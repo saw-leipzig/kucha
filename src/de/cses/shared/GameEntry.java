@@ -1,0 +1,44 @@
+/*
+ * Copyright 2017 
+ * Saxon Academy of Science in Leipzig, Germany
+ * 
+ * This is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License version 3 (GPL v3) as published by the Free Software Foundation.
+ * 
+ * This software is distributed WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. Please read the GPL v3 for more details.
+ * 
+ * You should have received a copy of the GPL v3 along with the software. 
+ * If not, you can access it from here: <https://www.gnu.org/licenses/gpl-3.0.txt>.
+ */
+package de.cses.shared;
+
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+/**
+ * @author nina
+ *
+ */
+public class GameEntry implements IsSerializable {
+	
+	private int gameID;
+	private String name;
+	private String description;
+	private int imageID;
+	private ArrayList<AnnotationEntry> annotations;
+	
+	public GameEntry(int gameID, String name, int imageID, ArrayList<AnnotationEntry> annotations, String description){
+			this.gameID = gameID;
+			this.name = name;
+			this.imageID = imageID;
+			this.annotations = annotations;
+			this.description = description;
+	}
+}

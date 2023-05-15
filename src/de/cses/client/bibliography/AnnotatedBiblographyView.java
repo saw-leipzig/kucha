@@ -52,7 +52,7 @@ public class AnnotatedBiblographyView extends AbstractView {
 		//
 	//setHTML(dvTemplates.view(annotatedBibliographyEntry));
 //		setHTML(dvTemplates.extendedView(annotatedBibliographyEntry));
-		processtoview(annotatedBibliographyEntry);
+		processToView(annotatedBibliographyEntry);
 		setSize("95%", "90%");
 		Integer.toString(getHTML().length());
 
@@ -80,7 +80,7 @@ public class AnnotatedBiblographyView extends AbstractView {
 		this.annotatedBibliographyEntry=entry;
 	}
 
-	public void processtoview(AnnotatedBibliographyEntry annotatedBibliographyEntry) {
+	public void processToView(AnnotatedBibliographyEntry annotatedBibliographyEntry) {
 		SafeHtmlBuilder shb = new SafeHtmlBuilder();
 		if (annotatedBibliographyEntry.getAnnotation()) {
 			String uri="resource?document=" + annotatedBibliographyEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri();
@@ -280,7 +280,7 @@ public class AnnotatedBiblographyView extends AbstractView {
 			annotatedBibliographyEntry = (AnnotatedBibliographyEntry) entry;
 //			setHTML(dvTemplates.view(annotatedBibliographyEntry));
 //			setHTML(dvTemplates.extendedView(annotatedBibliographyEntry));
-			processtoview(annotatedBibliographyEntry);
+			processToView(annotatedBibliographyEntry);
 		}
 	}
 	public String getLabel() {

@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -169,7 +171,16 @@ public class ImageSelector implements IsWidget {
 
 		});
 		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>(), imageCell);
-		imageListView.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		imageListView.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
+		imageListView.getSelectionModel().addBeforeSelectionHandler(new BeforeSelectionHandler<ImageEntry>() {
+
+			@Override
+			public void onBeforeSelection(BeforeSelectionEvent<ImageEntry> event) {
+				Info.display("selected","image");
+				
+			}
+			
+		});
 		// we need to remove this due to multiple seleciton!!
 //		imageListView.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<ImageEntry>() {
 //
@@ -357,7 +368,7 @@ public class ImageSelector implements IsWidget {
 						imageEntryList.add(ie);
 					}
 				}
-				imageListView.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+				imageListView.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
 			}
 		});
 	}
@@ -382,7 +393,7 @@ public class ImageSelector implements IsWidget {
 						}
 					}
 				}
-				imageListView.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+				imageListView.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
 			}
 		});
 	}

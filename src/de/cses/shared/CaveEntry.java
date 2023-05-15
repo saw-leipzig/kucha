@@ -58,7 +58,9 @@ public class CaveEntry extends AbstractEntry {
 	private ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBibliographyEntry>();
 	private Map<Integer,ArrayList<PositionEntry>> wallPositions = new HashMap<Integer,ArrayList<PositionEntry>>();
 
-	public CaveEntry() { 	}
+	public CaveEntry() { 
+		
+	}
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int siteID, int districtID,
 			int regionID, int orientationID, String stateOfPerservation, String findings, String notes, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,

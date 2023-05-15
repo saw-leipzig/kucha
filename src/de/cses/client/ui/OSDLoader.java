@@ -14,7 +14,6 @@ import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.widget.core.client.info.Info;
-
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
@@ -85,7 +84,7 @@ public class OSDLoader {
 		this.icoTree=null;
 		//this.osdLoader=this;
 	}
-	public void getResults(String id ,String tags, String polygon, String image, Boolean delete, Boolean update) {
+	public void getResults(String id ,String tags, String polygon, String image, Boolean delete, Boolean update, Double creationTime, Double modificationTime, Boolean isProposed) {
 		// Function for sending the Annotations to MYSQL-Backend
 		Util.doLogging("Annotation recieved: Tag: "+tags+", Polygone: "+polygon+", Image: "+image+", delete: "+Boolean.toString(delete)+", update: "+Boolean.toString(update)+", DepictionID: "+osdListener.getDepictionID());
 		// Even JS-Arrays are not usable in Java-Code, so we have to use a String to get all the tags, which are than associated with a Iconography Entry
@@ -96,18 +95,25 @@ public class OSDLoader {
 			//Util.doLogging("found tag value: "+icoEntry.getText());
 			newTags.add(icoEntry);
 		}
+		JavaScriptObject bodies = createList();
+		for (IconographyEntry ie : newTags) {
+			bodies = addToBody(bodies,ie.getIconographyID(), ie.getText(), image);
+		}
+
 		// As we want our MySQL-DB to understand the Polygons, we need to convert them into WKT and then into a GeoJSON
 		String svgRaw = polygon.replace("<svg><path d=\"","").replace("\"></path></svg>","");
-		Util.doLogging("Starting Converter for SVG to WKT");
 		String newPoly = toWKT(svgRaw);
 		if (newPoly != "") {
-			Util.doLogging("Starting Converter for WKT to GeoJSON");
 			String newPolyGeoJson=toGeopJson(newPoly);
 			//Util.doLogging("Writing Annotation");
-			AnnotationEntry annoEntry = new AnnotationEntry(osdListener.getDepictionID(), id, newTags, newPolyGeoJson, image, delete, update);
+			AnnotationEntry annoEntry = new AnnotationEntry(osdListener.getDepictionID(), id, newTags, newPolyGeoJson, image, delete, update, creationTime, modificationTime, isProposed);
+			String w3cAnno = generateW3CAnnotation(annoEntry.getAnnotoriousID() , bodies, newPolyGeoJson, annoEntry.getImage(), annoEntry.getIsProposed()).toString();
+			annoEntry.setW3c(w3cAnno);
 			annoEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());		
 			// Create a new annotation and decide, what to do with it.
-			AnnotationEntry annoEntryDB = new AnnotationEntry(annoEntry.getDepictionID(), annoEntry.getAnnotoriousID(), annoEntry.getTags(), newPoly, annoEntry.getImage(), annoEntry.getDelete(), annoEntry.getUpdate());
+			AnnotationEntry annoEntryDB = new AnnotationEntry(annoEntry.getDepictionID(), annoEntry.getAnnotoriousID(), annoEntry.getTags(), newPoly, annoEntry.getImage(), annoEntry.getDelete(), annoEntry.getUpdate(), creationTime, modificationTime, isProposed);
+			annoEntryDB.setW3c(w3cAnno);
+			
 			if (!update && !delete) {
 				osdListener.addAnnotation(annoEntry);
 			}
@@ -163,7 +169,6 @@ public class OSDLoader {
 	}
 
 	public void startLoadingTiles(String context) {
-		Util.doLogging("start loading osd 2");
 		Collection<IconographyEntry> icos = StaticTables.getInstance().getIconographyEntries().values();
 		Util.doLogging("load tiles");
 		if (icos.size()>0) {
@@ -255,15 +260,16 @@ public class OSDLoader {
 		JavaScriptObject w3cAnnotation = createList();
 		if (annoEntries!=null) {
 			for (AnnotationEntry annoEntry : annoEntries) {
-				//Util.doLogging(annoEntry.getPolygone());
-				JavaScriptObject bodies = createList();
-				for (IconographyEntry ie : annoEntry.getTags()) {
-					bodies = addToBody(bodies,ie.getIconographyID(), ie.getText(), annoEntry.getImage());
-				}
-				w3cAnnotation = addAnnotation(w3cAnnotation,annoEntry.getAnnotoriousID(), bodies, annoEntry.getPolygone(), annoEntry.getImage());
+//				//Util.doLogging(annoEntry.getPolygone());
+//				JavaScriptObject bodies = createList();
+//				for (IconographyEntry ie : annoEntry.getTags()) {
+//					bodies = addToBody(bodies,ie.getIconographyID(), ie.getText(), annoEntry.getImage());
+//				}
+//				
+				JavaScriptObject w3cAnnotationObject = parseW3CAnnotation(annoEntry.getW3c());
+				w3cAnnotation = addAnnotation(w3cAnnotation, w3cAnnotationObject);
 			}			
 		}
-		// Util.doLogging("w3cAnnotation "+w3cAnnotation);
 		return w3cAnnotation;
 	}
 
@@ -277,13 +283,16 @@ public class OSDLoader {
 	 	bodies.push(body);
  		return bodies;
 	}-*/;
-	public static native JavaScriptObject addAnnotation(JavaScriptObject annos,String annotoriousID, JavaScriptObject tags, String polygone, String image)
+	public static native JavaScriptObject generateW3CAnnotation(String annotoriousID, JavaScriptObject tags, String polygone, String image, Boolean isProposed)
 	/*-{
 		var anno={};
 		anno["@context"]="http://www.w3.org/ns/anno.jsonld";
 		anno["id"]=annotoriousID;
 		anno["type"]="Annotation";
 		anno["body"]=tags;
+		anno["creator"]={
+		"type":isProposed?"computer":"human"
+		}
 		var target={};
 		var selector={};
 		selector["type"]="SvgSelector";
@@ -295,6 +304,15 @@ public class OSDLoader {
 		target["selector"]=selector;
 		target["source"]= image,
 		anno["target"]=target;
+	    return anno;
+	}-*/;
+	public static native JavaScriptObject parseW3CAnnotation(String w3cAnno)
+	/*-{
+		var anno = JSON.parse(w3cAnno)
+	    return anno;
+	}-*/;
+	public static native JavaScriptObject addAnnotation(JavaScriptObject annos,JavaScriptObject anno)
+	/*-{
 		annos.push(anno);
 	    return annos;
 	}-*/;
@@ -305,7 +323,7 @@ public class OSDLoader {
 	}
 	public static native void removeOrAddAnnotationsJS(JavaScriptObject viewers, JavaScriptObject annos, Boolean add) 
 	/*-{
-	    //$wnd.console.log("Adding Annotation: ", annos)
+	    $wnd.console.log("viewers ", viewers)
 	    if (viewers["annotorious"]!=null){
 	    	for (var v in viewers["annotorious"]) {
 				var annosForViewer = [];
@@ -450,7 +468,7 @@ public class OSDLoader {
 	            	poly+=", "+firstCoord
 	            }
 	            poly+="))";
-	        	$wnd.console.log("poly: ",poly);
+	        	// $wnd.console.log("poly: ",poly);
 	        	var precisionModel = new $wnd.jsts.geom.PrecisionModel($wnd.jsts.geom.PrecisionModel.FLOATING)
     			var geometryPrecisionReducer = new $wnd.jsts.precision.GeometryPrecisionReducer(precisionModel)
     			var geomFactoryJSTS = new $wnd.jsts.geom.GeometryFactory(precisionModel)
@@ -564,6 +582,17 @@ public class OSDLoader {
         $wnd.console.log("annotations:",annotations);
         return annotations;
 	}-*/;
+	public void setHasContourAllign(boolean hasContourAllign) {
+		setHasContourAllignJS(jso, hasContourAllign);
+	}
+	public static native JavaScriptObject setHasContourAllignJS(JavaScriptObject viewers, boolean hasContourAllign)
+	/*-{
+		$wnd.console.log("viewers:",viewers);
+		for (var v in viewers["annotorious"]) {
+			$wnd.console.log("viewers:",viewers,v, hasContourAllign);
+			viewers["annotorious"][v].setHasContourAllign(hasContourAllign);
+		}
+	}-*/;
 	public static native JavaScriptObject createZoomeImage(JavaScriptObject tiles,JavaScriptObject wheres, JavaScriptObject source, JavaScriptObject dic, String sessionID, boolean anno, JavaScriptObject icoTree, OSDLoader osdLoader, JavaScriptObject annos, boolean isWall)
 	/*-{
 	 annotorious={};
@@ -587,193 +616,198 @@ public class OSDLoader {
             	return 'highlight';
         	}
 	 	// $wnd.console.log("wheres:",wheres);
-	 		 for (var i = 0, length = wheres.length; i < length; i++){
-		// $wnd.console.log("Processing image, request header: ",wheres[i]);
-	 	if (!(wheres[i] in dic)){  			
-		 	dic[wheres[i]] =  $wnd.OpenSeadragon({
-		        id: wheres[i],
-		        showRotationControl: true,
-		        showFlipControl: true,
-		        maxZoomLevel: 100,
-		        minZoomLevel: 0.001,
-		        ajaxWithCredentials: true,
-		        loadTilesWithAjax: true,
-		        tileRequestHeaders:{"SessionID": sessionID},
-		        ajaxHeaders: {"SessionID": sessionID},
-		        loadTilesWithAjax:true,
-				prefixUrl: "scripts/openseadragon-bin-2.4.2/images/",
-//				tileSources: tiles[wheres[i]]
-				
-			}); 
-        dic[wheres[i]].open({
-            // The headers specified here will be combined with those in the Viewer object (if any)
-            ajaxHeaders:  {"SessionID": sessionID},
-            tileSource: tiles[wheres[i]]
-        });			
-			if (anno){
-				$wnd.console.log("Starting annotation for:",wheres[i]);	
-				
-				var savedAnnos=[];
-				var foundAnno=false;
-				for (var k = 0, length2 = annos.length; k < length2; k++){
-					//$wnd.console.log("annotation", annos[k]);	
-					if (annos[k].target.source===wheres[i]){
-						//$wnd.console.log("foundAnnotation");	
-						savedAnnos.push(annos[k]);
-						foundAnno=true;
+	 	for (var i = 0, length = wheres.length; i < length; i++){
+			// $wnd.console.log("Processing image, request header: ",wheres[i]);
+		 	if (!(wheres[i] in dic)){  			
+			 	dic[wheres[i]] =  $wnd.OpenSeadragon({
+			        id: wheres[i],
+			        showRotationControl: true,
+			        showFlipControl: true,
+			        maxZoomLevel: 100,
+			        minZoomLevel: 0.001,
+			        ajaxWithCredentials: true,
+			        loadTilesWithAjax: true,
+			        tileRequestHeaders:{"SessionID": sessionID},
+			        ajaxHeaders: {"SessionID": sessionID},
+			        loadTilesWithAjax:true,
+					prefixUrl: "scripts/openseadragon-bin-2.4.2/images/",
+	//				tileSources: tiles[wheres[i]]
+					
+				}); 
+	        dic[wheres[i]].open({
+	            // The headers specified here will be combined with those in the Viewer object (if any)
+	            ajaxHeaders:  {"SessionID": sessionID},
+	            tileSource: tiles[wheres[i]]
+	        });			
+				if (anno){
+					$wnd.console.log("Starting annotation for:",wheres[i]);	
+					
+					var savedAnnos=[];
+					var foundAnno=false;
+					for (var k = 0, length2 = annos.length; k < length2; k++){
+						//$wnd.console.log("annotation", annos[k]);	
+						if (annos[k].target.source===wheres[i]){
+							//$wnd.console.log("foundAnnotation");	
+							savedAnnos.push(annos[k]);
+							foundAnno=true;
+						}
 					}
-				}
-				//$wnd.console.log("config");
-				var config = {};
-				config["locale"] = 'auto',
-				config["readOnly"]=false;
-				var tw = $wnd.TreeWidget;
-				if (isWall){
-					config["widgets"]=[{ widget: 'TAG', vocabulary: [ 'lost'] }];
-					config["readOnly"]=true;
-				} else {
-					config["widgets"]=[{ widget: tw, tree: icoTree }];
-				}
-				config["image"]=wheres[i];
-				config["formatter"] = [MyHighlightFormatter];
-				// $wnd.console.log("Adding Annotorious",config);
-				annotorious[wheres[i]] = $wnd.OpenSeadragon.Annotorious(dic[wheres[i]],config);
-		        $wnd.Annotorious.SelectorPack(annotorious[wheres[i]]);
-		        console.log(annotorious[wheres[i]].listDrawingTools());
-		        // annotorious[wheres[i]].setDrawingTool('bettermultipolygon');
-		        annotorious[wheres[i]].setDrawingTool('bettermultipolygon');
-
-				//annotorious[wheres[i]].setDrawingTool("polygon");
-				//annotorious[wheres[i]].setDrawingEnabled(true);
-				//$wnd.console.log("Adding Handler");
-				annotorious[wheres[i]].on('createAnnotation',function(annotation) {
-					  // $wnd.console.log("annotation",annotation);
-						
-			          results="";
-			          polygonRes=annotation.target.selector.value
-			          var image = "";
-			          for (var key in annotation.body){
-						if (results===""){
-							results=annotation.body[key].id;
-						}
-						else{
-							results=results+";"+annotation.body[key].id;
-						}
-						if (annotation.target.source.includes("%2Fimages%2F")){
-					 		image=annotation.target.source.split("%2Fimages%2F")[1]
-						} else {
-							image=annotation.target.source
-						}
+					//$wnd.console.log("config");
+					var config = {};
+					config["locale"] = 'auto',
+					config["readOnly"]=false;
+					config["allowEmpty"] = true;
+					config["inverted"] = false;
+					config["drawOnSingleClick"] = false
+					var tw = $wnd.TreeWidget;
+					if (isWall){
+						config["widgets"]=[{ widget: 'TAG', vocabulary: [ 'lost'] }];
+						config["readOnly"]=true;
+					} else {
+						config["widgets"]=[{ widget: tw, tree: icoTree }];
+					}
+					config["image"]=wheres[i];
+					config["formatter"] = [MyHighlightFormatter];
+					// $wnd.console.log("Adding Annotorious",config);
+					annotorious[wheres[i]] = $wnd.OpenSeadragon.Annotorious(dic[wheres[i]],config);
+			        $wnd.Annotorious.SelectorPack(annotorious[wheres[i]]);
+			        console.log(annotorious[wheres[i]].listDrawingTools());
+			        // annotorious[wheres[i]].setDrawingTool('bettermultipolygon');
+			        annotorious[wheres[i]].setDrawingTool('bettermultipolygon');
+	
+					//annotorious[wheres[i]].setDrawingTool("polygon");
+					//annotorious[wheres[i]].setDrawingEnabled(true);
+					//$wnd.console.log("Adding Handler");
+					annotorious[wheres[i]].on('createAnnotation',function(annotation) {
+						  // $wnd.console.log("annotation",annotation);
 							
-					}		
-					//$wnd.console.log("results: ",results);
-					osdLoader.@de.cses.client.ui.OSDLoader::getResults(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;)(annotation.id,results,polygonRes,image, false, false);
-				});
-				annotorious[wheres[i]].on('deleteAnnotation', function(annotation) {
-					"deleteAnnotation Triggered"
-					results=""
-					var image = "";
-					for (var key in annotation.body){
-						if (results===""){
-							results=annotation.body[key].id;
+				          results="";
+				          polygonRes=annotation.target.selector.value
+				          var image = "";
+				          for (var key in annotation.body){
+							if (results===""){
+								results=annotation.body[key].id;
+							}
+							else{
+								results=results+";"+annotation.body[key].id;
+							}
+							if (annotation.target.source.includes("%2Fimages%2F")){
+						 		image=annotation.target.source.split("%2Fimages%2F")[1]
+							} else {
+								image=annotation.target.source
+							}
+								
+						}		
+						//$wnd.console.log("results: ",results);
+						annotation["creator"] = annotation.creator?annotation.creator:{"type":"human"}
+						osdLoader.@de.cses.client.ui.OSDLoader::getResults(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Boolean;)(annotation.id,results,polygonRes,image, false, false, annotation.created?annotation.created:-1, annotation.modified?annotation.modified:-1, annotation.creator.type === "computer"?true:false);
+					});
+					annotorious[wheres[i]].on('deleteAnnotation', function(annotation) {
+						"deleteAnnotation Triggered"
+						results=""
+						var image = "";
+						for (var key in annotation.body){
+							if (results===""){
+								results=annotation.body[key].id;
+							}
+							else{
+								results=results+";"+annotation.body[key].id;
+							}
+							if (annotation.target.source.includes("%2Fimages%2F")){
+						 		image=annotation.target.source.split("%2Fimages%2F")[1]
+							} else {
+								image=annotation.target.source
+							}
 						}
-						else{
-							results=results+";"+annotation.body[key].id;
+						
+						//$wnd.console.log("results: ",results);
+						osdLoader.@de.cses.client.ui.OSDLoader::getResults(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Boolean;)(annotation.id,results,annotation.target.selector.value,image, true, false,annotation.created?annotation.created:-1, annotation.modified?annotation.modified:-1, annotation.creator.type === "computer"?true:false);
+					});
+					annotorious[wheres[i]].on('selectAnnotation', function(annotation) {
+					});
+	//				annotorious[wheres[i]].on('mouseEnterAnnotation', function(annotation, event) {
+	//				});
+	//				annotorious[wheres[i]].on('mouseLeaveAnnotation', function(annotation, event) {
+	//				});
+					annotorious[wheres[i]].on('startSelection', function(point) {
+					});
+					annotorious[wheres[i]].on('updateAnnotation', function(annotation, previous) {
+						results=""
+						var image = "";
+						for (var key in annotation.body){
+							if (results===""){
+								results=annotation.body[key].id;
+							}
+							else{
+								results=results+";"+annotation.body[key].id;
+							}
+							if (annotation.target.source.includes("%2Fimages%2F")){
+						 		image=annotation.target.source.split("%2Fimages%2F")[1]
+							} else {
+								image=annotation.target.source
+							}
 						}
-						if (annotation.target.source.includes("%2Fimages%2F")){
-					 		image=annotation.target.source.split("%2Fimages%2F")[1]
-						} else {
-							image=annotation.target.source
-						}
+						$wnd.console.log("Updating Annotation ", annotation);
+						osdLoader.@de.cses.client.ui.OSDLoader::getResults(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Boolean;)(annotation.id,results,annotation.target.selector.value,image, false, true, annotation.created?annotation.created:-1, annotation.modified?annotation.modified:-1, annotation.creator.type === "computer"?true:false);
+					});
+					//$wnd.console.log("Adding Annotations");
+					if (isWall){
+						if (foundAnno){
+							// $wnd.console.log("Found Annotation for picture ",wheres[i],": ",savedAnnos);
+							annotorious[wheres[i]].setAnnotations(savedAnnos);
+							var annoStyle = {
+					            style:{
+					              outer: {
+					                "vector-effect": "none",
+					                "stroke": "#f00",
+					                "fill": "rgba(0, 128, 0,0.55)",
+					                "stroke-width":"5px",
+					                "transition": "fill 1s, stroke-width 0.7s"
+					              },
+					              inner: {
+					                "vector-effect": "none",
+					                "stroke": "#fff",
+					                "stroke-width": "1px",
+					                "transition": "stroke-width 0.7s"
+					              }
+					            }
+					          }
+							for (var k in savedAnnos) {
+								annotorious[wheres[i]].setAnnotationStyle(savedAnnos[k].id, annoStyle);
+							};
+	
+						}					
 					}
-					
-					//$wnd.console.log("results: ",results);
-					osdLoader.@de.cses.client.ui.OSDLoader::getResults(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;)(annotation.id,results,annotation.target.selector.value,image, true, false);
+				}		
+				// $wnd.console.log("Adding Imagefilters");
+				
+				dic[wheres[i]].imagefilters({menuId:"menu"+wheres[i],
+			    							 toolsLeft: 270
+			    							});
+				dic[wheres[i]].addHandler("pre-full-page", function (data) {
+						data.preventDefaultAction=true;
+						// $wnd.console.log($wnd.screenfull);
+						// $wnd.screenfull.request(data.eventSource.element);
+	  					if (data.eventSource.element.requestFullscreen) {
+	    					data.eventSource.element.requestFullscreen();
+	  					} else if (data.eventSource.element.mozRequestFullScreen) { 
+	    					data.eventSource.element.mozRequestFullScreen();
+	  					} else if (data.eventSource.element.webkitRequestFullscreen) { 
+	    					data.eventSource.element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+	  					} else if (data.eventSource.element.msRequestFullscreen) {
+	    					data.eventSource.element.msRequestFullscreen();
+	  					} else if (data.eventSource.element.webkitEnterFullScreen) {
+	  						data.eventSource.element.webkitEnterFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+						}
+	  					else {
+	      					var el = $doc.documentElement;
+	      					el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+	    				}
 				});
-//				annotorious[wheres[i]].on('selectAnnotation', function(annotation) {
-//				});
-//				annotorious[wheres[i]].on('mouseEnterAnnotation', function(annotation, event) {
-//				});
-//				annotorious[wheres[i]].on('mouseLeaveAnnotation', function(annotation, event) {
-//				});
-				annotorious[wheres[i]].on('updateAnnotation', function(annotation, previous) {
-					results=""
-					var image = "";
-					for (var key in annotation.body){
-						if (results===""){
-							results=annotation.body[key].id;
-						}
-						else{
-							results=results+";"+annotation.body[key].id;
-						}
-						if (annotation.target.source.includes("%2Fimages%2F")){
-					 		image=annotation.target.source.split("%2Fimages%2F")[1]
-						} else {
-							image=annotation.target.source
-						}
-					}
-					
-					$wnd.console.log(" Updated Annotations results: ",results);
-					osdLoader.@de.cses.client.ui.OSDLoader::getResults(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;)(annotation.id,results,annotation.target.selector.value,image, false, true);
-				});
-				//$wnd.console.log("Adding Annotations");
-				if (isWall){
-					if (foundAnno){
-						// $wnd.console.log("Found Annotation for picture ",wheres[i],": ",savedAnnos);
-						annotorious[wheres[i]].setAnnotations(savedAnnos);
-						var annoStyle = {
-				            style:{
-				              outer: {
-				                "vector-effect": "none",
-				                "stroke": "#f00",
-				                "fill": "rgba(0, 128, 0,0.55)",
-				                "stroke-width":"5px",
-				                "transition": "fill 1s, stroke-width 0.7s"
-				              },
-				              inner: {
-				                "vector-effect": "none",
-				                "stroke": "#fff",
-				                "stroke-width": "1px",
-				                "transition": "stroke-width 0.7s"
-				              }
-				            }
-				          }
-						for (var k in savedAnnos) {
-							annotorious[wheres[i]].setAnnotationStyle(savedAnnos[k].id, annoStyle);
-						};
-
-					}					
-				}
-			}		
-			// $wnd.console.log("Adding Imagefilters");
-			
-			dic[wheres[i]].imagefilters({menuId:"menu"+wheres[i],
-		    							 toolsLeft: 270
-		    							});
-			dic[wheres[i]].addHandler("pre-full-page", function (data) {
-					data.preventDefaultAction=true;
-					// $wnd.console.log($wnd.screenfull);
-					// $wnd.screenfull.request(data.eventSource.element);
-  					if (data.eventSource.element.requestFullscreen) {
-    					data.eventSource.element.requestFullscreen();
-  					} else if (data.eventSource.element.mozRequestFullScreen) { 
-    					data.eventSource.element.mozRequestFullScreen();
-  					} else if (data.eventSource.element.webkitRequestFullscreen) { 
-    					data.eventSource.element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-  					} else if (data.eventSource.element.msRequestFullscreen) {
-    					data.eventSource.element.msRequestFullscreen();
-  					} else if (data.eventSource.element.webkitEnterFullScreen) {
-  						data.eventSource.element.webkitEnterFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-					}
-  					else {
-      					var el = $doc.documentElement;
-      					el.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-    				}
-			});
-
-			//$wnd.console.log("Processing ended, i=",i, wheres.length);
-			//$wnd.console.log(dic[wheres[i]].viewport.getContainerSize().x+" / "+dic[wheres[i]].viewport.getContainerSize().y);
-  
+				
+	
+				// $wnd.console.log("Processing ended, i=",i, wheres.length);
+				//$wnd.console.log(dic[wheres[i]].viewport.getContainerSize().x+" / "+dic[wheres[i]].viewport.getContainerSize().y);
 
 		}
 	 }

@@ -67,7 +67,6 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	private boolean hasArticle = false;
 	private boolean hasOtherAuthors = false;
 	private boolean hasOtherEditors = false;
-	private String authorString = "";
 
 	public AnnotatedBibliographyEntry(int annotatedBibliographyID, PublicationTypeEntry publicationType, 
 			String titleEN, String titleORG, String titleTR,
@@ -209,9 +208,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	public boolean getHasHan() {
 		return hasHan;
 	}
-	public void setAuthorString() {
-		this.authorString = this.getAuthors();
-	}
+
 	public void setAnnotation(boolean annotation) {
 		this.annotation = annotation;
 	}

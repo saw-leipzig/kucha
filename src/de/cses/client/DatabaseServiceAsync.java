@@ -368,6 +368,8 @@ public interface DatabaseServiceAsync {
 	void searchDepictions(DepictionSearchEntry searchEntry, AsyncCallback<ArrayList<DepictionEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getAnnotations(int depictionEntry,AsyncCallback<ArrayList<AnnotationEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void getProposedAnnotations(ArrayList<ImageEntry> images, int depictionEntry,AsyncCallback<ArrayList<AnnotationEntry>> asyncCallback) throws IllegalArgumentException;
 	
 	void setAnnotationResults(AnnotationEntry annoEntry, boolean isOrnament,AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 	

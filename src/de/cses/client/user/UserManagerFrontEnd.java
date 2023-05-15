@@ -72,6 +72,7 @@ public class UserManagerFrontEnd extends PopupPanel {
 		ValueProvider<UserEntry, String> firstname();
 		ValueProvider<UserEntry, String> lastname();
 		ValueProvider<UserEntry, String> email();
+		ValueProvider<UserEntry, String> affiliation();
 		ValueProvider<UserEntry, Integer> accessLevel(); 
 		ValueProvider<UserEntry, Boolean> granted(); 
 	}
@@ -185,6 +186,7 @@ public class UserManagerFrontEnd extends PopupPanel {
 		ColumnConfig<UserEntry, String> firstnameCol = new ColumnConfig<UserEntry, String>(userProps.firstname(), 300, "Firstname");
 		ColumnConfig<UserEntry, String> lastnameCol = new ColumnConfig<UserEntry, String>(userProps.lastname(), 300, "Lastname");
 		ColumnConfig<UserEntry, String> emailCol = new ColumnConfig<UserEntry, String>(userProps.email(), 300, "Email");
+		ColumnConfig<UserEntry, String> affCol = new ColumnConfig<UserEntry, String>(userProps.affiliation(), 300, "Affiliation");
 		ColumnConfig<UserEntry, Integer> accessLevelCol = new ColumnConfig<UserEntry, Integer>(userProps.accessLevel(), 150, "Access Level");
 		ColumnConfig<UserEntry, Boolean> grantedCol = new ColumnConfig<UserEntry, Boolean>(userProps.granted(), 150, "granted");
 		
@@ -196,6 +198,7 @@ public class UserManagerFrontEnd extends PopupPanel {
     sourceColumns.add(firstnameCol);
     sourceColumns.add(lastnameCol);
     sourceColumns.add(emailCol);
+    sourceColumns.add(affCol);
     sourceColumns.add(accessLevelCol);
     sourceColumns.add(grantedCol);
 

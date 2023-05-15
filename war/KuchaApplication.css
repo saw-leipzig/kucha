@@ -376,6 +376,22 @@ div.doubleLeftButtonOver {
 	cursor: pointer;
 }
 
+div.doubleRightButton {
+	background-image: url(icons/doppel_rechts.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.doubleRightButtonOver {
+	background-image: url(icons/doppel_rechts_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
 div.removeButton {
 	background-image: url(icons/remove.png);
 	width: 20px;

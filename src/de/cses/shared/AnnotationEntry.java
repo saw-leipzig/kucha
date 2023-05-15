@@ -13,7 +13,10 @@
  */
 package de.cses.shared;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
+
 
 /**
  * @author alingnau
@@ -23,9 +26,12 @@ public class AnnotationEntry extends AbstractEntry {
 	private int depictionID = 0;
 	private String annotoriousID = "";
 	private ArrayList<IconographyEntry> tags;
-	private String polygon, image = "";
+	private String geoJson, w3c, image = "";
 	private boolean delete;
 	private boolean update;
+	private double creationTime;
+	private double modificationTime;
+	private boolean isProposed;
 
 	/**
 	 * The default constructor is used to create a new AuthorEntry. The authorID
@@ -34,17 +40,40 @@ public class AnnotationEntry extends AbstractEntry {
 	 */
 	public AnnotationEntry() {	}
 
-	public AnnotationEntry(int DepictionID, String annotoriousID, ArrayList<IconographyEntry> tags, String polygon, String image, boolean delete, boolean update) {
+	public AnnotationEntry(int DepictionID, String annotoriousID, ArrayList<IconographyEntry> tags, String geoJson, String image, boolean delete, boolean update, double creationTime, double modificationTime, boolean isProposed) {
 		this.depictionID = DepictionID;
 		this.annotoriousID = annotoriousID;
 		this.tags=tags;
-		this.polygon=polygon;
+		this.geoJson=geoJson;
 		this.image=image;
 		this.delete=delete;
 		this.update=update;
-		
+		this.creationTime=creationTime;
+		this.modificationTime=modificationTime;
+		this.isProposed=isProposed;
 	}
-	
+
+	public boolean getIsProposed() {
+		return isProposed;
+	}
+
+	public void setTimeSpan(boolean isProposed) {
+		this.isProposed = isProposed;
+	}
+	public double getModificationTime() {
+		return modificationTime;
+	}
+
+	public void setModificationTime(double modificationTime) {
+		this.modificationTime = modificationTime;
+	}
+	public double getCreationTime() {
+		return creationTime;
+	}
+
+	public void setCreatonTime(double creationTime) {
+		this.creationTime = creationTime;
+	}
 	public int getDepictionID() {
 		return depictionID;
 	}
@@ -86,12 +115,19 @@ public class AnnotationEntry extends AbstractEntry {
 		this.image = image;
 	}
 
-	public String getPolygone() {
-		return polygon;
+	public String getGeoJson() {
+		return geoJson;
 	}
 
-	public void setPolygon(String polygon) {
-		this.polygon = polygon;
+	public void setW3c(String w3c) {
+		this.w3c = w3c;
+	}
+	public String getW3c() {
+		return w3c;
+	}
+
+	public void setGeoJson(String geoJson) {
+		this.geoJson = geoJson;
 	}
 
 	public Boolean getDelete() {

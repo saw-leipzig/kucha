@@ -339,6 +339,8 @@ public interface DatabaseService extends RemoteService {
 	
 	ArrayList<AnnotationEntry> getAnnotations(int depictionEntry) throws IllegalArgumentException;
 
+	ArrayList<AnnotationEntry> getProposedAnnotations(ArrayList<ImageEntry> images, int depictionEntry) throws IllegalArgumentException;
+
 	ArrayList<CaveEntry> searchCaves(CaveSearchEntry searchEntry) throws IllegalArgumentException;
 
 	ArrayList<DepictionEntry> searchDepictions(DepictionSearchEntry searchEntry) throws IllegalArgumentException;

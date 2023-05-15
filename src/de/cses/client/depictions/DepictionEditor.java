@@ -480,6 +480,8 @@ public class DepictionEditor extends AbstractEditor {
 		if (newAnnos.size()>0) {
 			if (annotationsLoaded) {
 				osdLoader.removeOrAddAnnotations(newAnnos,!deselect);
+				osdLoader.setHasContourAllign(false);
+
 			}				
 		}
 //		for (AnnotationEntry aeSelected : newAnnos) {
@@ -1810,9 +1812,38 @@ public class DepictionEditor extends AbstractEditor {
 				osdLoader.removeOrAddAnnotations(correspondingDepictionEntry.getRelatedAnnotationList(),
 						annotationsLoaded);
 				annotationsLoaded = !annotationsLoaded;
+				osdLoader.setHasContourAllign(false);
 			}
 		});
 		showAnnotationTB.setToolTip(Util.createToolTip("Show or Hide Annotations.", "This will show or hide all Annotations."));
+		ToolButton showproposedAnnotationTB = new ToolButton(new IconConfig("doubleRightButton", "doubleRightButtonOver"));
+		showproposedAnnotationTB.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				ArrayList<AnnotationEntry> proposedAnnotations = new ArrayList<AnnotationEntry>();
+				dbService.getProposedAnnotations(correspondingDepictionEntry.getRelatedImages(), correspondingDepictionEntry.getDepictionID(), new AsyncCallback<ArrayList<AnnotationEntry>>() {
+					
+					@Override
+					public void onSuccess(ArrayList<AnnotationEntry> result) {
+						if (result != null){
+							for (AnnotationEntry entry : result) {
+								proposedAnnotations.add(entry);
+							}
+							osdLoader.removeOrAddAnnotations(proposedAnnotations,
+									annotationsLoaded);
+							osdLoader.setHasContourAllign(true);
+						}
+						annotationsLoaded = !annotationsLoaded;
+					}
+					
+					@Override
+					public void onFailure(Throwable caught) {
+					}
+				});
+
+			}
+		});
+		showproposedAnnotationTB.setToolTip(Util.createToolTip("Show or Hide Proposed Annotations.", "This will show or hide all artificially generated Annotations."));
 		ToolButton modifiedToolButtonImage = new ToolButton(new IconConfig("foldButton", "foldButtonOver"));
 		modifiedToolButtonImage.setToolTip(Util.createToolTip("show modification history"));
 		modifiedToolButtonImage.addSelectHandler(new SelectHandler() {
@@ -1947,7 +1978,7 @@ public class DepictionEditor extends AbstractEditor {
 		depictionImagesPanel.addTool(removeImageTB);
 		depictionImagesPanel.addTool(setMasterTB);
 		depictionImagesPanel.addTool(showAnnotationTB);
-		
+		depictionImagesPanel.addTool(showproposedAnnotationTB);
 
 		/**
 		 * ---------------------- content of third tab (Iconography & Pictorial

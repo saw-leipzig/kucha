@@ -14,6 +14,7 @@
 package de.cses.server.mysql;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.math.BigInteger;
 import java.util.Base64;
 import java.net.HttpURLConnection;
@@ -73,7 +75,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gwt.thirdparty.json.JSONArray;
 import com.google.gwt.thirdparty.json.JSONException;
 import com.google.gwt.thirdparty.json.JSONObject;
@@ -98,13 +103,13 @@ import de.cses.shared.CaveSketchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CollectionEntry;
-import de.cses.shared.CommentEntry;
 import de.cses.shared.CoordinatesEntry;
 import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
+import de.cses.shared.GameEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageSearchEntry;
@@ -946,10 +951,8 @@ public class MysqlConnector implements IsSerializable {
 			json = json.replaceAll(",\"deleted\":false}", "}");
 			if (update) {
 				target = new URL (url+":"+port+index+"/_doc/"+ID+"/_update");				
-				// System.out.println("executing update request: "+ target);
 			} else {
 				target = new URL (url+":"+port+index+"/_doc/"+ID);
-				// System.out.println("executing update request: "+ target);
 			}
 	        String encoding = Base64.getEncoder().encodeToString((elastic_user+":"+ elastic_pw).getBytes("utf-8"));
 	        HttpURLConnection connection = (HttpURLConnection) target.openConnection();
@@ -975,6 +978,48 @@ public class MysqlConnector implements IsSerializable {
 	        String line;
 	        while ((line = in.readLine()) != null) {
 	            output +=line;
+	        }
+	        if(index == "/kucha_backup") {
+				String filename=serverProperties.getProperty("home.jsons")+"versions.json";
+				File versionfile = new File(filename);
+				versionfile.createNewFile(); 
+				try {
+					Writer versionOutput = new BufferedWriter(new FileWriter(filename, true));
+					versionOutput.append("{ \"index\" : { \"_index\" : \"" + index.replace("/", "") + "\", \"_id\" : \"" + ID + "\" } }" + System.lineSeparator());
+					versionOutput.append(json+System.lineSeparator());
+					versionOutput.close();
+
+				}catch (IOException e) {
+				    System.err.println(e);
+				}
+	        } else if (index == "/kucha_discussion") {
+				String filename=serverProperties.getProperty("home.jsons")+"discussions.json";
+				File versionfile = new File(filename);
+				versionfile.createNewFile(); 
+				try {
+					Writer versionOutput = new BufferedWriter(new FileWriter(filename, true));
+					versionOutput.append("{ \"index\" : { \"_index\" : \"" + index.replace("/", "") + "\", \"_id\" : \"" + ID + "\" } }" + System.lineSeparator());
+					versionOutput.append(json+System.lineSeparator());
+					versionOutput.close();
+
+				}catch (IOException e) {
+				    System.err.println(e);
+				}
+	        	
+	        } else if (index == "/kucha_news") {
+				String filename=serverProperties.getProperty("home.jsons")+"news.json";
+				File versionfile = new File(filename);
+				versionfile.createNewFile(); 
+				try {
+					Writer versionOutput = new BufferedWriter(new FileWriter(filename, true));
+					versionOutput.append("{ \"index\" : { \"_index\" : \"" + index.replace("/", "") + "\", \"_id\" : \"" + ID + "\" } }" + System.lineSeparator());
+					versionOutput.append(json+System.lineSeparator());
+					versionOutput.close();
+
+				}catch (IOException e) {
+				    System.err.println(e);
+				}
+	        	
 	        }
 		} catch (Exception ex) {
 			output += "Failed to do request ";
@@ -1049,12 +1094,12 @@ public class MysqlConnector implements IsSerializable {
 				if (imgAccessLevel.get(ae.getImage())>0) {
 					newAEs.add(ae);
 				} else {
-					ae.setPolygon("{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [0, 0]]]}");
+					ae.setGeoJson("{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [0, 0]]]}");
 					ae.setImage("no_picture_available.jpg");
 					newAEs.add(ae);
 				}
 			} else {
-				ae.setPolygon("{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [0, 0]]]}");
+				ae.setGeoJson("{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [0, 0]]]}");
 				ae.setImage("no_picture_available.jpg");
 				newAEs.add(ae);
 			}
@@ -1303,7 +1348,6 @@ public class MysqlConnector implements IsSerializable {
 					}
 					ArrayList<AnnotatedBibliographyEntry> bibs = getAnnotatedBiblography();
 					for (AnnotatedBibliographyEntry bib : bibs) {
-						bib.setAuthorString();
 						String json = gson.toJson(bib);
 						//System.out.println(filename);
 						try {
@@ -1490,7 +1534,7 @@ public class MysqlConnector implements IsSerializable {
 				pstmt.setString(5, pwHash);
 				pstmt.executeUpdate();
 				pstmt.close();
-				sendMail("kuchaadmin@saw-leipzig.de",user.getEmail(),"Kucha-Admin","An account has been created for you at kucha.saw-leipzig.de","Dear "+user.getFirstname()+ " "+user.getLastname()+",\n the Admin has created an Account in kuchatest.saw-leipzig.de for you.\nYour username is: "+user.getEmail()+"\nYour password is:  \""+pwd+"\" (without quotes)\n However, you do not yet have commenting privileges. These are still to be assigned by the administrators. We ask for a little patience.");
+				sendMail("kuchaadmin@saw-leipzig.de",user.getEmail(),"Kucha-Admin","An account has been created for you at kucha.saw-leipzig.de","Dear "+user.getFirstname()+ " "+user.getLastname()+",\n the Admin has created an Account in kuchatest.saw-leipzig.de for you.\nYour username is: "+user.getEmail()+"\nYour password is:  \""+pwd+"\" (without quotes)\n However, an administrator still needs to grant you access to our site. We ask for a little patience.");
 			} else {
 				System.out.println("Email already exists!");
 				return "Email already exists!";
@@ -1503,6 +1547,36 @@ public class MysqlConnector implements IsSerializable {
 		}
 		return "";
 	}
+
+	public Boolean putNews(String user, String passwordHash, String news, String uuid, String messageText) {
+		String url = serverProperties.getProperty("home.elastic.url");
+		String index_data = serverProperties.getProperty("home.elastic.index_data");
+		String index_dic = serverProperties.getProperty("home.elastic.index_dic");
+		String index_backup = serverProperties.getProperty("home.elastic.index_backup");
+		String elastic_user = serverProperties.getProperty("home.elastic.login");
+		String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+		String mapping_data = serverProperties.getProperty("home.elastic.mapping.kucha_data");
+		String mapping_dic = serverProperties.getProperty("home.elastic.mapping.kucha_dic");
+		String mapping_backup = serverProperties.getProperty("home.elastic.mapping.kucha_backup");
+		String elastic_role = serverProperties.getProperty("home.elastic.role");
+		String elasticReadOnlyUser = serverProperties.getProperty("home.elastic.user");
+		int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+		System.out.println(doUploadToElastic(uuid,news, url,"/kucha_news", Integer.toString(port), elastic_user,elastic_pw, false));
+		try{
+			String title = "";
+			JSONArray userIDs;
+			JSONObject newsObject = new JSONObject(news);
+			title = newsObject.getString("title");
+			sendMail("kuchaadmin@saw-leipzig.de","kuchaadmin@saw-leipzig.de","Kucha-Admin", "The News \"" + title + "\" has been updated.","Dear Erik,\n The news\"" + title + "\" has been updated.\n" + messageText);
+			
+        }catch(JSONException ex){
+            System.out.println("Error parsing json " + ex.getMessage());
+        }						
+
+		return true;
+	}
+	
+	
 	public Boolean putComment(String user, String passwordHash, String comments, String uuid, String sendMail, String messageText) {
 		String url = serverProperties.getProperty("home.elastic.url");
 		String index_data = serverProperties.getProperty("home.elastic.index_data");
@@ -1543,6 +1617,7 @@ public class MysqlConnector implements IsSerializable {
 
 		return true;
 	}
+
 	private ArrayList<Integer> gothroughComments(JSONArray comments, ArrayList<Integer> userIDs){
         try{
             for(int i = 0; i<comments.length();i++){
@@ -4672,6 +4747,7 @@ public boolean isHan(String s) {
 	 * @param publicationTypeID
 	 * @return
 	 */
+
 	public SiteEntry getSite(int id) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
@@ -5947,7 +6023,7 @@ public boolean isHan(String s) {
 			String elastic_user = serverProperties.getProperty("home.elastic.login");
 			String elastic_pw = serverProperties.getProperty("home.elastic.pw");
 			String updateResult = doUploadToElastic(caveEntry.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
-
+			
 			ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
 			System.out.println(er.result + " "+ updateResult);
 		    if (!er.result.equals("noop")) {
@@ -6964,7 +7040,6 @@ public boolean isHan(String s) {
 
 			pstmt = dbc.prepareStatement("INSERT INTO DepictionImageRelation VALUES (?, ?)");
 			for (ImageEntry entry : imgEntryList) {
-				System.err.println("==> updateDepictionImageRelation called"+ entry.getImageID());				
 				pstmt.setInt(1, depictionID);
 				pstmt.setInt(2, entry.getImageID());
 				pstmt.executeUpdate();
@@ -7533,9 +7608,133 @@ public boolean isHan(String s) {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von writeC14AnalysisUrlEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
+	private String buildPath(String path, JsonElement polygons) {
+		for (JsonElement polygon: polygons.getAsJsonArray()) {
+			boolean first = true;
+			for (JsonElement coords: polygon.getAsJsonArray()) {
+				String strCoords = String.format("%.10f", coords.getAsJsonArray().get(0).getAsDouble()) + ", " + String.format("%.10f", coords.getAsJsonArray().get(1).getAsDouble());
+				if (first) {
+					first = false;					
+					path = path + "M" + strCoords;
+				} else {
+					path = path + "L" + strCoords;
+				}
+			}
+		}
+		path += " Z";
+		return path;
+	}
+	private String generateW3CAnnotation(AnnotationEntry anno) {
+		String w3cAnnotation = "";
+		JsonParser jp = new JsonParser();
+		JsonElement polygons = jp.parse(anno.getGeoJson());
+		String path = "";
+		if (polygons.getAsJsonObject().get("type").getAsString().equals("MultiPolygon")) {
+			for (JsonElement polys : polygons.getAsJsonObject().get("coordinates").getAsJsonArray()) {
+				path = buildPath(path, polys);
+			}
+		} else {
+			path = buildPath(path, polygons.getAsJsonObject().get("coordinates"));
+		}
+		JsonArray bodies = new JsonArray();
+		for (IconographyEntry ico: anno.getTags()) {
+		 	JsonObject body = new JsonObject();
+		 	body.addProperty("type", "TextualBody");
+		 	body.addProperty("value", ico.getText());
+		 	body.addProperty("id", ico.getIconographyID());
+		 	body.addProperty("image", anno.getImage());
+		 	bodies.add(body);			
+		}
+		JsonObject w3cAnnoObject = new JsonObject();
+		w3cAnnoObject.addProperty("@context", "http://www.w3.org/ns/anno.jsonld");
+		w3cAnnoObject.addProperty("id", anno.getAnnotoriousID());
+		w3cAnnoObject.addProperty("type", "Annotation");
+		w3cAnnoObject.add("body", bodies);
+		JsonObject creator = new JsonObject();
+		creator.addProperty("type", anno.getIsProposed()? "computer":"human");
+		w3cAnnoObject.add("creator", creator);
+		JsonObject target = new JsonObject();
+		JsonObject selector = new JsonObject();
+		selector.addProperty("type", "SvgSelector");
+		selector.addProperty("conformsTo", "http://www.w3.org/TR/media-frags/");
+		selector.addProperty("value", "<svg><path d=\"" + path + "\"></path></svg>");
+		target.add("selector", selector);
+		target.addProperty("source", anno.getImage());
+		w3cAnnoObject.add("target", target);
+		w3cAnnotation = w3cAnnoObject.toString();
+		return w3cAnnotation;
+	}
+	/**
+	 * @param imageID
+	 * @return
+	 */
+	public ArrayList<AnnotationEntry> getProposedAnnotations(ArrayList<ImageEntry> images, int depictionID) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAnnotations wurde ausgelöst.");;
+		}
+		
+		Connection dbc = getConnection();
+		PreparedStatement proposedAnnosStatement;
+		Statement proposedIcoStatement;
+		ArrayList<AnnotationEntry> result = new ArrayList<AnnotationEntry>();
+		ResultSet proposedAnnosRS;
+		Connection dbc2 = getConnection();
+		ArrayList<AnnotationEntry> result2 = new ArrayList<AnnotationEntry>();
+		ResultSet proposedAnnosRS2;
+		for (ImageEntry ie: images) {
+			try {
+				proposedAnnosStatement = dbc.prepareStatement("SELECT PolygoneID,AnnotoriousID,ST_AsGeoJSON(ProposedPolygon.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,ProposedPolygon.deleted, IconographyID FROM ProposedPolygon left join Images on( ProposedPolygon.ImageID=Images.ImageID) WHERE ProposedPolygon.ImageID=?");
+				proposedAnnosStatement.setInt(1, ie.getImageID());
+				proposedAnnosRS = proposedAnnosStatement.executeQuery();
+				while (proposedAnnosRS.next()) {
+					AnnotationEntry entry = new AnnotationEntry(depictionID, proposedAnnosRS.getString("AnnotoriousID"), null , proposedAnnosRS.getString("Polygon"), proposedAnnosRS.getString("Filename"), false, false, 0, 0, true);
+					ArrayList<IconographyEntry> tags = new ArrayList<IconographyEntry>();
+					try {
+						proposedIcoStatement = dbc2.createStatement();
+						ResultSet rs2 = proposedIcoStatement.executeQuery(
+								"SELECT * FROM Iconography WHERE IconographyID = "
+										+ Integer.toString(proposedAnnosRS.getInt("IconographyID")));
+						while (rs2.next()) {
+							//System.err.println("Entering Iteration 2");
+							IconographyEntry icoRes = new IconographyEntry(rs2.getInt("IconographyID"), rs2.getInt("ParentID"), rs2.getString("Text")==null ? "" : rs2.getString("Text"), rs2.getString("search")==null ? "" : rs2.getString("search"));
+							if (rootItems.containsKey(icoRes.getIconographyID())){
+								icoRes.setRoot(rootItems.get(icoRes.getIconographyID()));
+							}
+							else {
+								rootItems.put(icoRes.getIconographyID(), findIconographyRoot(icoRes.getIconographyID()));
+								icoRes.setRoot(rootItems.get(icoRes.getIconographyID()));
+							}
+							tags.add(icoRes);
+							//System.err.println("IconographyID for AnnoID "+newAnno.getAnnotoriousID()+": "+Integer.toString(rs2.getInt("IconographyID")));
+						}
+						rs2.close();
+						proposedIcoStatement.close();
+					} catch (SQLException e) {
+						e.printStackTrace();
+						System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+					}
+					entry.setTags(tags);
+					entry.setW3c(generateW3CAnnotation(entry));
+					result.add(entry);
+				}
+				proposedAnnosStatement.close();
+			
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+				return null;
+			}
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getWalls brauchte "+diff + " Millisekunden.");;}}
+		return result;
+	}
 
 	/**
-	 * @param caveID
+	 * @param imageID
 	 * @return
 	 */
 	public ArrayList<WallEntry> getWalls(int caveID) {
@@ -7621,11 +7820,11 @@ public boolean isHan(String s) {
 		Statement stmt2 = null;
 		try {
 			stmt = dbc.createStatement();
-			String sqlText = "SELECT PolygoneID,AnnotoriousID,ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,DepictionID,Polygon.deleted FROM Polygon left join Images on( Polygon.ImageID=Images.ImageID) WHERE Polygon.DepictionID="+depictionID+" and Polygon.deleted=0 and Polygon.Polygon is not null";
+			String sqlText = "SELECT PolygoneID, AnnotoriousID, ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\", Images.ImageID, Images.Filename, DepictionID, Polygon.deleted, CreationTime, ModificationTime, IsProposed FROM Polygon left join Images on(Polygon.ImageID=Images.ImageID) WHERE Polygon.DepictionID="+depictionID+" and Polygon.deleted=0 and Polygon.Polygon is not null";
 			//System.err.println(sqlText);
 			ResultSet rs = stmt.executeQuery(sqlText);
 			while (rs.next()) {
-				AnnotationEntry newAnno = new AnnotationEntry(rs.getInt("DepictionID"), rs.getString("AnnotoriousID"), null,rs.getString("Polygon"), rs.getString("Filename"), false,false);
+				AnnotationEntry newAnno = new AnnotationEntry(rs.getInt("DepictionID"), rs.getString("AnnotoriousID"), null,rs.getString("Polygon"), rs.getString("Filename"), false,false, rs.getLong("CreationTime"), rs.getLong("ModificationTime"), rs.getBoolean("IsProposed"));
 				//System.err.println("Found Annotation for Depiction "+depictionID+ " - "+newAnno.getAnnotoriousID());
 				ArrayList<IconographyEntry> icoResults = new ArrayList<IconographyEntry>();
 				try {
@@ -7653,7 +7852,84 @@ public boolean isHan(String s) {
 					System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 				}
 				newAnno.setTags(icoResults);
+				newAnno.setW3c(generateW3CAnnotation(newAnno));
 				
+				results.add(newAnno);
+				//System.err.println("Polygon2SVG:"+newAnno.getPolygone());
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDepictionEntry brauchte "+diff + " Millisekunden.");;}}
+		return results;
+	}
+	public String getGame(){
+		// Level 1
+		ArrayList<GameEntry> games = new ArrayList<GameEntry>();
+		ArrayList<AnnotationEntry> annotationsLevel1 = getAnnotationsByIconography(803, 2063, 26823);
+		GameEntry level1 = new GameEntry(1, "Monkeys", 26823, annotationsLevel1, "Find all Mokeys in the Painting!");
+		games.add(level1);
+		Gson gson = new Gson();
+		String json = gson.toJson(games);
+		return json;
+
+	}
+	/**
+	 * @return
+	 */
+	private ArrayList<AnnotationEntry> getAnnotationsByIconography(int depictionID, int iconographyID, int imageID) {
+		long start = System.currentTimeMillis();
+		//System.err.println("Entering getAnnotations for DepictionID: "+Integer.toString(depictionID));
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		ArrayList<AnnotationEntry> results = new ArrayList<AnnotationEntry>();
+		Statement stmt;
+		Connection dbc2 = getConnection();
+		Statement stmt2 = null;
+		try {
+			stmt = dbc.createStatement();
+			String sqlText = "SELECT PolygoneID, Polygon.AnnotoriousID, ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\", Images.ImageID,Images.Filename, DepictionID, Polygon.deleted FROM Polygon inner join Annotations on (Annotations.AnnotoriousID = Polygon.AnnotoriousID) left join Images on( Polygon.ImageID=Images.ImageID) WHERE Polygon.DepictionID = " + depictionID + " and Polygon.ImageID = " + imageID + " and Annotations.IconographyID =" + iconographyID + " and Polygon.deleted=0 and Polygon.Polygon is not null";
+			System.err.println(sqlText);
+			ResultSet rs = stmt.executeQuery(sqlText);
+			while (rs.next()) {
+				AnnotationEntry newAnno = new AnnotationEntry(rs.getInt("DepictionID"), rs.getString("AnnotoriousID"), null,rs.getString("Polygon"), rs.getString("Filename"), false,false, -1, -1, false);
+				//System.err.println("Found Annotation for Depiction "+depictionID+ " - "+newAnno.getAnnotoriousID());
+				ArrayList<IconographyEntry> icoResults = new ArrayList<IconographyEntry>();
+				try {
+					stmt2 = dbc2.createStatement();
+					ResultSet rs2 = stmt2.executeQuery(
+							"SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM Annotations WHERE deleted=0 and AnnotoriousID='"
+									+ newAnno.getAnnotoriousID() + "')");
+					while (rs2.next()) {
+						//System.err.println("Entering Iteration 2");
+						IconographyEntry icoRes = new IconographyEntry(rs2.getInt("IconographyID"), rs2.getInt("ParentID"), rs2.getString("Text")==null ? "" : rs2.getString("Text"), rs2.getString("search")==null ? "" : rs2.getString("search"));
+						if (rootItems.containsKey(icoRes.getIconographyID())){
+							icoRes.setRoot(rootItems.get(icoRes.getIconographyID()));
+						}
+						else {
+							rootItems.put(icoRes.getIconographyID(), findIconographyRoot(icoRes.getIconographyID()));
+							icoRes.setRoot(rootItems.get(icoRes.getIconographyID()));
+						}
+						icoResults.add(icoRes);
+						//System.err.println("IconographyID for AnnoID "+newAnno.getAnnotoriousID()+": "+Integer.toString(rs2.getInt("IconographyID")));
+					}
+					rs2.close();
+					stmt2.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+					System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+				}
+				newAnno.setTags(icoResults);
+				newAnno.setW3c(generateW3CAnnotation(newAnno));				
 				results.add(newAnno);
 				//System.err.println("Polygon2SVG:"+newAnno.getPolygone());
 			}
@@ -7683,11 +7959,11 @@ public boolean isHan(String s) {
 		Statement stmt2 = null;
 		try {
 			stmt = dbc.createStatement();
-			String sqlText = "SELECT PolygoneID,AnnotoriousID,ST_AsGeoJSON(PolygonOrnament.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,OrnamentID,PolygonOrnament.deleted FROM PolygonOrnament left join Images on( PolygonOrnament.ImageID=Images.ImageID) WHERE PolygonOrnament.OrnamentID="+depictionID+" and PolygonOrnament.deleted=0 and PolygonOrnament.Polygon is not null";
+			String sqlText = "SELECT PolygoneID,AnnotoriousID,ST_AsGeoJSON(PolygonOrnament.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,OrnamentID,PolygonOrnament.deleted, CreationTime, ModificationTime, IsProposed FROM PolygonOrnament left join Images on( PolygonOrnament.ImageID=Images.ImageID) WHERE PolygonOrnament.OrnamentID="+depictionID+" and PolygonOrnament.deleted=0 and PolygonOrnament.Polygon is not null";
 			//System.err.println(sqlText);
 			ResultSet rs = stmt.executeQuery(sqlText);
 			while (rs.next()) {
-				AnnotationEntry newAnno = new AnnotationEntry(rs.getInt("OrnamentID"), rs.getString("AnnotoriousID"), null,rs.getString("Polygon"), rs.getString("Filename"), false,false);
+				AnnotationEntry newAnno = new AnnotationEntry(rs.getInt("OrnamentID"), rs.getString("AnnotoriousID"), null,rs.getString("Polygon"), rs.getString("Filename"), false,false, rs.getLong("CreationTime"), rs.getLong("ModificationTime"), rs.getBoolean("IsProposed"));
 				//System.err.println("Found Annotation for Depiction "+depictionID+ " - "+newAnno.getAnnotoriousID());
 				ArrayList<IconographyEntry> icoResults = new ArrayList<IconographyEntry>();
 				try {
@@ -7715,7 +7991,7 @@ public boolean isHan(String s) {
 					System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 				}
 				newAnno.setTags(icoResults);
-				
+				newAnno.setW3c(generateW3CAnnotation(newAnno));				
 				results.add(newAnno);
 				//System.err.println("Polygon2SVG:"+newAnno.getPolygone());
 			}
@@ -7745,7 +8021,7 @@ public boolean isHan(String s) {
 			PreparedStatement annoStatement;
 			try {
 				for (IconographyEntry tag : annoEntry.getTags()) {
-					System.err.println("Annotation (for Depiction: "+Integer.toString(annoEntry.getDepictionID())+") recieved: Tag: "+tag.getText()+", Polygon: "+annoEntry.getPolygone()+", Image: "+annoEntry.getImage()+", delete: "+Boolean.toString(annoEntry.getDelete())+", update: "+Boolean.toString(annoEntry.getUpdate()));
+					System.err.println("Annotation (for Depiction: "+Integer.toString(annoEntry.getDepictionID())+") recieved: Tag: "+tag.getText()+", Polygon: "+annoEntry.getGeoJson()+", Image: "+annoEntry.getImage()+", delete: "+Boolean.toString(annoEntry.getDelete())+", update: "+Boolean.toString(annoEntry.getUpdate()));
 					annoStatement = dbc.prepareStatement(
 							"INSERT INTO Annotations ( AnnotoriousID, iconographyID) VALUES ( ?, ?)",
 							Statement.RETURN_GENERATED_KEYS);
@@ -7762,7 +8038,7 @@ public boolean isHan(String s) {
 				PreparedStatement polygoneStatement;
 				String parts[]=annoEntry.getImage().split("\\.",-1);
 	            String part1=parts[0];
-				String poly=annoEntry.getPolygone();
+				String poly=annoEntry.getGeoJson();
 //				if (annoEntry.getPolygone().indexOf(" ")>annoEntry.getPolygone().indexOf(",")) {
 //					poly=poly.replace(" ", "|");
 //					poly=poly.replace(",", " ");
@@ -7777,9 +8053,9 @@ public boolean isHan(String s) {
 //				} else {
 				System.err.println("INSERT INTO Polygon (DepictionID, AnnotoriousID, Polygon, ImageID) VALUES ("+Integer.toString(annoEntry.getDepictionID())+", "+annoEntry.getAnnotoriousID()+", PolygonFromText(\""+poly+"\"),"+part1+")");
 				if (isOrnament) {
-					polygoneStatement = dbc.prepareStatement("INSERT INTO PolygonOrnament (OrnamentID, AnnotoriousID, Polygon, ImageID) VALUES (?, ?, PolygonFromText(?),?)");					
+					polygoneStatement = dbc.prepareStatement("INSERT INTO PolygonOrnament (OrnamentID, AnnotoriousID, Polygon, ImageID, CreationTime, ModificationTime, isProposed) VALUES (?, ?, PolygonFromText(?),?,?,?,?)");					
 				} else {
-					polygoneStatement = dbc.prepareStatement("INSERT INTO Polygon (DepictionID, AnnotoriousID, Polygon, ImageID) VALUES (?, ?, PolygonFromText(?),?)");					
+					polygoneStatement = dbc.prepareStatement("INSERT INTO Polygon (DepictionID, AnnotoriousID, Polygon, ImageID, CreationTime, ModificationTime, isProposed) VALUES (?, ?, PolygonFromText(?),?,?,?,?)");					
 				}					
 					
 //				}
@@ -7793,6 +8069,9 @@ public boolean isHan(String s) {
 //				}
 				polygoneStatement.setString(3, poly);
 				polygoneStatement.setInt(4, Integer.parseInt(part1));
+				polygoneStatement.setDouble(5, annoEntry.getCreationTime());
+				polygoneStatement.setDouble(6, annoEntry.getModificationTime());
+				polygoneStatement.setBoolean(7, annoEntry.getIsProposed());
 				polygoneStatement.executeUpdate();
 				polygoneStatement.close();
 			} catch (SQLException e) {

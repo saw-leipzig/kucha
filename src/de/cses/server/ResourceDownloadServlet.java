@@ -220,6 +220,12 @@ public class ResourceDownloadServlet extends HttpServlet {
 		//for (String key : request.getParameterMap().keySet()) {
 		//	System.out.println("   " +key+ " - "+request.getParameter(key));
 		//}
+		if (request.getParameter("getGames") != null) {
+	    	response.setContentType("application/json");
+	    	response.getWriter().write(connector.getGame());
+	    	response.setStatus(200);
+	    	response.getWriter().flush();		
+		}
 		if (request.getParameter("imageID") != null) {
 			String imageID = request.getParameter("imageID");
 			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));
@@ -417,18 +423,6 @@ public class ResourceDownloadServlet extends HttpServlet {
 			} else {
 				System.out.println("request for dataexport blocked!");
 			}
-		} else if (request.getParameter("putComment") != null)  {
-	        Map<String, String> map = new HashMap<String, String>();
-
-	        Enumeration headerNames = request.getHeaderNames();
-	        while (headerNames.hasMoreElements()) {
-	            String key = (String) headerNames.nextElement();
-	            String value = request.getHeader(key);
-	            System.out.println(key+": "+value);
-	        }
-	        System.out.println(request.getLocalAddr());
-	        String ip = "";
-
 		} else if (request.getParameter("imageFile") != null) {
 			String filename = request.getParameter("imageFile");
 			String parts[]=filename.split("\\.");
@@ -500,11 +494,11 @@ public class ResourceDownloadServlet extends HttpServlet {
 	
 	@Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  	    setAccessControlHeaders(response);
 		System.out.println("got request: "+ request);
 	    if (request.getCharacterEncoding() == null) {
 	        request.setCharacterEncoding("UTF-8");
 	    }
-		setAccessControlHeaders(response);
 		String sessionID = request.getParameter("sessionID");
 		//System.out.println("doGetParameters: ");
 		//for (String key : request.getParameterMap().keySet()) {
@@ -513,15 +507,23 @@ public class ResourceDownloadServlet extends HttpServlet {
 		
 		if (request.getParameter("putComment") != null)  {
 	        String discussion = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-	        System.out.println("body");
-	        System.out.println(discussion);
 	        String uuid = request.getParameter("uuid");
 	        String sendMail = request.getParameter("sendMail");
 	        String messageText = request.getParameter("message");
-	        System.out.println(sessionID);
 	        
 	        if (connector.checkSessionIDFrontEnd(sessionID) != null) {
 		        if (connector.putComment("", "", discussion, uuid, sendMail, messageText)) {
+			        response.setStatus(200);	        	
+		        } else {
+			        response.setStatus(400);
+		        };	        	
+	        }
+		}	else if (request.getParameter("putNews") != null)  {
+	        String discussion = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+	        String uuid = request.getParameter("uuid");
+	        String messageText = request.getParameter("message");
+	        if (connector.checkSessionIDFrontEnd(sessionID) != null) {
+		        if (connector.putNews("", "", discussion, uuid, messageText)) {
 			        response.setStatus(200);	        	
 		        } else {
 			        response.setStatus(400);
