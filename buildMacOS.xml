@@ -16,7 +16,7 @@
 		<pathelement location="/home/erik/Downloads/javax.mail.jar" />
 		<fileset dir="${GWT_HOME}" includes="gwt-dev*.jar" />
 		<fileset dir="${GWT_HOME}" includes="validation-api*.jar" />
-		<fileset dir="/home/erik/Downloads" includes="javax.mail.jar" />
+		<fileset dir="lib" includes="javax.mail.jar" />
 	</path>
 	<path id="webinflib.class.path">
 		<fileset dir="war/WEB-INF/lib" includes="**/*.jar" />
@@ -43,8 +43,8 @@
 		<zip destfile="kis.war">
 			<zipfileset dir="war" />
 			<zipfileset dir="${GWT_HOME}" includes="gwt-servlet.jar" prefix="WEB-INF/lib/" />
-			<zipfileset dir="/home/erik/Downloads/" includes="javax.mail.jar" prefix="WEB-INF/lib/" />
-			<zipfileset dir="/home/erik/Downloads/" includes="activation-1.1.jar" prefix="WEB-INF/lib/" />
+			<zipfileset dir="lib" includes="javax.mail.jar" prefix="WEB-INF/lib/" />
+			<zipfileset dir="lib" includes="activation-1.1.jar" prefix="WEB-INF/lib/" />
 		</zip>
 	</target>
 	<target name="deploy" depends="war">

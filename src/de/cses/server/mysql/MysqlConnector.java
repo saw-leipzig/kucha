@@ -109,6 +109,7 @@ import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
+import de.cses.shared.ExportEntry;
 import de.cses.shared.GameEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
@@ -712,33 +713,7 @@ public class MysqlConnector implements IsSerializable {
 			}
 
 		}
-		if (entry instanceof AnnotationEntry) {
-			Connection dbc = getConnection();
-			PreparedStatement pstmt;
-			try {
-				pstmt = dbc.prepareStatement( "UPDATE Polygon SET deleted = 1 WHERE AnnotoriousID = '" +((AnnotationEntry)entry).getAnnotoriousID()  + "';");
-				ResultSet rs = pstmt.executeQuery();
-				rs.close();
-				pstmt.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-				return false;
-			}
-			try {
-				pstmt = dbc.prepareStatement( "UPDATE Annotations SET deleted = 1 WHERE AnnotoriousID = '" +((AnnotationEntry)entry).getAnnotoriousID()  + "';");
-				ResultSet rs = pstmt.executeQuery();
-				rs.close();
-				pstmt.close();
-				return true;
-			} catch (SQLException e) {
-				e.printStackTrace();
-				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-				return false;
-			}
-
-		}
-		if (entry instanceof AnnotatedBibliographyEntry) {
+		else if (entry instanceof AnnotatedBibliographyEntry) {
 			Connection dbc = getConnection();
 			PreparedStatement pstmt;
 			try { 
@@ -798,31 +773,51 @@ public class MysqlConnector implements IsSerializable {
 	public boolean deleteAnnotationEntry(AnnotationEntry entry, boolean isOrnament) {
 			Connection dbc = getConnection();
 			PreparedStatement pstmt;
+			if (isOrnament){
+				deleteEntry("DELETE FROM OrnamentPolygonRelation WHERE AnnotoriousID = \"" + entry.getAnnotoriousID() + "\" and OrnamentID = " + entry.getDepictionID());				
+			} else {
+				deleteEntry("DELETE FROM DepictionPolygonRelation WHERE AnnotoriousID = \"" + entry.getAnnotoriousID() + "\" and DepictionID = " + entry.getDepictionID());
+			}
+			boolean isStillInUse = false;
+			Connection dbcStillInUse = getConnection();
+			PreparedStatement pstmtStillInUse;
 			try {
-				if (isOrnament) {
-					pstmt = dbc.prepareStatement( "UPDATE PolygonOrnament SET deleted = 1 WHERE AnnotoriousID = '" +((AnnotationEntry)entry).getAnnotoriousID()  + "';");					
-				} else {
-					pstmt = dbc.prepareStatement( "UPDATE Polygon SET deleted = 1 WHERE AnnotoriousID = '" +((AnnotationEntry)entry).getAnnotoriousID()  + "';");										
+				pstmtStillInUse = dbcStillInUse.prepareStatement("Select AnnotoriousID from DepictionPolygonRelation dpr WHERE dpr.AnnotoriousID = ?  UNION Select AnnotoriousID from OrnamentPolygonRelation opr WHERE opr.AnnotoriousID = ?");
+				pstmtStillInUse.setString(1, entry.getAnnotoriousID());
+				pstmtStillInUse.setString(2, entry.getAnnotoriousID());
+				ResultSet rs = pstmtStillInUse.executeQuery();
+				while (rs.next()) {
+					isStillInUse = true;
+					break;
 				}
-				ResultSet rs = pstmt.executeQuery();
-				rs.close();
-				pstmt.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-				return false;
 			}
-			try {
-				pstmt = dbc.prepareStatement( "UPDATE Annotations SET deleted = 1 WHERE AnnotoriousID = '" +((AnnotationEntry)entry).getAnnotoriousID()  + "';");
-				ResultSet rs = pstmt.executeQuery();
-				rs.close();
-				pstmt.close();
-				return true;
-			} catch (SQLException e) {
-				e.printStackTrace();
-				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-				return false;
+			if (!isStillInUse) {
+				try {
+					pstmt = dbc.prepareStatement( "UPDATE Polygon SET deleted = 1 WHERE AnnotoriousID = '" +((AnnotationEntry)entry).getAnnotoriousID()  + "';");										
+					ResultSet rs = pstmt.executeQuery();
+					rs.close();
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+					System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+					return false;
+				}
+				try {
+					pstmt = dbc.prepareStatement( "UPDATE Annotations SET deleted = 1 WHERE AnnotoriousID = '" +((AnnotationEntry)entry).getAnnotoriousID()  + "';");
+					ResultSet rs = pstmt.executeQuery();
+					rs.close();
+					pstmt.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+					System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+					return false;
+				}
+				
 			}
+			return true;
 	}
 	public String getContext() {
 		return serverProperties.getProperty("iiif.images");
@@ -2046,8 +2041,8 @@ public class MysqlConnector implements IsSerializable {
 		
 		try {
 			ArrayList<Integer> des = new ArrayList<Integer>();
-			System.out.println("SELECT DepictionID FROM DepictionIconographyRelation INNER JOIN depictions  where depictions.deleted=0 and DepictionIconographyRelation.IconographyID="+Integer.toString(IconographyID) + " UNION SELECT Polygon.DepictionID FROM Annotations inner join Polygon on (Annotations.AnnotoriousID=Polygon.AnnotoriousID) inner join Depictions (on Polygon.DepictionID=Depictions.DepictionID) where Polygon.deleted = 0 and Depiction.deleted = 0 and IconographyID="+Integer.toString(IconographyID));
-			pstmt = dbc.prepareStatement("SELECT DepictionIconographyRelation.DepictionID FROM DepictionIconographyRelation INNER JOIN Depictions on (Depictions.DepictionID = DepictionIconographyRelation.DepictionID) where Depictions.deleted=0 and DepictionIconographyRelation.IconographyID="+Integer.toString(IconographyID) + " UNION SELECT Polygon.DepictionID FROM Annotations inner join Polygon on (Annotations.AnnotoriousID=Polygon.AnnotoriousID)  inner join Depictions on ( Polygon.DepictionID=Depictions.DepictionID) where Polygon.deleted = 0 and Depictions.deleted = 0 and IconographyID="+Integer.toString(IconographyID));
+			System.out.println("SELECT DepictionID FROM DepictionIconographyRelation INNER JOIN depictions  where depictions.deleted=0 and DepictionIconographyRelation.IconographyID="+Integer.toString(IconographyID) + " UNION SELECT DepcitionPolygonRelation.DepictionID FROM Annotations inner join Polygon on (Annotations.AnnotoriousID=Polygon.AnnotoriousID) inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) inner join Depictions (on DepcitionPolygonRelation.DepictionID=Depictions.DepictionID) where Polygon.deleted = 0 and Depiction.deleted = 0 and IconographyID="+Integer.toString(IconographyID));
+			pstmt = dbc.prepareStatement("SELECT DepictionIconographyRelation.DepictionID FROM DepictionIconographyRelation INNER JOIN Depictions on (Depictions.DepictionID = DepictionIconographyRelation.DepictionID) where Depictions.deleted=0 and DepictionIconographyRelation.IconographyID="+Integer.toString(IconographyID) + " UNION SELECT DepcitionPolygonRelation.DepictionID FROM Annotations inner join Polygon on (Annotations.AnnotoriousID=Polygon.AnnotoriousID) inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) inner join Depictions on ( DepcitionPolygonRelation.DepictionID=Depictions.DepictionID) where Polygon.deleted = 0 and Depictions.deleted = 0 and IconographyID="+Integer.toString(IconographyID));
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				DepictionEntry de= getDepictionEntry(rs.getInt("DepictionID"),sessionID);
@@ -7612,7 +7607,7 @@ public boolean isHan(String s) {
 		for (JsonElement polygon: polygons.getAsJsonArray()) {
 			boolean first = true;
 			for (JsonElement coords: polygon.getAsJsonArray()) {
-				String strCoords = String.format("%.10f", coords.getAsJsonArray().get(0).getAsDouble()) + ", " + String.format("%.10f", coords.getAsJsonArray().get(1).getAsDouble());
+				String strCoords = String.format(java.util.Locale.US,"%.10f", coords.getAsJsonArray().get(0).getAsDouble()) + ", " + String.format(java.util.Locale.US,"%.10f", coords.getAsJsonArray().get(1).getAsDouble());
 				if (first) {
 					first = false;					
 					path = path + "M" + strCoords;
@@ -7684,11 +7679,11 @@ public boolean isHan(String s) {
 		ResultSet proposedAnnosRS2;
 		for (ImageEntry ie: images) {
 			try {
-				proposedAnnosStatement = dbc.prepareStatement("SELECT PolygonID,AnnotoriousID,ST_AsGeoJSON(ProposedPolygon.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,ProposedPolygon.deleted, IconographyID FROM ProposedPolygon left join Images on( ProposedPolygon.ImageID=Images.ImageID) WHERE ProposedPolygon.ImageID=?");
+				proposedAnnosStatement = dbc.prepareStatement("SELECT Polygon.PolygonID,AnnotoriousID,ST_AsGeoJSON(ProposedPolygon.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,ProposedPolygon.deleted, IconographyID FROM ProposedPolygon left join Images on( ProposedPolygon.ImageID=Images.ImageID) WHERE ProposedPolygon.ImageID=?");
 				proposedAnnosStatement.setInt(1, ie.getImageID());
 				proposedAnnosRS = proposedAnnosStatement.executeQuery();
 				while (proposedAnnosRS.next()) {
-					AnnotationEntry entry = new AnnotationEntry(depictionID, proposedAnnosRS.getString("AnnotoriousID"), null , proposedAnnosRS.getString("Polygon"), proposedAnnosRS.getString("Filename"), false, false, 0, 0, true);
+					AnnotationEntry entry = new AnnotationEntry(depictionID, proposedAnnosRS.getString("Polygon.AnnotoriousID"), null , proposedAnnosRS.getString("Polygon"), proposedAnnosRS.getString("Filename"), false, false, 0, 0, true);
 					ArrayList<IconographyEntry> tags = new ArrayList<IconographyEntry>();
 					try {
 						proposedIcoStatement = dbc2.createStatement();
@@ -7820,11 +7815,11 @@ public boolean isHan(String s) {
 		Statement stmt2 = null;
 		try {
 			stmt = dbc.createStatement();
-			String sqlText = "SELECT PolygonID, AnnotoriousID, ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\", Images.ImageID, Images.Filename, DepictionID, Polygon.deleted, CreationTime, ModificationTime, IsProposed FROM Polygon left join Images on(Polygon.ImageID=Images.ImageID) WHERE Polygon.DepictionID="+depictionID+" and Polygon.deleted=0 and Polygon.Polygon is not null";
+			String sqlText = "SELECT Polygon.PolygonID, Polygon.AnnotoriousID, ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\", Images.ImageID, Images.Filename, DepictionPolygonRelation.DepictionID, Polygon.deleted, CreationTime, ModificationTime, IsProposed FROM Polygon left join Images on(Polygon.ImageID=Images.ImageID) inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) WHERE DepictionPolygonRelation.DepictionID="+depictionID+" and Polygon.deleted=0 and Polygon.Polygon is not null";
 			//System.err.println(sqlText);
 			ResultSet rs = stmt.executeQuery(sqlText);
 			while (rs.next()) {
-				AnnotationEntry newAnno = new AnnotationEntry(rs.getInt("DepictionID"), rs.getString("AnnotoriousID"), null,rs.getString("Polygon"), rs.getString("Filename"), false,false, rs.getLong("CreationTime"), rs.getLong("ModificationTime"), rs.getBoolean("IsProposed"));
+				AnnotationEntry newAnno = new AnnotationEntry(rs.getInt("DepictionID"), rs.getString("Polygon.AnnotoriousID"), null,rs.getString("Polygon"), rs.getString("Filename"), false,false, rs.getLong("CreationTime"), rs.getLong("ModificationTime"), rs.getBoolean("IsProposed"));
 				//System.err.println("Found Annotation for Depiction "+depictionID+ " - "+newAnno.getAnnotoriousID());
 				ArrayList<IconographyEntry> icoResults = new ArrayList<IconographyEntry>();
 				try {
@@ -7874,8 +7869,20 @@ public boolean isHan(String s) {
 		// Level 1
 		ArrayList<GameEntry> games = new ArrayList<GameEntry>();
 		ArrayList<AnnotationEntry> annotationsLevel1 = getAnnotationsByIconography(803, 2063, 26823);
-		GameEntry level1 = new GameEntry(1, "Monkeys", 26823, annotationsLevel1, "Find all Mokeys in the Painting!");
+		ArrayList<AnnotationEntry> annotationsLevel2 = getAnnotationsByIconography(193, 1173, 3140);
+		ArrayList<AnnotationEntry> annotationsLevel3 = getAnnotationsByIconography(913, 1169, 6621);
+		GameEntry level1 = new GameEntry(1, "Monkeys", "26823.png", annotationsLevel1, "Find all Mokeys in the Painting!");
+		GameEntry level2 = new GameEntry(2, "Man sacrifying himself to a tiger", "26823.png", annotationsLevel2, "A Brahmin with bare upper body and a long lower garment a ribbon, jewellery around his neck and probably a top knot, falls down from a height with his hands held in anjali gesture; he is shown again stretched out lifeless on the ground with his head to the left.\n"
+				+ "There is a nimbus behind the Brahmin's head.\n"
+				+ "A tigress with a split tail stands on the body of the Brahmin and feeds on the chest.\n"
+				+ "In the background there is a tree, and two birds.");
+		GameEntry level3 = new GameEntry(3, "Good son, shot to death by a king", "26823.png", annotationsLevel3, "Syama-Jataka.\n"
+				+ "A young ascetic named Syama took care of his old parents who lived in the seclusion of a forest, in a hermitage. One day he was fetching water with a jar for them. At the same time the king was hunting in the forest. He accidently hit Syama with his arrow. \n"
+				+ "\n"
+				+ "The young ascetic Syama kneels in front of a pond and scoops warer with a bowl(?). He wears a cord around his naked torso, a loincloth and his hair is tied up into a topknot. The king with a nimbus around his head, rides on his horse with a drawn bow. Adorned with jewellery, he wears a scarf and a long waist robe.\n");
 		games.add(level1);
+		games.add(level2);
+		games.add(level3);
 		Gson gson = new Gson();
 		String json = gson.toJson(games);
 		return json;
@@ -7897,11 +7904,11 @@ public boolean isHan(String s) {
 		Statement stmt2 = null;
 		try {
 			stmt = dbc.createStatement();
-			String sqlText = "SELECT PolygonID, Polygon.AnnotoriousID, ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\", Images.ImageID,Images.Filename, DepictionID, Polygon.deleted FROM Polygon inner join Annotations on (Annotations.AnnotoriousID = Polygon.AnnotoriousID) left join Images on( Polygon.ImageID=Images.ImageID) WHERE Polygon.DepictionID = " + depictionID + " and Polygon.ImageID = " + imageID + " and Annotations.IconographyID =" + iconographyID + " and Polygon.deleted=0 and Polygon.Polygon is not null";
+			String sqlText = "SELECT Polygon.PolygonID, Polygon.AnnotoriousID, ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\", Images.ImageID,Images.Filename, DepictionID, Polygon.deleted FROM Polygon inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) inner join Annotations on (Annotations.AnnotoriousID = Polygon.AnnotoriousID) left join Images on( Polygon.ImageID=Images.ImageID) WHERE DepictionPolygonRelation.DepictionID = " + depictionID + " and Polygon.ImageID = " + imageID + " and Annotations.IconographyID =" + iconographyID + " and Polygon.deleted=0 and Polygon.Polygon is not null";
 			System.err.println(sqlText);
 			ResultSet rs = stmt.executeQuery(sqlText);
 			while (rs.next()) {
-				AnnotationEntry newAnno = new AnnotationEntry(rs.getInt("DepictionID"), rs.getString("AnnotoriousID"), null,rs.getString("Polygon"), rs.getString("Filename"), false,false, -1, -1, false);
+				AnnotationEntry newAnno = new AnnotationEntry(rs.getInt("DepictionID"), rs.getString("Polygon.AnnotoriousID"), null,rs.getString("Polygon"), rs.getString("Filename"), false,false, -1, -1, false);
 				//System.err.println("Found Annotation for Depiction "+depictionID+ " - "+newAnno.getAnnotoriousID());
 				ArrayList<IconographyEntry> icoResults = new ArrayList<IconographyEntry>();
 				try {
@@ -7959,11 +7966,11 @@ public boolean isHan(String s) {
 		Statement stmt2 = null;
 		try {
 			stmt = dbc.createStatement();
-			String sqlText = "SELECT PolygonID,AnnotoriousID,ST_AsGeoJSON(PolygonOrnament.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,OrnamentID,PolygonOrnament.deleted, CreationTime, ModificationTime, IsProposed FROM PolygonOrnament left join Images on( PolygonOrnament.ImageID=Images.ImageID) WHERE PolygonOrnament.OrnamentID="+depictionID+" and PolygonOrnament.deleted=0 and PolygonOrnament.Polygon is not null";
+			String sqlText = "SELECT Polygon.PolygonID,Polygon.AnnotoriousID,ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,OrnamentID,Polygon.deleted, CreationTime, ModificationTime, IsProposed FROM Polygon inner join OrnamentPolygonRelation on (Polygon.AnnotoriousID = OrnamentPolygonRelation.AnnotoriousID) left join Images on( Polygon.ImageID=Images.ImageID) WHERE OrnamentPolygonRelation.OrnamentID="+depictionID+" and Polygon.deleted=0 and Polygon.Polygon is not null";
 			//System.err.println(sqlText);
 			ResultSet rs = stmt.executeQuery(sqlText);
 			while (rs.next()) {
-				AnnotationEntry newAnno = new AnnotationEntry(rs.getInt("OrnamentID"), rs.getString("AnnotoriousID"), null,rs.getString("Polygon"), rs.getString("Filename"), false,false, rs.getLong("CreationTime"), rs.getLong("ModificationTime"), rs.getBoolean("IsProposed"));
+				AnnotationEntry newAnno = new AnnotationEntry(rs.getInt("OrnamentID"), rs.getString("Polygon.AnnotoriousID"), null,rs.getString("Polygon"), rs.getString("Filename"), false,false, rs.getLong("CreationTime"), rs.getLong("ModificationTime"), rs.getBoolean("IsProposed"));
 				//System.err.println("Found Annotation for Depiction "+depictionID+ " - "+newAnno.getAnnotoriousID());
 				ArrayList<IconographyEntry> icoResults = new ArrayList<IconographyEntry>();
 				try {
@@ -8035,7 +8042,7 @@ public boolean isHan(String s) {
 					}
 					keys.close();
 				}
-				PreparedStatement polygoneStatement;
+				PreparedStatement polygonRelationStatement;
 				String parts[]=annoEntry.getImage().split("\\.",-1);
 	            String part1=parts[0];
 				String poly=annoEntry.getGeoJson();
@@ -8053,27 +8060,33 @@ public boolean isHan(String s) {
 //				} else {
 				System.err.println("INSERT INTO Polygon (DepictionID, AnnotoriousID, Polygon, ImageID) VALUES ("+Integer.toString(annoEntry.getDepictionID())+", "+annoEntry.getAnnotoriousID()+", PolygonFromText(\""+poly+"\"),"+part1+")");
 				if (isOrnament) {
-					polygoneStatement = dbc.prepareStatement("INSERT INTO PolygonOrnament (OrnamentID, AnnotoriousID, Polygon, ImageID, CreationTime, ModificationTime, isProposed) VALUES (?, ?, PolygonFromText(?),?,?,?,?)");					
+					polygonRelationStatement = dbc.prepareStatement("INSERT INTO OrnamentPolygonRelation (OrnamentID, AnnotoriousID) VALUES (?, ?)");					
 				} else {
-					polygoneStatement = dbc.prepareStatement("INSERT INTO Polygon (DepictionID, AnnotoriousID, Polygon, ImageID, CreationTime, ModificationTime, isProposed) VALUES (?, ?, PolygonFromText(?),?,?,?,?)");					
+					polygonRelationStatement = dbc.prepareStatement("INSERT INTO DepictionPolygonRelation (DepictionID, AnnotoriousID) VALUES (?, ?)");					
 				}					
 					
 //				}
-				polygoneStatement.setInt(1, annoEntry.getDepictionID());
-				polygoneStatement.setString(2, annoEntry.getAnnotoriousID());
+				polygonRelationStatement.setInt(1, annoEntry.getDepictionID());
+				polygonRelationStatement.setString(2, annoEntry.getAnnotoriousID());
+				polygonRelationStatement.executeUpdate();
+				polygonRelationStatement.close();
+				PreparedStatement polygonStatement;
+				
+				polygonStatement = dbc.prepareStatement("INSERT INTO Polygon (AnnotoriousID, Polygon, ImageID, CreationTime, ModificationTime, isProposed) VALUES (?, PolygonFromText(?),?,?,?,?)");					
 //				if (annoEntry.getPolygone().indexOf("\"></polygon></svg>")>0) {
 //					polygoneStatement.setString(3, "POLYGON(("+poly.substring(22,annoEntry.getPolygone().indexOf("\"></polygon></svg>"))+"))");					
 //				}
 //				else {
 //					polygoneStatement.setString(3, "POLYGON(("+poly+"))");
 //				}
-				polygoneStatement.setString(3, poly);
-				polygoneStatement.setInt(4, Integer.parseInt(part1));
-				polygoneStatement.setDouble(5, annoEntry.getCreationTime());
-				polygoneStatement.setDouble(6, annoEntry.getModificationTime());
-				polygoneStatement.setBoolean(7, annoEntry.getIsProposed());
-				polygoneStatement.executeUpdate();
-				polygoneStatement.close();
+				polygonStatement.setString(1, annoEntry.getAnnotoriousID());
+				polygonStatement.setString(2, poly);
+				polygonStatement.setInt(3, Integer.parseInt(part1));
+				polygonStatement.setDouble(4, annoEntry.getCreationTime());
+				polygonStatement.setDouble(5, annoEntry.getModificationTime());
+				polygonStatement.setBoolean(6, annoEntry.getIsProposed());
+				polygonStatement.executeUpdate();
+				polygonStatement.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
@@ -8083,7 +8096,7 @@ public boolean isHan(String s) {
 
 		}
 		else {
-			deleteAbstractEntry(annoEntry);
+			deleteAnnotationEntry(annoEntry, isOrnament);
 		}
 		Date date = new Date(System.currentTimeMillis());
 		DateFormat df = DateFormat.getDateTimeInstance();
@@ -10546,7 +10559,60 @@ public boolean isHan(String s) {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateUserEntry brauchte "+diff + " Millisekunden.");;}}
 		return rowsChangedCount > 0;
 	}
+	public boolean linkAnnoToEntry(String annotoriousID, ExportEntry entry) {
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement(entry.getDescription().equals("Painted Representation") ? "INSERT INTO DepictionPolygonRelation (AnnotoriousID, DepictionID) VALUES (?,?)": "INSERT INTO OrnamentPolygonRelation (AnnotoriousID, OrnamentID) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);				
+			pstmt.setString(1, annotoriousID);
+			pstmt.setInt(2, entry.getId());
+			pstmt.executeQuery();
 
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return false;
+		}
+		
+		return true;
+	}
+	public ArrayList<ExportEntry> getEntriesByImageID(String imageID, String annotoriousID){
+		ArrayList<ExportEntry> result = new ArrayList<ExportEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM DepictionImageRelation inner join Images on (DepictionImageRelation.ImageID = Images.ImageID) WHERE Images.Filename = ? and DepictionImageRelation.DepictionID not in (Select DepictionID from DepictionPolygonRelation where AnnotoriousID = ?)" );
+			pstmt.setString(1, imageID);
+			pstmt.setString(2, annotoriousID);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				result.add(new ExportEntry(rs.getInt("DepictionID"), "Painted Representation"));
+				}
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		Connection dbc2 = getConnection();
+		PreparedStatement pstmt2;
+		try {
+			pstmt2 = dbc2.prepareStatement("SELECT * FROM OrnamentImageRelation inner join Images on (OrnamentImageRelation.ImageID = Images.ImageID) WHERE Images.Filename =  ? and OrnamentImageRelation.OrnamentID not in (Select OrnamentId from OrnamentPolygonRelation where AnnotoriousID = ?)" );
+			pstmt2.setString(1, imageID);
+			pstmt2.setString(2, annotoriousID);
+			ResultSet rs = pstmt2.executeQuery();
+			while (rs.next()) {
+				result.add(new ExportEntry(rs.getInt("OrnamentID"), "Typical"));
+				}
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		return result;
+	}
 	/**
 	 * 
 	 * @param searchEntry
@@ -10593,9 +10659,9 @@ public boolean isHan(String s) {
 		if (!iconographyIDs.isEmpty()) {
 			where += where.isEmpty() 
 					? "(DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
-						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT Polygon.DepictionID FROM Annotations inner join Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") and Polygon.deleted=0 and Polygon.Polygon is not null and Annotations.deleted=0  GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+")))"
+						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT DepcitionPolygonRelation.DepictionID FROM Annotations inner join Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") and Polygon.deleted=0 and Polygon.Polygon is not null and Annotations.deleted=0  GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+")))"
 					: " AND (DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
-						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT Polygon.DepictionID FROM Annotations inner join Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") and Polygon.deleted=0 and Polygon.Polygon is not null and Annotations.deleted=0  GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+")))";
+						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT DepcitionPolygonRelation.DepictionID FROM Annotations inner join Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") and Polygon.deleted=0 and Polygon.Polygon is not null and Annotations.deleted=0  GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+")))";
 		}
 		String wallTreeIDs = "";
 		for (int wallTreeID : searchEntry.getWallIDList()) {

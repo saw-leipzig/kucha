@@ -33,11 +33,7 @@ public class AnnotationEntry extends AbstractEntry {
 	private double modificationTime;
 	private boolean isProposed;
 
-	/**
-	 * The default constructor is used to create a new AuthorEntry. The authorID
-	 * is set to 0 to indicate that this entry is not taken from a database and
-	 * therefore has to be inserted instead of updated.
-	 */
+
 	public AnnotationEntry() {	}
 
 	public AnnotationEntry(int DepictionID, String annotoriousID, ArrayList<IconographyEntry> tags, String geoJson, String image, boolean delete, boolean update, double creationTime, double modificationTime, boolean isProposed) {

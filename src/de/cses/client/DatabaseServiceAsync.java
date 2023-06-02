@@ -14,6 +14,7 @@
 package de.cses.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,7 @@ import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
+import de.cses.shared.ExportEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageSearchEntry;
@@ -368,6 +370,10 @@ public interface DatabaseServiceAsync {
 	void searchDepictions(DepictionSearchEntry searchEntry, AsyncCallback<ArrayList<DepictionEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getAnnotations(int depictionEntry,AsyncCallback<ArrayList<AnnotationEntry>> asyncCallback) throws IllegalArgumentException;
+	
+	void linkAnnoToEntry(String annotoriousID, ExportEntry entry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
+	void getEntriesByImageID(String imageID, String annotoriousID, AsyncCallback<ArrayList<ExportEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getProposedAnnotations(ArrayList<ImageEntry> images, int depictionEntry,AsyncCallback<ArrayList<AnnotationEntry>> asyncCallback) throws IllegalArgumentException;
 	

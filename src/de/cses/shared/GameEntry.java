@@ -31,10 +31,10 @@ public class GameEntry implements IsSerializable {
 	private int gameID;
 	private String name;
 	private String description;
-	private int imageID;
+	private String imageID;
 	private ArrayList<AnnotationEntry> annotations;
 	
-	public GameEntry(int gameID, String name, int imageID, ArrayList<AnnotationEntry> annotations, String description){
+	public GameEntry(int gameID, String name, String imageID, ArrayList<AnnotationEntry> annotations, String description){
 			this.gameID = gameID;
 			this.name = name;
 			this.imageID = imageID;

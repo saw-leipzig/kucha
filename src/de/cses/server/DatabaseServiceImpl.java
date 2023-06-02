@@ -14,6 +14,7 @@
 package de.cses.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,7 @@ import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
+import de.cses.shared.ExportEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageSearchEntry;
@@ -146,6 +148,16 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		boolean  hasHan = connector.isHan(title);
 		return hasHan;
 	}
+	public Boolean linkAnnoToEntry(String annotoriousID, ExportEntry entry) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		Boolean res = connector.linkAnnoToEntry(annotoriousID, entry);
+		return res;
+	}	
+	public ArrayList<ExportEntry> getEntriesByImageID(String imageID, String annotoriousID) {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		ArrayList<ExportEntry>  res = connector.getEntriesByImageID(imageID, annotoriousID);
+		return res;
+	}	
 	public Map<Integer,String> getPicsByImageID(String imgSourceIds, int tnSize, String sessionID) {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		Map<Integer,String>  districts = connector.getPicsByImageID(imgSourceIds, tnSize, sessionID);

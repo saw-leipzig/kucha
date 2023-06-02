@@ -14,12 +14,14 @@
 package de.cses.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import de.cses.shared.ExportEntry;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
@@ -340,6 +342,10 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<AnnotationEntry> getAnnotations(int depictionEntry) throws IllegalArgumentException;
 
 	ArrayList<AnnotationEntry> getProposedAnnotations(ArrayList<ImageEntry> images, int depictionEntry) throws IllegalArgumentException;
+	
+	Boolean linkAnnoToEntry(String annotoriousID, ExportEntry entry) throws IllegalArgumentException;
+	
+	ArrayList<ExportEntry>  getEntriesByImageID(String imageID, String annotoriousID) throws IllegalArgumentException;
 
 	ArrayList<CaveEntry> searchCaves(CaveSearchEntry searchEntry) throws IllegalArgumentException;
 

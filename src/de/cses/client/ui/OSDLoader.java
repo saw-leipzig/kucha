@@ -1,6 +1,7 @@
 package de.cses.client.ui;
 
 import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -9,10 +10,27 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
+import com.sencha.gxt.data.shared.LabelProvider;
+import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.ModelKeyProvider;
+import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
+import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.info.Info;
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -20,10 +38,26 @@ import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotationEntry;
+import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationAttributeEntry;
+import de.cses.shared.VendorEntry;
+import de.cses.shared.ExportEntry;
+
+
+interface ExportProperties extends PropertyAccess<ExportEntry> {
+
+	ModelKeyProvider<ExportEntry> uniqueID();
+
+	LabelProvider<ExportEntry> name();
+
+}
+interface ExportViewTemplates extends XTemplates {
+	@XTemplate("<div>{name}</div>")
+	SafeHtml exportLabel(String name);
+}
 
 public class OSDLoader {
 	private JavaScriptObject osdDic;
@@ -83,6 +117,80 @@ public class OSDLoader {
 		this.annoation =true;
 		this.icoTree=null;
 		//this.osdLoader=this;
+	}
+	public void export(String annotoriousID, String imageID) {
+		PopupPanel modifiedPopUp = new PopupPanel();
+		FramedPanel modifiedFP = new FramedPanel();
+		modifiedFP.setHeading("Link Annotation " + annotoriousID);
+
+	    ExportProperties exportProps = GWT.create(ExportProperties.class);
+	    ListStore<ExportEntry> exportEntryLS = new ListStore<ExportEntry>(exportProps.uniqueID());
+	    ComboBox<ExportEntry> exportSelectionCB = new ComboBox<ExportEntry>(exportEntryLS, exportProps.name(),
+				new AbstractSafeHtmlRenderer<ExportEntry>() {
+
+					@Override
+					public SafeHtml render(ExportEntry item) {
+						final ExportViewTemplates exortTemplates = GWT.create(ExportViewTemplates.class);
+						return exortTemplates.exportLabel(item.getName());
+					}
+				});
+		exportSelectionCB.setEmptyText("nothing selected");
+		exportSelectionCB.setWidth(200);
+		modifiedFP.add(exportSelectionCB);
+		TextButton exportButton = new TextButton("Link");
+		exportButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				Util.doLogging("Linking " + annotoriousID + " to Entry " + exportSelectionCB.getValue().getName());
+				dbService.linkAnnoToEntry(annotoriousID, exportSelectionCB.getValue(), new AsyncCallback<Boolean>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						Util.doLogging(caught.getLocalizedMessage());
+						caught.printStackTrace();
+						Info.display("Error!", "Linking Annotation failed!!!");
+						
+					}
+
+					@Override
+					public void onSuccess(Boolean result) {
+						Util.doLogging("Annotation linked: "+Boolean.toString(result));
+					}
+				});			
+
+			}
+		});
+		modifiedFP.addButton(exportButton);
+		dbService.getEntriesByImageID(imageID, annotoriousID,  new AsyncCallback<ArrayList<ExportEntry>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				Util.doLogging(caught.getLocalizedMessage());
+				caught.printStackTrace();
+				Util.doLogging(caught.getMessage());
+				Info.display("Error!", "Saving Annotation failed!!!");
+				
+			}
+
+			@Override
+			public void onSuccess(ArrayList<ExportEntry> result) {
+				for (ExportEntry entry : result) {
+					exportEntryLS.add(entry);
+				}
+			}
+		});	
+		modifiedPopUp.add(modifiedFP);
+		ToolButton closeToolButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+		closeToolButton.setToolTip(Util.createToolTip("close"));
+		closeToolButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				modifiedPopUp.hide();
+			}
+		});
+		modifiedFP.addTool(closeToolButton);
+		modifiedPopUp.setModal(true);
+		modifiedPopUp.center();
+
 	}
 	public void getResults(String id ,String tags, String polygon, String image, Boolean delete, Boolean update, Double creationTime, Double modificationTime, Boolean isProposed) {
 		// Function for sending the Annotations to MYSQL-Backend
@@ -323,7 +431,6 @@ public class OSDLoader {
 	}
 	public static native void removeOrAddAnnotationsJS(JavaScriptObject viewers, JavaScriptObject annos, Boolean add) 
 	/*-{
-	    $wnd.console.log("viewers ", viewers)
 	    if (viewers["annotorious"]!=null){
 	    	for (var v in viewers["annotorious"]) {
 				var annosForViewer = [];
@@ -435,7 +542,7 @@ public class OSDLoader {
 	        // $wnd.console.log("polygon: ",polygon);
 	        var results =polygon.split('M');
 	        // $wnd.console.log("results: ");
-	        $wnd.console.log("results: ",results);
+	        // $wnd.console.log("results: ",results);
 	        results.forEach(function (result, index) {
 	          // $wnd.console.log("result: ",result);
 	          if (result.length>0){
@@ -468,7 +575,7 @@ public class OSDLoader {
 	            	poly+=", "+firstCoord
 	            }
 	            poly+="))";
-	        	// $wnd.console.log("poly: ",poly);
+	        	$wnd.console.log("poly: ",poly);
 	        	var precisionModel = new $wnd.jsts.geom.PrecisionModel($wnd.jsts.geom.PrecisionModel.FLOATING)
     			var geometryPrecisionReducer = new $wnd.jsts.precision.GeometryPrecisionReducer(precisionModel)
     			var geomFactoryJSTS = new $wnd.jsts.geom.GeometryFactory(precisionModel)
@@ -587,15 +694,36 @@ public class OSDLoader {
 	}
 	public static native JavaScriptObject setHasContourAllignJS(JavaScriptObject viewers, boolean hasContourAllign)
 	/*-{
-		$wnd.console.log("viewers:",viewers);
 		for (var v in viewers["annotorious"]) {
-			$wnd.console.log("viewers:",viewers,v, hasContourAllign);
 			viewers["annotorious"][v].setHasContourAllign(hasContourAllign);
 		}
 	}-*/;
 	public static native JavaScriptObject createZoomeImage(JavaScriptObject tiles,JavaScriptObject wheres, JavaScriptObject source, JavaScriptObject dic, String sessionID, boolean anno, JavaScriptObject icoTree, OSDLoader osdLoader, JavaScriptObject annos, boolean isWall)
 	/*-{
 	 annotorious={};
+	 
+	 var ExportWidget = function(args) {
+		  var annoExport = function(evt) {
+			osdLoader.@de.cses.client.ui.OSDLoader::export(Ljava/lang/String;Ljava/lang/String;)(args.annotation.id, args.annotation.targets[0].source);		  
+			}
+	 		
+		  var createButton = function(value) {
+		    var button = document.createElement('button');
+			button.innerHTML = 'Link to other Entry'
+		    button.addEventListener('click', annoExport); 
+		    return button;
+		  }
+		
+		  var container = document.createElement('div');
+		  container.className = 'export-widget';
+		  
+		  var button1 = createButton();
+		
+		  container.appendChild(button1);
+	      $wnd.console.log("exportbutton is loading" + container);
+		  
+		  return container;
+		}
 	 $doc.cookie = "sessionID="+sessionID+";SameSite=Lax;"; 
 	    $wnd.OpenSeadragon.setString('Tooltips.SelectionToggle','Selection Demo');
 	    $wnd.OpenSeadragon.setString('Tooltips.SelectionConfirm','Ok');
@@ -640,7 +768,6 @@ public class OSDLoader {
 	            tileSource: tiles[wheres[i]]
 	        });			
 				if (anno){
-					$wnd.console.log("Starting annotation for:",wheres[i]);	
 					
 					var savedAnnos=[];
 					var foundAnno=false;
@@ -664,14 +791,13 @@ public class OSDLoader {
 						config["widgets"]=[{ widget: 'TAG', vocabulary: [ 'lost'] }];
 						config["readOnly"]=true;
 					} else {
-						config["widgets"]=[{ widget: tw, tree: icoTree }];
+						config["widgets"]=[{ widget: tw, tree: icoTree }, ExportWidget];
 					}
 					config["image"]=wheres[i];
 					config["formatter"] = [MyHighlightFormatter];
 					// $wnd.console.log("Adding Annotorious",config);
 					annotorious[wheres[i]] = $wnd.OpenSeadragon.Annotorious(dic[wheres[i]],config);
 			        $wnd.Annotorious.SelectorPack(annotorious[wheres[i]]);
-			        console.log(annotorious[wheres[i]].listDrawingTools());
 			        // annotorious[wheres[i]].setDrawingTool('bettermultipolygon');
 			        annotorious[wheres[i]].setDrawingTool('bettermultipolygon');
 	
