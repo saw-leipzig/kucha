@@ -74,7 +74,7 @@ public class OrnamenticView extends AbstractView {
 		//if ((oEntry.getImages() != null) && (!oEntry.getImages().isEmpty())) {
 		//	imageUri = UriUtils.fromString("resource?imageID=" + oEntry.getImages().get(0).getImageID() + "&thumb=80" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 		//}
-		setHTML(ovTemplate.view(imageUri, oEntry.getCode(),oEntry.getOrnamentID()));
+		setHTML(ovTemplate.view(imageUri, oEntry.getCode(),oEntry.getTypicalID()));
 		setPixelSize(110, 110);
 
 		DragSource source = new DragSource(this) {
@@ -83,7 +83,7 @@ public class OrnamenticView extends AbstractView {
 			protected void onDragStart(DndDragStartEvent event) {
 				super.onDragStart(event);
 				event.setData(oEntry);
-				event.getStatusProxy().update(ovTemplate.view(imageUri,  oEntry.getCode(),oEntry.getOrnamentID()));
+				event.getStatusProxy().update(ovTemplate.view(imageUri,  oEntry.getCode(),oEntry.getTypicalID()));
 			}
 			
 		};
@@ -121,7 +121,7 @@ public class OrnamenticView extends AbstractView {
 	public void refreshpic( SafeUri uri ) {
 		imageUri= uri;
 
-		setHTML(ovTemplate.view(imageUri, oEntry.getCode(),oEntry.getOrnamentID()));
+		setHTML(ovTemplate.view(imageUri, oEntry.getCode(),oEntry.getTypicalID()));
 
 	}
 //	/* (non-Javadoc)

@@ -270,18 +270,19 @@ public class IconographySelector extends FramedPanel {
 		    @Override
 		    public void render(Context context, String ie, SafeHtmlBuilder sb) {
 		    	boolean found = false;
+		    	IconographyEntry ico = null;
 		    	for (IconographyEntry icoEntry : allAnnotationEntries) {
 		    			if (Integer.toString(icoEntry.getIconographyID())==context.getKey()) {
 		    				found=true;
+		    				ico = icoEntry;
+		    				break;
 		    			}
 		    	}
 		    	if (found) {
-		    		sb.append(SafeHtmlUtils.fromTrustedString("<p style=\"color:green;\">"+ie+"</p>"));
+		    		sb.append(SafeHtmlUtils.fromTrustedString("<p style=\"color:green;\">"+ie + " (" + context.getKey()+")</p>"));
 		    	}else {
-		    		sb.append(SafeHtmlUtils.fromTrustedString("<p style=\"color:red;\">"+ie+"</p>"));
+		    		sb.append(SafeHtmlUtils.fromTrustedString("<p style=\"color:red;\">"+ie + " (" + context.getKey()+")</p>"));
 		    	}
-		    	
-				
 		    }
 		    @Override
 		    public void onBrowserEvent(Context context, Element parent, String value,
@@ -460,60 +461,63 @@ public class IconographySelector extends FramedPanel {
 	}
 	public void loadOrnamentMasterPics(List<IconographyEntry> iconographies) {
 		if (UserLogin.getInstance().getSessionID()!="") {
-			String wherefirst = "IconographyID in (";
-			String where= "";
-			for (IconographyEntry ie : iconographies) {
-				if (where.isEmpty()) {
-					where=Integer.toString(ie.getIconographyID());
+			if (iconographies.size()>0) {
+				String wherefirst = "IconographyID in (";
+				String where= "";
+				for (IconographyEntry ie : iconographies) {
+					if (where.isEmpty()) {
+						where=Integer.toString(ie.getIconographyID());
+					}
+					else {
+						where=where+", "+Integer.toString(ie.getIconographyID());				
+					}
 				}
-				else {
-					where=where+", "+Integer.toString(ie.getIconographyID());				
-				}
-			}
-			
-			where=wherefirst+where+")";
-			Util.doLogging("where for getOrnamentsWhere: "+where);
-			dbService.getOrnamentsWHERE(where, new AsyncCallback<ArrayList<OrnamentEntry>>() {
-	
-				@Override
-				public void onFailure(Throwable caught) {
-					caught.printStackTrace();
-				}
-				@Override
-				public void onSuccess(ArrayList<OrnamentEntry> result) {
-					String where= "";
-						ornamentEntries = result;
-						for (OrnamentEntry oe :result) {
-							if (where.isEmpty()) {
-								where=Integer.toString(oe.getMasterImageID());				
+				
+				where=wherefirst+where+")";
+				// Util.doLogging("where for getOrnamentsWhere: "+where);
+				dbService.getOrnamentsWHERE(where, new AsyncCallback<ArrayList<OrnamentEntry>>() {
+		
+					@Override
+					public void onFailure(Throwable caught) {
+						caught.printStackTrace();
+					}
+					@Override
+					public void onSuccess(ArrayList<OrnamentEntry> result) {
+						String where= "";
+							ornamentEntries = result;
+							for (OrnamentEntry oe :result) {
+								if (where.isEmpty()) {
+									where=Integer.toString(oe.getMasterImageID());				
+								}
+								else {
+									where=where+", "+Integer.toString(oe.getMasterImageID());				
+								}
+		
 							}
-							else {
-								where=where+", "+Integer.toString(oe.getMasterImageID());				
-							}
-	
-						}
-						dbService.getPicsByImageID(where, 400, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<Integer,String>>() {
-							
-							@Override
-							public void onFailure(Throwable caught) {				
-								caught.printStackTrace();
-							}
-							
-							@Override
-							public void onSuccess(Map<Integer,String> imgdic) {
-								for (OrnamentEntry oe : ornamentEntries) {
-									if (oe.getMasterImageID()>0) {
-										if (imgdic.containsKey(oe.getMasterImageID())) {
-											//Util.doLogging(imgdic.get(oe.getMasterImageID()));
-											imgdDic.put(oe.getIconographyID(), imgdic.get(oe.getMasterImageID()));
-											StaticTables.getInstance().setOrnamentMasterPics(imgdDic);
-											}	
+							dbService.getPicsByImageID(where, 400, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<Integer,String>>() {
+								
+								@Override
+								public void onFailure(Throwable caught) {				
+									caught.printStackTrace();
+								}
+								
+								@Override
+								public void onSuccess(Map<Integer,String> imgdic) {
+									for (OrnamentEntry oe : ornamentEntries) {
+										if (oe.getMasterImageID()>0) {
+											if (imgdic.containsKey(oe.getMasterImageID())) {
+												//Util.doLogging(imgdic.get(oe.getMasterImageID()));
+												imgdDic.put(oe.getIconographyID(), imgdic.get(oe.getMasterImageID()));
+												StaticTables.getInstance().setOrnamentMasterPics(imgdDic);
+												}	
+										}
 									}
 								}
-							}
-						});
-					}
-			});
+							});
+						}
+				});
+				
+			}
 
 		}
 
@@ -689,6 +693,14 @@ public class IconographySelector extends FramedPanel {
 			@Override
 			public void onSelect(SelectEvent event) {
 				iconographyTree.expandAll();
+			}
+		});
+		ToolButton iconographyReduceTree = new ToolButton(new IconConfig("rightButton", "rightButtonOver"));
+		iconographyReduceTree.setToolTip(Util.createToolTip("Reduce tree."));
+		iconographyReduceTree.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				icoSelectorListener.reduceTree();
 			}
 		});
 
@@ -896,6 +908,7 @@ public class IconographySelector extends FramedPanel {
 //		mainPanel = new FramedPanel();
 		setHeading("Iconography Selector");
 		add(iconographySelectorBLC);
+		addTool(iconographyReduceTree);
 		addTool(iconographyExpandTB);
 		addTool(iconographyCollapseTB);
 		addTool(addEntryTB);				
@@ -903,7 +916,7 @@ public class IconographySelector extends FramedPanel {
 		addTool(maxTB);
 		addTool(minTB);
 		addTool(closeTB);
-		
+	
 		//addTool(resetTB);
 		if (el!=null) {
 			el.setClickNumber(0);

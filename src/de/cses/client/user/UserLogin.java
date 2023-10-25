@@ -78,7 +78,7 @@ public class UserLogin extends PopupPanel {
 	private PasswordField passwordField;
 	private UserEntry currentUser = null;
 	private UserInformationTemplate uiTemplate;
-
+	private ToolButton exportDBTB = null;
 	/**
 	 * 
 	 */
@@ -315,6 +315,7 @@ public class UserLogin extends PopupPanel {
 			}
 		});
 		ToolButton adminTB = null;
+		ToolButton userManagerFrontendTB = null;
 		if (getAccessRights() == UserEntry.ADMIN) {
 			adminTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
 			adminTB.addSelectHandler(new SelectHandler() {
@@ -327,28 +328,42 @@ public class UserLogin extends PopupPanel {
 					userManagerDialog.center();
 				}
 			});
+			userManagerFrontendTB = new ToolButton(new IconConfig("foldButton", "foldButtonOver"));
+			userManagerFrontendTB.addSelectHandler(new SelectHandler() {
+				
+				@Override
+				public void onSelect(SelectEvent event) {
+					UserManagerFrontEnd userManagerDialog = new UserManagerFrontEnd();
+					userManagerDialog.setSize("900px", "450px");
+					userManagerDialog.setModal(true);
+					userManagerDialog.center();
+	
+				}
+			});
+			userManagerFrontendTB.setToolTip(Util.createToolTip("Edit Users of Frontend"));
 		}
-		ToolButton exportDBTB = null;
-		if (getAccessRights() == UserEntry.FULL || getAccessRights() == UserEntry.ADMIN) {
+		if (currentUser.getUserID() == 14) {
 			exportDBTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 			exportDBTB.addSelectHandler(new SelectHandler() {
 				
 				@Override
 				public void onSelect(SelectEvent event) {
+					exportDBTB.disable();
 					dbService.serializeAllDepictionEntries(currentUser.getSessionID(), new AsyncCallback<Boolean>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
 							Util.showWarning("Login Message", "A problem occurred during login.\n Please check username / password!");
 							passwordField.reset();
+							exportDBTB.enable();
 						}
 
 						@Override
 						public void onSuccess(Boolean result) {
 							Info.display("Finished database export", "See logs for details.");
+							exportDBTB.enable();
 						}
 					});
-
 				}
 			});
 		}
@@ -384,6 +399,7 @@ public class UserLogin extends PopupPanel {
 		}
 		if (adminTB != null) {
 			userFP.addTool(adminTB);
+			userFP.addTool(userManagerFrontendTB);
 		}
 		userFP.addTool(closeTB);
 		userFP.setHeight(500);

@@ -22,12 +22,15 @@ import java.util.List;
  *
  */
 public class UserEntry extends AbstractEntry {
+	public static final Boolean yes = true;
+	public static final Boolean no = false;
 
 	public static final int GUEST = 1;
 	public static final int ASSOCIATED = 2;
 	public static final int FULL = 3;
 	public static final int ADMIN = 4;
 	public static final List<String> ACCESS_RIGHTS_LABEL = Arrays.asList("guest", "associated", "full", "admin");
+	public static final List<String> granted_LABEL = Arrays.asList("yes", "no");
 
 	
 	private int userID;
@@ -38,6 +41,7 @@ public class UserEntry extends AbstractEntry {
 	private String affiliation;
 	private String sessionID;
 	private long loginDate;
+	private Boolean granted;
 
 	/**
 	 * 
@@ -69,6 +73,22 @@ public class UserEntry extends AbstractEntry {
 		this.setModifiedOn(modifiedOn);
 		Date now = new Date();
 		setLoginDate(now.getTime());
+	}
+	public UserEntry(int userID, String username, String firstname, String lastname, String email, String affiliation, int accessLevel, 
+			String sessionID, String modifiedOn, Boolean granted) {
+		super();
+		this.userID = userID;
+		this.username = username;
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.email = email;
+		this.affiliation = affiliation;
+		this.setAccessLevel(accessLevel);
+		this.sessionID = sessionID;
+		this.setModifiedOn(modifiedOn);
+		Date now = new Date();
+		setLoginDate(now.getTime());
+		this.granted = granted;
 	}
 
 	public int getUserID() {
@@ -139,6 +159,20 @@ public class UserEntry extends AbstractEntry {
 	 */
 	public void setSessionID(String sessionID) {
 		this.sessionID = sessionID;
+	}
+
+	/**
+	 * @return the granted-Status
+	 */
+	public Boolean getGranted() {
+		return granted;
+	}
+
+	/**
+	 * @param sessionID the sessionID to set
+	 */
+	public void setGranted(Boolean granted) {
+		this.granted = granted;
 	}
 
 	/**

@@ -14,6 +14,8 @@
 package de.cses.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -36,6 +38,7 @@ import de.cses.shared.DepictionEntry;
 import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
+import de.cses.shared.ExportEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageSearchEntry;
@@ -92,6 +95,10 @@ public interface DatabaseServiceAsync {
 	void getImages(AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
 
 	void getMasterImageFromOrnament(int tnSize,String sessionID,AsyncCallback<Map<Integer,String>> callback) throws IllegalArgumentException;	
+	
+	void saveWallDimension(ArrayList<WallTreeEntry> pe, Integer caveID, AsyncCallback<Boolean> callback) throws IllegalArgumentException;	
+	
+	void getWallDimension(Integer caveID, AsyncCallback<Map<Integer,ArrayList<PositionEntry>>> callback) throws IllegalArgumentException;	
 	
 	void getImages(String sqlWhere, AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
 
@@ -171,6 +178,8 @@ public interface DatabaseServiceAsync {
 
 	void iconographyIDisUsed(int iconographyID, int OrnamentID, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
+	void isGoodDimension(int caveID, int register, int number, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 	void getPublicationEntry(int id, AsyncCallback<PublicationEntry> asyncCallback) throws IllegalArgumentException;
 
 	void getAuthorEntry(int id, AsyncCallback<AuthorEntry> asyncCallback) throws IllegalArgumentException;
@@ -229,6 +238,8 @@ public interface DatabaseServiceAsync {
 
 	void resetPassword(UserEntry currentUser, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
+	void resetPasswordFrontEnd(UserEntry currentUser, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 	void getCeilingTypes(AsyncCallback<ArrayList<CeilingTypeEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getPreservationClassifications(AsyncCallback<ArrayList<PreservationClassificationEntry>> asyncCallback)
@@ -242,7 +253,7 @@ public interface DatabaseServiceAsync {
 
 	void userLogin(String username, String password, AsyncCallback<UserEntry> asyncCallback);
 
-	void updateImageEntry(ImageEntry imgEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+	void updateImageEntry(ImageEntry imgEntry, String sessionID, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void getImageTypes(AsyncCallback<ArrayList<ImageTypeEntry>> asyncCallback) throws IllegalArgumentException;
 
@@ -348,6 +359,8 @@ public interface DatabaseServiceAsync {
 
 	void insertBibKeyword(BibKeywordEntry bkEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
+	void updateBibKeyword(BibKeywordEntry bkEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 	void deleteAuthorEntry(AuthorEntry selectedEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
@@ -357,6 +370,12 @@ public interface DatabaseServiceAsync {
 	void searchDepictions(DepictionSearchEntry searchEntry, AsyncCallback<ArrayList<DepictionEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void getAnnotations(int depictionEntry,AsyncCallback<ArrayList<AnnotationEntry>> asyncCallback) throws IllegalArgumentException;
+	
+	void linkAnnoToEntry(String annotoriousID, ExportEntry entry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
+	void getEntriesByImageID(String imageID, String annotoriousID, AsyncCallback<ArrayList<ExportEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void getProposedAnnotations(ArrayList<ImageEntry> images, int depictionEntry,AsyncCallback<ArrayList<AnnotationEntry>> asyncCallback) throws IllegalArgumentException;
 	
 	void setAnnotationResults(AnnotationEntry annoEntry, boolean isOrnament,AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 	
@@ -370,11 +389,19 @@ public interface DatabaseServiceAsync {
 	
 	void updateIconographyEntry(IconographyEntry iconographyEntryToEdit, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
+	void updateWallTreeEntry(WallTreeEntry wte, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 	void getUsers(AsyncCallback<ArrayList<UserEntry>> asyncCallback) throws IllegalArgumentException;
+
+	void getUsersFrontEnd(AsyncCallback<ArrayList<UserEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void updateUserEntry(UserEntry userEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
+	void updateUserEntryFrontEnd(UserEntry userEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 	void insertUserEntry(UserEntry entry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
+	void saveWebPageUser(UserEntry entry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
 	void saveCollectedEntries(String sessionID, String collectionLabel, Boolean isGroupCollection, ArrayList<AbstractEntry> entryList, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 

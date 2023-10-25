@@ -52,8 +52,7 @@ public class OrnamentDataDisplay extends AbstractDataDisplay {
 		HTML htmlWidget2 = new HTML(view.displayunten(
 		e.getDescription(),
 		e.getRemarks(),
-		e.getRelatedBibliographyList(),
-		e.getOrnamentComponents()
+		e.getRelatedBibliographyList()
 		));		
 		HTML htmlWidgetmiddle = new HTML(view.displaymitte());
 		ornamentTrees= new 	OrnamenticIconographyTree(entry);

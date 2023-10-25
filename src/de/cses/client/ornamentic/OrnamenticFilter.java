@@ -60,6 +60,7 @@ import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.IntegerSpinnerField;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
+import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
@@ -146,6 +147,8 @@ public class OrnamenticFilter extends AbstractFilter {
 	private ListStore<DistrictEntry> districtsEntryList;
 	private DistrictsProperties districtsProps;
 	private ListView<DistrictEntry, DistrictEntry> districtsSelectionLV;
+	private SimpleComboBox<String> publishedFilter;
+	private SimpleComboBox<String> isVirtualTour;
 
 
 //	private ListStore<InnerSecondaryPatternsEntry> innerSecondaryPatternsEntryList;
@@ -393,7 +396,8 @@ public class OrnamenticFilter extends AbstractFilter {
 		positionSelectionLV.getSelectionModel().deselectAll();;
 		imgIDs.clear();
 		bibIDs.clear();
-
+		publishedFilter.clear();
+		isVirtualTour.clear();
 	}
 
 	// Laden aller Daten aus der Datenbank
@@ -594,6 +598,20 @@ public class OrnamenticFilter extends AbstractFilter {
 				selectedIconographyLS.add(ie);
 			}
 		}
+		if ((((OrnamenticSearchEntry)searchEntry).getAccessLevel() == 2)) {
+			publishedFilter.setValue("Published");
+		} else if ((((OrnamenticSearchEntry)searchEntry).getAccessLevel() == 0) || (((DepictionSearchEntry)searchEntry).getAccessLevel() == 1)) {
+			publishedFilter.setValue("Unpublished");			
+		} else {
+			publishedFilter.reset();
+		}
+		if ((((OrnamenticSearchEntry)searchEntry).getIsVirtualTour() == 1)) {
+			isVirtualTour.setValue("not in Virtual Tour");
+		} else if ((((OrnamenticSearchEntry)searchEntry).getAccessLevel() == 0)) {
+			isVirtualTour.setValue("in Virtual Tour");			
+		} else {
+			isVirtualTour.reset();
+		}
 
 	}
 
@@ -624,6 +642,28 @@ public class OrnamenticFilter extends AbstractFilter {
 	protected Widget getFilterUI() {
 
 		// Erstellen der Felder und ListViews auf der Client Seite
+		isVirtualTour = new SimpleComboBox<String>(new LabelProvider<String>() {
+
+			@Override
+			public String getLabel(String item) {
+				return item;
+			}
+		});
+		isVirtualTour.setName("is in Virtual Tour");
+		isVirtualTour.add("in Virtual Tour");
+		isVirtualTour.add("not in Virtual Tour");
+		isVirtualTour.setEmptyText("is in Virtual Tour");
+		publishedFilter = new SimpleComboBox<String>(new LabelProvider<String>() {
+
+			@Override
+			public String getLabel(String item) {
+				return item;
+			}
+		});
+		publishedFilter.setName("Access Level Filter");
+		publishedFilter.add("Published");
+		publishedFilter.add("Unpublished");
+		publishedFilter.setEmptyText("Access Level Filter");
 		IDSearchTF = new TextField();
 		IDSearchTF.addValidator(new RegExValidator("[0-9]", "Only numbers allowed"));
 		IDSearchTF.setEmptyText("search ID");
@@ -1022,7 +1062,6 @@ public class OrnamenticFilter extends AbstractFilter {
 //		accordion.add(ornamentCodePanel);
 
 		VerticalPanel ornamenticFilterVLC = new VerticalPanel();
-		ornamenticFilterVLC.setHeight("100px");
 		ContentPanel ornamentDeskriptionPanel = new ContentPanel();
 		ornamentDeskriptionPanel.setHeaderVisible(true);
 		ornamentDeskriptionPanel.setToolTip(Util.createToolTip("Search for ornament description."));
@@ -1030,6 +1069,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		ornamentDeskriptionPanel.add(ornamentDeskriptionSearchTF);
 		ornamentDeskriptionPanel.getHeader().setStylePrimaryName("frame-header");
 		ornamenticFilterVLC.add(ornamentDeskriptionPanel);
+		ornamenticFilterVLC.setHeight("100px");
 		ornamenticFilterVLC.addDomHandler(getShortkey(), KeyPressEvent.getType());
 
 //		ContentPanel ornamentInterpretationPanel = new ContentPanel();
@@ -1219,16 +1259,18 @@ public class OrnamenticFilter extends AbstractFilter {
 		accordion.add(ornamentdistrictsPanel);
 //		accordion.add(innerSecPanel);
 //		accordion.add(relatedornamentPanel);
-		accordion.add(ornamentComponentsPanel);
+//		accordion.add(ornamentComponentsPanel);
 		accordion.add(textSearch);
 		accordion.add(iconographyPanel);
 		accordion.add(wallPanel);
 
 		VerticalLayoutContainer codeMotifVLC = new VerticalLayoutContainer();
 		codeMotifVLC.addDomHandler(getShortkey(), KeyPressEvent.getType());
-		codeMotifVLC.add(IDSearchTF, new VerticalLayoutData(1.0, 25));
-		codeMotifVLC.add(ornamentCodeSearchTF, new VerticalLayoutData(1.0, 25));
-		codeMotifVLC.add(headerOrnamentClass, new VerticalLayoutData(1.0, 45));
+		codeMotifVLC.add(IDSearchTF, new VerticalLayoutData(1.0, .25));
+		codeMotifVLC.add(ornamentCodeSearchTF, new VerticalLayoutData(1.0, .25));
+		codeMotifVLC.add(publishedFilter, new VerticalLayoutData(1.0, .25));
+		codeMotifVLC.add(isVirtualTour, new VerticalLayoutData(1.0, .25));
+		// codeMotifVLC.add(headerOrnamentClass, new VerticalLayoutData(1.0, 45));
 		
 		// accordion.setActiveWidget(ornamentCavesPanel);
 
@@ -1246,7 +1288,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		
 		BorderLayoutContainer ornamentFilterBLC = new BorderLayoutContainer();
 		ornamentFilterBLC.addDomHandler(getShortkey(), KeyPressEvent.getType());
-		ornamentFilterBLC.setNorthWidget(codeMotifVLC, new BorderLayoutData(70));
+		ornamentFilterBLC.setNorthWidget(codeMotifVLC, new BorderLayoutData(100));
 		ornamentFilterBLC.setCenterWidget(accordion, new MarginData(5, 0, 0, 0));
 		ornamentFilterBLC.setHeight(600);
 		return ornamentFilterBLC;
@@ -1341,6 +1383,28 @@ public class OrnamenticFilter extends AbstractFilter {
 		for (WallTreeEntry wte : selectedWallsLS.getAll()) {
 			searchEntry.getWalls().add(wte);
 		}
+		if (publishedFilter.getValue() != null) {
+			if (publishedFilter.getValue().equals("Published")) {
+				searchEntry.setAccessLevel(2);
+			} else if (publishedFilter.getValue().equals("Unpublished")) {
+				searchEntry.setAccessLevel(1);
+			} else {
+				searchEntry.setAccessLevel(-1);			
+			}			
+		} else {
+			searchEntry.setAccessLevel(-1);	
+		}
+		if (isVirtualTour.getValue() != null) {
+			if (isVirtualTour.getValue().equals("in Virtual Tour")) {
+				searchEntry.setIsVirtualTour(1);
+			} else if (isVirtualTour.getValue().equals("not in Virtual Tour")) {
+				searchEntry.setIsVirtualTour(0);
+			} else {
+				searchEntry.setIsVirtualTour(-1);			
+			}			
+		} else {
+			searchEntry.setIsVirtualTour(-1);						
+		}
 		
 
 
@@ -1375,7 +1439,7 @@ public class OrnamenticFilter extends AbstractFilter {
 	private void showWallSelection() {
 		pe = new PositionEditor(null, selectedWallsLS.getAll(), true) {
 			@Override
-			protected void save(List<WallTreeEntry> results ) {
+			protected void save(ArrayList<WallTreeEntry> results ) {
 				selectedWallsLS.clear();
 				selectedWallsLS.addAll(getSelectedWalls());
 				if ((pe.getSelectedItems() != null) && (selectedWallsLS.size() > 0)) {

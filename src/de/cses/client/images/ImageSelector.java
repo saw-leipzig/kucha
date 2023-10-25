@@ -14,9 +14,12 @@
 package de.cses.client.images;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -37,6 +40,11 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.Store;
+import com.sencha.gxt.dnd.core.client.DndDragStartEvent;
+import com.sencha.gxt.dnd.core.client.DragSource;
+import com.sencha.gxt.dnd.core.client.ListViewDragSource;
+import com.sencha.gxt.fx.client.Draggable;
+import com.sencha.gxt.fx.client.Draggable.DraggableAppearance;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.ListView;
@@ -146,22 +154,33 @@ public class ImageSelector implements IsWidget {
 
 		
 		imgFilter = new ImageFilter("Selector Filter");
-		
-		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>(), new SimpleSafeHtmlCell<ImageEntry>(new AbstractSafeHtmlRenderer<ImageEntry>() {
+		SimpleSafeHtmlCell<ImageEntry> imageCell = new SimpleSafeHtmlCell<ImageEntry>(new AbstractSafeHtmlRenderer<ImageEntry>() {
 			final ImageViewTemplates imageViewTemplates = GWT.create(ImageViewTemplates.class);
 
 			public SafeHtml render(ImageEntry item) {
 				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getImageID() + "&thumb=700" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-				if (item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
+				long now = new Date().getTime();  
+				if (((item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) && (!item.getIsExpiring()))|| ((item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) && (item.getIsExpiring())&&(now < item.getExpiriesAt()))) {
+					Util.doLogging("now: "+Long.toString(now));
+					Util.doLogging("getExpiriesAt: "+Long.toString(item.getExpiriesAt()));
 					return imageViewTemplates.publicImage(imageUri, item.getTitle(), item.getShortName(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
 				} else {
 					return imageViewTemplates.nonPublicImage(imageUri, item.getTitle(), item.getShortName(), item.getFilename().substring(item.getFilename().lastIndexOf(".")+1).toUpperCase());
 				}
 			}
 
-		}));
-		imageListView.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+		});
+		imageListView = new ListView<ImageEntry, ImageEntry>(imageEntryList, new IdentityValueProvider<ImageEntry>(), imageCell);
+		imageListView.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
+		imageListView.getSelectionModel().addBeforeSelectionHandler(new BeforeSelectionHandler<ImageEntry>() {
 
+			@Override
+			public void onBeforeSelection(BeforeSelectionEvent<ImageEntry> event) {
+				Info.display("selected","image");
+				
+			}
+			
+		});
 		// we need to remove this due to multiple seleciton!!
 //		imageListView.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<ImageEntry>() {
 //
@@ -349,7 +368,7 @@ public class ImageSelector implements IsWidget {
 						imageEntryList.add(ie);
 					}
 				}
-				imageListView.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+				imageListView.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
 			}
 		});
 	}
@@ -374,7 +393,7 @@ public class ImageSelector implements IsWidget {
 						}
 					}
 				}
-				imageListView.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+				imageListView.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
 			}
 		});
 	}

@@ -1,6 +1,18 @@
 /** Add css rules here for your application. */
 @charset "utf-8";
+.a9s-annotation.highlight .a9s-inner {
+	stroke: rgb(246, 0, 0);
+	fill: rgba(0, 128, 0,0.55);
+	stroke-width:3px;
+	transition: fill 1s, stroke-width 0.7s;
+}
 
+.a9s-annotation.highlight .a9s-inner:hover {
+	stroke: #fff000;
+	fill: rgba(0, 128, 0,0.55);
+	stroke-width:3px;
+	transition: fill 1s, stroke-width 0.7s
+}
 body {
 	background-image: url(backgroundKIS.jpg);
 	background-size: cover;
@@ -71,6 +83,14 @@ div.label {
 	position: absolute;
 	bottom: 5px;
 }
+div.gwt-DatePicker {
+	background:white;
+}
+
+div.dateBoxPopup {
+	background:white;
+}
+
 
 div.text {
 	margin-left: 45px;
@@ -350,6 +370,22 @@ div.doubleLeftButton {
 
 div.doubleLeftButtonOver {
 	background-image: url(icons/doppel_links_mo.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.doubleRightButton {
+	background-image: url(icons/doppel_rechts.png);
+	width: 20px;
+	height: 20px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+div.doubleRightButtonOver {
+	background-image: url(icons/doppel_rechts_mo.png);
 	width: 20px;
 	height: 20px;
 	background-repeat: no-repeat;
@@ -801,4 +837,39 @@ div.addResult {
 div.addResultOver {
 	width: 100%;
 	cursor: pointer;
+}
+.collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #555;
+}
+
+.collapsible:after {
+  content: '\002B';
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "\2212";
+}
+
+.content {
+  padding: 0 18px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  background-color: #f1f1f1;
 }

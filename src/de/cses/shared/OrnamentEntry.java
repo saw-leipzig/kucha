@@ -17,62 +17,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrnamentEntry extends AbstractEntry {
-	private int ornamentID;
+	private int typicalID;
 	private String code;
 	private String description;
 	private String remarks;
 	private int iconographyID;
+	private boolean isVirtualTour;
 	private double virtualTourOrder;
 	private IconographyEntry ie;
 	//private String annotations; wurde mal geloescht, evtl wird es irgendwann wieder gewollt
-	private String interpretation;
-	private String references;
-	private int ornamentClass; // hei�t jetzt motif, name wurde nur oberflaechlich angepasst. 
-	private int structureOrganizationID; // gibt es nicht mehr, wird evtl. mal wieder gewollt
 	private ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
-	private ArrayList<OrnamentCaveRelation> cavesRelations = new ArrayList<OrnamentCaveRelation>();
-	private ArrayList<OrnamentComponentsEntry> ornamentComponents = new ArrayList<OrnamentComponentsEntry>();
-	private ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns = new ArrayList<InnerSecondaryPatternsEntry>();
 	private ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBibliographyEntry>();
 	private Integer masterImageID = 0;
 	private ArrayList<IconographyEntry> relatedIconographyList = new ArrayList<IconographyEntry>();
 	private ArrayList<AnnotationEntry> relatedAnnotationList = new ArrayList<AnnotationEntry>();
 
 	public OrnamentEntry() {
-		ornamentID = 0;
+		typicalID = 0;
 	}
 	@Override
 	public boolean equals(Object object) {
 		if (object != null && object instanceof OrnamentEntry) {
-			return (this.ornamentID == ((OrnamentEntry) object).getOrnamentID());
+			return (this.typicalID == ((OrnamentEntry) object).getTypicalID());
 		}
 		return false;
 	}
 
-	public OrnamentEntry(int ornamentID, String code) {
-		this.ornamentID = ornamentID;
+	public OrnamentEntry(int typicalID, String code) {
+		this.typicalID = typicalID;
 		this.code = code;
 	}
 
-	public OrnamentEntry(int ornamentID, String code, String description, String remarks, 
+	public OrnamentEntry(int typicalID, String code, String description, String remarks, 
 			//String annotations,
 			String interpretation,
-			String references, int ornamentClassID, ArrayList<ImageEntry> images, ArrayList<OrnamentCaveRelation> cavesRelations,
-			ArrayList<OrnamentComponentsEntry> ornamentComponents, ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns,
+			String references, int ornamentClassID, ArrayList<ImageEntry> images,
 			ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList, String modifiedOn, int iconographyID, int masterImageID,
-			ArrayList<IconographyEntry> relatedIconographyList, ArrayList<AnnotationEntry> relatedAnnotationList, int accessLevel, double tourOrder) {
-		this.ornamentID = ornamentID;
+			ArrayList<IconographyEntry> relatedIconographyList, ArrayList<AnnotationEntry> relatedAnnotationList, int accessLevel, double tourOrder, boolean isVirtualTour) {
+		this.typicalID = typicalID;
 		this.code = code;
 		this.description = description;
 		this.remarks = remarks;
 		//this.annotations = annotations;
-		this.interpretation = interpretation;
-		this.references = references;
-		this.ornamentClass = ornamentClassID;
 		this.images = images;
-		this.innerSecondaryPatterns = innerSecondaryPatterns;
-		this.cavesRelations = cavesRelations;
-		this.ornamentComponents = ornamentComponents;
 		this.relatedBibliographyList = relatedBibliographyList;
 		this.setModifiedOn(modifiedOn);
 		this.iconographyID=iconographyID;
@@ -81,21 +68,17 @@ public class OrnamentEntry extends AbstractEntry {
 		this.relatedAnnotationList=relatedAnnotationList;
 		this.accessLevel=accessLevel;
 		this.virtualTourOrder=tourOrder;
+		this.isVirtualTour = isVirtualTour;
 	}
 
-	public OrnamentEntry(int ornamentID, String code, String description, String remarks, 
-			//String annotations, 
-			String interpretation,
-			String references, int ornamentClassID, String modifiedOn, ArrayList<IconographyEntry> relatedIconographyList,
+	public OrnamentEntry(int typicalID, String code, String description, String remarks, 
+			//String annotations, String modifiedOn, ArrayList<IconographyEntry> relatedIconographyList,
 			ArrayList<AnnotationEntry> relatedAnnotationList, int accessLevel) {
-		this.ornamentID = ornamentID;
+		this.typicalID = typicalID;
 		this.code = code;
 		this.description = description;
 		this.remarks = remarks;
 		//this.annotations = annotations;
-		this.interpretation = interpretation;
-		this.references = references;
-		this.ornamentClass = ornamentClassID;
 		this.setModifiedOn(modifiedOn);
 		this.relatedIconographyList=relatedIconographyList;
 		this.relatedAnnotationList=relatedAnnotationList;
@@ -112,12 +95,12 @@ public class OrnamentEntry extends AbstractEntry {
 		this.relatedAnnotationList = relatedAnnotationList;
 	}
 
-	public int getOrnamentID() {
-		return ornamentID;
+	public int getTypicalID() {
+		return typicalID;
 	}
 
-	public void setOrnamentID(int ornamentID) {
-		this.ornamentID = ornamentID;
+	public void setOrnamentID(int typicalID) {
+		this.typicalID = typicalID;
 	}
 	public IconographyEntry getIconographyEntry() {
 		return ie;
@@ -128,6 +111,13 @@ public class OrnamentEntry extends AbstractEntry {
 	}
 	public double getVirtualTourOrder() {
 		return virtualTourOrder;
+	}
+
+	public void setIsVirtualTour(boolean isVirtualTour) {
+		this.isVirtualTour = isVirtualTour;
+	}
+	public boolean getisVirtualTour() {
+		return isVirtualTour;
 	}
 
 	public void setIconographyEntry(IconographyEntry ie) {
@@ -172,30 +162,8 @@ public class OrnamentEntry extends AbstractEntry {
 		this.remarks = remarks;
 	}
 
-	public String getInterpretation() {
-		return interpretation;
-	}
-
-	public void setInterpretation(String interpretation) {
-		this.interpretation = interpretation;
-	}
-
-	public String getReferences() {
-		return references;
-	}
-
-	public void setReferences(String references) {
-		this.references = references;
-	}
-
-	public List<OrnamentCaveRelation> getCavesRelations() {
-		return cavesRelations;
-	}
 	public void addRelatedImages(ImageEntry ie) {
 		images.add(ie);
-	}
-	public void setCavesRelations(ArrayList<OrnamentCaveRelation> list) {
-		this.cavesRelations = list;
 	}
 	public Integer getMasterImageID() {
 		return masterImageID != 0 ? masterImageID : (!images.isEmpty() ? images.get(0).getImageID() : 0);
@@ -235,68 +203,9 @@ public class OrnamentEntry extends AbstractEntry {
 	 */
 	@Override
 	public String getUniqueID() {
-		return "OrnamentEntry" + ornamentID;
+		return "Typical-" + typicalID;
 	}
 
-	/**
-	 * @return the ornamentClass
-	 */
-	public int getOrnamentClass() {
-		return ornamentClass;
-	}
-
-	/**
-	 * @param ornamentClass
-	 *          the ornamentClass to set
-	 */
-	public void setOrnamentClass(int ornamentClass) {
-		this.ornamentClass = ornamentClass;
-	}
-
-	/**
-	 * @return the structureOrganizationID
-	 */
-	public int getStructureOrganizationID() {
-		return structureOrganizationID;
-	}
-
-	/**
-	 * @param structureOrganizationID
-	 *          the structureOrganizationID to set
-	 */
-	public void setStructureOrganizationID(int structureOrganizationID) {
-		this.structureOrganizationID = structureOrganizationID;
-	}
-
-	/**
-	 * @return the ornamentComponents
-	 */
-	public ArrayList<OrnamentComponentsEntry> getOrnamentComponents() {
-		return ornamentComponents;
-	}
-
-	/**
-	 * @param ornamentComponents
-	 *          the ornamentComponents to set
-	 */
-	public void setOrnamentComponents(ArrayList<OrnamentComponentsEntry> ornamentComponents) {
-		this.ornamentComponents = ornamentComponents;
-	}
-
-	/**
-	 * @return the innerSecondaryPatterns
-	 */
-	public ArrayList<InnerSecondaryPatternsEntry> getInnerSecondaryPatterns() {
-		return innerSecondaryPatterns;
-	}
-
-	/**
-	 * @param innerSecondaryPatterns
-	 *          the innerSecondaryPatterns to set
-	 */
-	public void setInnerSecondaryPatterns(ArrayList<InnerSecondaryPatternsEntry> innerSecondaryPatterns) {
-		this.innerSecondaryPatterns = innerSecondaryPatterns;
-	}
 	public ArrayList<AnnotatedBibliographyEntry> getRelatedBibliographyList() {
 		return relatedBibliographyList;
 	}

@@ -15,13 +15,13 @@ package de.cses.shared;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
-import de.cses.client.Util;
 
 /**
  * @author Nina
@@ -208,6 +208,7 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	public boolean getHasHan() {
 		return hasHan;
 	}
+
 	public void setAnnotation(boolean annotation) {
 		this.annotation = annotation;
 	}
@@ -883,6 +884,23 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	 *          the authorAnnotatedList to set
 	 */
 	public void setAuthorList(ArrayList<AuthorEntry> authorList) {
+		authorList.sort(new Comparator<AuthorEntry>(){
+
+			  public int compare(AuthorEntry ae1, AuthorEntry ae2)
+			  {	
+				  if (ae1.getLastname() == null) {
+					  if (ae2.getLastname() == null) {
+						  return 0;
+					  } else {
+						  return "".compareTo(ae2.getLastname());							  
+					  }
+				  } else if (ae2.getLastname() == null) {
+					  return ae1.getLastname().compareTo(" ");
+				  } else {
+					  return ae1.getLastname().compareTo(ae1.getLastname());					  
+				  }
+			  }
+			});
 		this.authorList = authorList;
 	}
 
@@ -898,6 +916,29 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 	 *          the editorAnnotatedList to set
 	 */
 	public void setEditorList(ArrayList<AuthorEntry> editorList) {
+		editorList.sort(new Comparator<AuthorEntry>(){
+
+			  public int compare(AuthorEntry ae1, AuthorEntry ae2)
+			  {	
+				  try {
+					  if (ae1.getLastname() == null) {
+						  if (ae2.getLastname() == null) {
+							  return 0;
+						  } else {
+							  return "".compareTo(ae2.getLastname());							  
+						  }
+					  } else if (ae2.getLastname() == null) {
+						  return ae1.getLastname().compareTo("");
+					  } else {
+						  return ae1.getLastname().compareTo(ae1.getLastname());					  
+					  }
+				  }
+				  catch (NullPointerException ioe) {
+					    System.out.println("IO-Problem");
+					    return 0;
+				  }
+			  }
+			});
 		this.editorList = editorList;
 	}
 

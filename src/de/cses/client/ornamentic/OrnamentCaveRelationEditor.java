@@ -107,10 +107,10 @@ public class OrnamentCaveRelationEditor {
 		wallRelationProps = GWT.create(WallRelationProperties.class);
 		caveEntryList = new ListStore<CaveEntry>(caveEntryProps.caveID());
 		districtEntryList = new ListStore<DistrictEntry>(districtEntryProps.districtID());
-		ornamentEntryList = new ListStore<OrnamentEntry>(ornamentEntryProps.OrnamentID());
-		ornamentEntryList2 = new ListStore<OrnamentEntry>(ornamentEntryProps.OrnamentID());
-		selectedSimilarOrnaments = new ListStore<OrnamentEntry>(ornamentEntryProps.OrnamentID());
-		selectedRedlatedOrnaments = new ListStore<OrnamentEntry>(ornamentEntryProps.OrnamentID());
+		ornamentEntryList = new ListStore<OrnamentEntry>(ornamentEntryProps.TypicalID());
+		ornamentEntryList2 = new ListStore<OrnamentEntry>(ornamentEntryProps.TypicalID());
+		selectedSimilarOrnaments = new ListStore<OrnamentEntry>(ornamentEntryProps.TypicalID());
+		selectedRedlatedOrnaments = new ListStore<OrnamentEntry>(ornamentEntryProps.TypicalID());
 		styleEntryList = new ListStore<StyleEntry>(styleProps.styleID());
 
 		wallsListStore = new ListStore<WallOrnamentCaveRelation>(new WallOrnamentCaveRelationKeyProvider());
@@ -144,7 +144,7 @@ public class OrnamentCaveRelationEditor {
 				if (ornamentCaveRelationEntry != null) {
 					for (OrnamentEntry oe : ornamentCaveRelationEntry.getRelatedOrnamentsRelations()) {
 						ornamentEntryList
-								.remove(ornamentEntryList.findModelWithKey(Integer.toString(oe.getOrnamentID())));
+								.remove(ornamentEntryList.findModelWithKey(Integer.toString(oe.getTypicalID())));
 						selectedRedlatedOrnaments.add(oe);
 					}
 				}
@@ -607,7 +607,7 @@ public class OrnamentCaveRelationEditor {
 	}
 
 	interface OrnamentEntryProperties extends PropertyAccess<OrnamentEntry> {
-		ModelKeyProvider<OrnamentEntry> OrnamentID();
+		ModelKeyProvider<OrnamentEntry> TypicalID();
 
 		@Path("code")
 		ValueProvider<OrnamentEntry, String> code();

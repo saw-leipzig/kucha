@@ -14,11 +14,14 @@
 package de.cses.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import de.cses.shared.ExportEntry;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
@@ -86,7 +89,13 @@ public interface DatabaseService extends RemoteService {
 		
 	boolean resetPassword(UserEntry currentUser) throws IllegalArgumentException;
 	
+	boolean resetPasswordFrontEnd(UserEntry currentUser) throws IllegalArgumentException;
+	
 	Map<Integer,String> getMasterImageFromOrnament(int tnSize,String sessionID) throws IllegalArgumentException;
+
+	boolean saveWallDimension(ArrayList<WallTreeEntry> pe, Integer caveID) throws IllegalArgumentException;
+	
+	Map<Integer,ArrayList<PositionEntry>> getWallDimension(Integer caveID) throws IllegalArgumentException;
 
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
 
@@ -149,6 +158,8 @@ public interface DatabaseService extends RemoteService {
 	AuthorEntry getAuthorEntry(int id) throws IllegalArgumentException;
 	
 	boolean iconographyIDisUsed(int iconographyID, int OrnamentID) throws IllegalArgumentException;
+
+	boolean isGoodDimension(int caveID, int register, int number) throws IllegalArgumentException;
 
 	@Deprecated
 	ImageEntry getMasterImageEntryForDepiction(int depictionID) throws IllegalArgumentException;
@@ -219,7 +230,7 @@ public interface DatabaseService extends RemoteService {
 
 	UserEntry userLogin(String username, String password);
 
-	boolean updateImageEntry(ImageEntry imgEntry) throws IllegalArgumentException;
+	boolean updateImageEntry(ImageEntry imgEntry, String sessionID) throws IllegalArgumentException;
 
 	ArrayList<ImageTypeEntry> getImageTypes() throws IllegalArgumentException;
 
@@ -320,6 +331,8 @@ public interface DatabaseService extends RemoteService {
 
 	int insertBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException;
 
+	Boolean updateBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException;
+
 	boolean deleteAuthorEntry(AuthorEntry selectedEntry) throws IllegalArgumentException;
 
 	boolean updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash) throws IllegalArgumentException;
@@ -327,6 +340,12 @@ public interface DatabaseService extends RemoteService {
 	boolean setAnnotationResults(AnnotationEntry annoEntry, boolean isOrnament) throws IllegalArgumentException;
 	
 	ArrayList<AnnotationEntry> getAnnotations(int depictionEntry) throws IllegalArgumentException;
+
+	ArrayList<AnnotationEntry> getProposedAnnotations(ArrayList<ImageEntry> images, int depictionEntry) throws IllegalArgumentException;
+	
+	Boolean linkAnnoToEntry(String annotoriousID, ExportEntry entry) throws IllegalArgumentException;
+	
+	ArrayList<ExportEntry>  getEntriesByImageID(String imageID, String annotoriousID) throws IllegalArgumentException;
 
 	ArrayList<CaveEntry> searchCaves(CaveSearchEntry searchEntry) throws IllegalArgumentException;
 
@@ -342,11 +361,19 @@ public interface DatabaseService extends RemoteService {
 
 	boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit) throws IllegalArgumentException;
 
+	boolean updateWallTreeEntry(WallTreeEntry wte) throws IllegalArgumentException;
+
 	ArrayList<UserEntry> getUsers() throws IllegalArgumentException;
+
+	ArrayList<UserEntry> getUsersFrontEnd() throws IllegalArgumentException;
 
 	boolean updateUserEntry(UserEntry userEntry) throws IllegalArgumentException;
 
+	boolean updateUserEntryFrontEnd(UserEntry userEntry) throws IllegalArgumentException;
+
 	int insertUserEntry(UserEntry entry) throws IllegalArgumentException;
+
+	int saveWebPageUser(UserEntry entry) throws IllegalArgumentException;
 
 	boolean saveCollectedEntries(String sessionID, String collectionLabel, Boolean isGroupCollection, ArrayList<AbstractEntry> entryList) throws IllegalArgumentException;
 

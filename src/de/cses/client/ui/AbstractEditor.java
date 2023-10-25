@@ -38,6 +38,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -242,7 +243,7 @@ public abstract class AbstractEditor implements IsWidget {
 
 			@Override
 			public void onSuccess(Boolean result) {
-					//Info.display("Delete", "Finished with result:"+Boolean.toString(result));
+					Info.display("Delete", "Finished with result:"+Boolean.toString(result));
 				}
 		
 		});

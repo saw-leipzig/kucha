@@ -27,5 +27,6 @@ public interface IconographySelectorListener {
 	public void icoDeHighlighter(int icoID);
 	public void reloadIconography(IconographyEntry iconographyEntry);
 	public void reloadOSD();
+	public void reduceTree();
 
 }

@@ -14,12 +14,18 @@
 package de.cses.client.bibliography;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -93,8 +99,12 @@ import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
+import de.cses.shared.DistrictEntry;
 import de.cses.shared.ModifiedEntry;
 import de.cses.shared.PublicationTypeEntry;
+import com.google.gwt.user.client.Event;
+import de.cses.client.StaticTables;
+
 
 /**
  * @author Nina
@@ -112,9 +122,10 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 	private ListStore<AuthorEntry> selectedEditorListStore;
 
 	private ListStore<BibKeywordEntry> bibKeywordsStore;
+	private ListStore<BibKeywordEntry> bibKeywordsEditStore;
 	private ListStore<BibKeywordEntry> selectedBibKeywordsStore;
 	private BibKeywordProperties bibKeywordProps;
-
+	private BibKeywordPropertiesCB bibKeywordPropsCB;
 	private AnnotatedBibliographyEntryProperties annotatedBibliographyEntryProps;
 	private AuthorProperties authorProps;
 
@@ -131,6 +142,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 	private DualListField<AuthorEntry, String> editorSelection;
 	private TextField bibtexKeyTF;
 	private ToolButton saveToolButton;
+	private TextField keywordField;
 
 //	interface PublisherViewTemplates extends XTemplates {
 //		@XTemplate("<div>{name}</div>")
@@ -163,6 +175,13 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		ModelKeyProvider<AuthorEntry> authorID();
 		ValueProvider<AuthorEntry, String> name();
 	}
+	
+	interface BibKeywordPropertiesCB extends PropertyAccess<BibKeywordEntry> {
+		ModelKeyProvider<BibKeywordEntry> bibKeywordID();
+
+		LabelProvider<BibKeywordEntry> bibKeyword();
+	}
+
 	
 	interface BibKeywordProperties extends PropertyAccess<BibKeywordEntry> {
 		ModelKeyProvider<BibKeywordEntry> bibKeywordID();
@@ -268,7 +287,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 				public void onFailure(Throwable caught) {
 					saveToolButton.enable();
 					caught.printStackTrace();
-					Util.showWarning("Error", "A problem occured while saving!");
+					Util.showWarning("Error", "A problem occured while saving! " + caught.getLocalizedMessage());
 				}
 
 				@Override
@@ -326,6 +345,9 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		bibKeywordsStore = new ListStore<BibKeywordEntry>(bibKeywordProps.bibKeywordID());
 		bibKeywordsStore.addSortInfo(new StoreSortInfo<>(bibKeywordProps.bibKeyword(), SortDir.ASC));
 
+		bibKeywordsEditStore = new ListStore<BibKeywordEntry>(bibKeywordProps.bibKeywordID());
+		bibKeywordsEditStore.addSortInfo(new StoreSortInfo<>(bibKeywordProps.bibKeyword(), SortDir.ASC));
+
 		annotatedBibliographyEntryProps = GWT.create(AnnotatedBibliographyEntryProperties.class);
 		firstEditionBibliographyEntryLS = new ListStore<AnnotatedBibliographyEntry>(annotatedBibliographyEntryProps.annotatedBibliographyID());
 		firstEditionBibliographyEntryLS.addSortInfo(new StoreSortInfo<>(annotatedBibliographyEntryProps.titleEN(), SortDir.ASC));
@@ -375,6 +397,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 				for (BibKeywordEntry bke : result) {
 					if (selectedBibKeywordsStore.findModelWithKey(Integer.toString(bke.getBibKeywordID())) == null) {
 						bibKeywordsStore.add(bke);
+						bibKeywordsEditStore.add(bke);
 					}
 				}
 			}
@@ -1062,7 +1085,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
 					if (item.getName() != null) {
-						return item.getName().toLowerCase().contains(filter.toLowerCase()); 						
+						return StaticTables.getInstance().removeAccents(item.getName().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase())); 						
 					} else {
 						return false;						
 					}
@@ -1132,9 +1155,9 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 				@Override
 				protected boolean doSelect(Store<AuthorEntry> store, AuthorEntry parent, AuthorEntry item, String filter) {
 					if (item.getName() != null) {
-						return item.getName().toLowerCase().contains(filter.toLowerCase()); 						
+						return StaticTables.getInstance().removeAccents(item.getName().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()).replaceAll("\\p{M}", "")); 						
 					} else {
-						return false;						
+						return false;
 					}
 				}
 			};
@@ -1284,7 +1307,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			
 			@Override
 			protected boolean doSelect(Store<BibKeywordEntry> store, BibKeywordEntry parent, BibKeywordEntry item, String filter) {
-				return item.getBibKeyword().toLowerCase().contains(filter.toLowerCase()) ? true : false;
+				return StaticTables.getInstance().removeAccents(item.getBibKeyword().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase())) ? true : false;
 			}
 			
 		};
@@ -1350,10 +1373,94 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			}
 		});
 		
+		ToolButton editKeywordToolButton = new ToolButton(new IconConfig("editButton", "editButtonOver"));
+		editKeywordToolButton.setToolTip(Util.createToolTip("edit keywords"));
+		editKeywordToolButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addKeywordDialog = new PopupPanel();
+				FramedPanel addKeywordFP = new FramedPanel();
+				addKeywordFP.setHeading("Edit Keywords");
+				bibKeywordPropsCB = GWT.create(BibKeywordPropertiesCB.class);
+				ComboBox<BibKeywordEntry> keywordsComboBox = new ComboBox<BibKeywordEntry>(bibKeywordsEditStore,
+						bibKeywordPropsCB.bibKeyword(), new AbstractSafeHtmlRenderer<BibKeywordEntry>() {
+
+							@Override
+							public SafeHtml render(BibKeywordEntry item) {
+								final AnnotatedBibliographyEntryViewTemplates pvTemplates = GWT.create(AnnotatedBibliographyEntryViewTemplates.class);
+								return pvTemplates.label(item.getBibKeyword());
+							}
+						});
+				
+				keywordsComboBox.addSelectionHandler(new SelectionHandler<BibKeywordEntry>() {
+
+					@Override
+					public void onSelection(SelectionEvent<BibKeywordEntry> event) {
+						keywordField.setValue(event.getSelectedItem().getBibKeyword());
+					}
+					
+				});
+				keywordField = new TextField();
+				keywordField.setAllowBlank(false);
+				keywordField.addValidator(new MaxLengthValidator(32));
+				keywordField.setValue("");
+				keywordField.setWidth(200);
+				VerticalLayoutContainer editkwVLC = new VerticalLayoutContainer();
+				editkwVLC.setHeight(150);
+				editkwVLC.add(keywordsComboBox, new VerticalLayoutData(1, 0.3));
+				editkwVLC.add(keywordField, new VerticalLayoutData(1, 0.7));
+				addKeywordFP.add(editkwVLC);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (keywordField.validate()) {
+							
+							BibKeywordEntry bkEntry = keywordsComboBox.getValue();
+							bkEntry.setBibKeyword(keywordField.getValue());
+							dbService.updateBibKeyword(bkEntry, new AsyncCallback<Boolean>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+									Util.showWarning("Error", "The new keyword could not be saved!");
+								}
+
+								@Override
+								public void onSuccess(Boolean result) {
+									if (result) {
+										Info.display("Keyword", "Changed");
+										init();
+									}
+								}
+							});
+							addKeywordDialog.hide();
+						}
+					}
+				});
+				addKeywordFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addKeywordDialog.hide();
+					}
+				});
+				addKeywordFP.addButton(cancelButton);
+				addKeywordDialog.add(addKeywordFP);
+				addKeywordDialog.setModal(true);
+				addKeywordDialog.center();
+			}
+		});
+		
 		FramedPanel bibKeywordFP = new FramedPanel();
 		bibKeywordFP.setHeading("Keyword selection");
 		bibKeywordFP.add(bibKeywordVLC);
 		bibKeywordFP.addTool(addKeywordToolButton);
+		bibKeywordFP.addTool(editKeywordToolButton);
 
 		/**
 		 * series

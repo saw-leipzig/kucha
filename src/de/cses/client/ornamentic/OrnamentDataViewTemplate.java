@@ -16,6 +16,6 @@ public interface OrnamentDataViewTemplate extends XTemplates {
 	@XTemplate("<h4 class=\"data-display\">Detected in the following walls:</h4>")
 	SafeHtml displaymitte();
 	@XTemplate(source = "OrnamentDisplay_unten.html")
-	SafeHtml displayunten(String typeDesc, String genRemarks,  ArrayList<AnnotatedBibliographyEntry> bib, ArrayList<OrnamentComponentsEntry> components);
+	SafeHtml displayunten(String typeDesc, String genRemarks,  ArrayList<AnnotatedBibliographyEntry> bib);
 				}
 
