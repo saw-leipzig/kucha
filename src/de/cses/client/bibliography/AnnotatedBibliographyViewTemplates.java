@@ -25,7 +25,7 @@ import de.cses.shared.AnnotatedBibliographyEntry;
 public interface AnnotatedBibliographyViewTemplates extends XTemplates {
 
 	@XTemplate(source = "BibView.html")
-	SafeHtml view(AnnotatedBibliographyEntry bibEntry);
+	SafeHtml view(AnnotatedBibliographyEntry bibEntry, String uri, Boolean hasArticle);
 	
 	@XTemplate(source = "ExtendedBibView.html")
 	SafeHtml extendedView(AnnotatedBibliographyEntry bibEntry);

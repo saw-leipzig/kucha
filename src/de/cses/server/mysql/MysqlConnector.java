@@ -13,10 +13,16 @@
  */
 package de.cses.server.mysql;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,6 +68,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.jsoup.safety.Safelist;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -73,19 +80,34 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.XmlDeclaration;
+import org.jsoup.parser.Parser;
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.thirdparty.json.JSONArray;
 import com.google.gwt.thirdparty.json.JSONException;
 import com.google.gwt.thirdparty.json.JSONObject;
 //import javax.mail.Authenticator;
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.lowagie.text.DocumentException;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 
+import de.cses.client.Util;
 import de.cses.client.caves.CaveType;
+import de.cses.client.user.UserLogin;
 import de.cses.server.ServerProperties;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
@@ -110,6 +132,8 @@ import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.ExportEntry;
+import de.cses.shared.ExternalRessourceEntry;
+import de.cses.shared.ExternalRessourceTypeEntry;
 import de.cses.shared.GameEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
@@ -143,9 +167,11 @@ import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
+import de.cses.shared.WallDimensionEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
 import de.cses.shared.WallOrnamentCaveRelation;
+import de.cses.shared.WallSketchEntry;
 import de.cses.shared.WallTreeEntry;
 
 /**
@@ -773,18 +799,31 @@ public class MysqlConnector implements IsSerializable {
 	public boolean deleteAnnotationEntry(AnnotationEntry entry, boolean isOrnament) {
 			Connection dbc = getConnection();
 			PreparedStatement pstmt;
-			if (isOrnament){
-				deleteEntry("DELETE FROM OrnamentPolygonRelation WHERE AnnotoriousID = \"" + entry.getAnnotoriousID() + "\" and OrnamentID = " + entry.getDepictionID());				
-			} else {
-				deleteEntry("DELETE FROM DepictionPolygonRelation WHERE AnnotoriousID = \"" + entry.getAnnotoriousID() + "\" and DepictionID = " + entry.getDepictionID());
+			try {
+				String table = ""; 
+				if (isOrnament){
+					pstmt = dbc.prepareStatement( "UPDATE OrnamentPolygonRelation SET deleted = 1 WHERE AnnotoriousID = '" +((AnnotationEntry)entry).getAnnotoriousID()  + "' and OrnamentID = " + entry.getDepictionID()  + ";");				
+				} else {
+					pstmt = dbc.prepareStatement( "UPDATE DepictionPolygonRelation SET deleted = 1 WHERE AnnotoriousID = '" +((AnnotationEntry)entry).getAnnotoriousID()  + "' and DepictionID = " + entry.getDepictionID()  + ";");		
+				}
+				
+				ResultSet rs = pstmt.executeQuery();
+				rs.close();
+				pstmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+				return false;
 			}
 			boolean isStillInUse = false;
 			Connection dbcStillInUse = getConnection();
 			PreparedStatement pstmtStillInUse;
 			try {
-				pstmtStillInUse = dbcStillInUse.prepareStatement("Select AnnotoriousID from DepictionPolygonRelation dpr WHERE dpr.AnnotoriousID = ?  UNION Select AnnotoriousID from OrnamentPolygonRelation opr WHERE opr.AnnotoriousID = ?");
+				pstmtStillInUse = dbcStillInUse.prepareStatement("Select AnnotoriousID from DepictionPolygonRelation dpr WHERE dpr.AnnotoriousID = ? and dpr.DepictionID != ? and dpr.deleted=0  UNION Select AnnotoriousID from OrnamentPolygonRelation opr WHERE opr.AnnotoriousID = ? and opr.OrnamentID != ? and opr.deleted=0");
 				pstmtStillInUse.setString(1, entry.getAnnotoriousID());
-				pstmtStillInUse.setString(2, entry.getAnnotoriousID());
+				pstmtStillInUse.setInt(2, entry.getDepictionID());
+				pstmtStillInUse.setString(3, entry.getAnnotoriousID());
+				pstmtStillInUse.setInt(4, entry.getDepictionID());
 				ResultSet rs = pstmtStillInUse.executeQuery();
 				while (rs.next()) {
 					isStillInUse = true;
@@ -804,18 +843,7 @@ public class MysqlConnector implements IsSerializable {
 					e.printStackTrace();
 					System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 					return false;
-				}
-				try {
-					pstmt = dbc.prepareStatement( "UPDATE Annotations SET deleted = 1 WHERE AnnotoriousID = '" +((AnnotationEntry)entry).getAnnotoriousID()  + "';");
-					ResultSet rs = pstmt.executeQuery();
-					rs.close();
-					pstmt.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-					System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
-					return false;
-				}
-				
+				}				
 			}
 			return true;
 	}
@@ -824,6 +852,10 @@ public class MysqlConnector implements IsSerializable {
 	}
 	public String getOSDContext() {
 		return serverProperties.getProperty("iiif.osd");
+	}
+
+	public String getOSDContextWallSketches() {
+		return serverProperties.getProperty("iiif.wallsketches");
 	}
 
 	public Map<Integer,String> getPics(ArrayList<ImageEntry> imgSources, int tnSize, String sessionID) {
@@ -866,7 +898,7 @@ public class MysqlConnector implements IsSerializable {
 					// guests should be informed that there is an image
 					filename = "accessNotPermitted.png";
 				}
-			URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.jpg");
+			URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/" + tnSize + ",/0/default.jpg");
 			InputStream in = imageURL.openStream();
 			ByteArrayOutputStream bab = new ByteArrayOutputStream();
 			//ByteArrayBuffer bab = new ByteArrayBuffer(0);
@@ -880,7 +912,6 @@ public class MysqlConnector implements IsSerializable {
 			result.put(imgEntry.getImageID(), "data:image/jpg;base64,"+base64);
 			}
 			catch (Exception e) {
-				//System.out.println("                <><><>"+e.getMessage());
 				result.put(imgEntry.getImageID(), "icons/close_icon.png");
 			}
 			//System.out.println(imgEntry.getFilename()+" umgewandelt.");
@@ -1061,7 +1092,13 @@ public class MysqlConnector implements IsSerializable {
 		result.setImageSortInfo(null);
 		Gson gson = new Gson();
 		result.setRelatedImages(getRelatedPublicImages(result.getDepictionID()));
-		result.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(result.getDepictionID()));
+		ArrayList<AnnotatedBibliographyEntry> bibList = new ArrayList<AnnotatedBibliographyEntry>();
+		for (AnnotatedBibliographyEntry bib: getRelatedBibliographyFromDepiction(result.getDepictionID())) {
+			bib.setModifiedOn("");
+			bibList.add(bib);
+		}
+		
+		result.setRelatedBibliographyList(bibList);
 		result.setRelatedIconographyList(getRelatedIconography(result.getDepictionID()));
 		ArrayList<ImageEntry> publicImmages = new ArrayList<ImageEntry>();
 		Map<String, Integer> imgAccessLevel = new HashMap<String, Integer>();
@@ -1090,11 +1127,13 @@ public class MysqlConnector implements IsSerializable {
 					newAEs.add(ae);
 				} else {
 					ae.setGeoJson("{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [0, 0]]]}");
+					ae.setW3c("");
 					ae.setImage("no_picture_available.jpg");
 					newAEs.add(ae);
 				}
 			} else {
 				ae.setGeoJson("{\"type\": \"Polygon\", \"coordinates\": [[[0, 0], [0, 0]]]}");
+				ae.setW3c("");
 				ae.setImage("no_picture_available.jpg");
 				newAEs.add(ae);
 			}
@@ -1149,7 +1188,7 @@ public class MysqlConnector implements IsSerializable {
 		String json = gson.toJson(result);
 		return json;
 	}
-	public boolean serializeAllDepictionEntries(String sessionID) {
+	public boolean serializeAllEntries(String sessionID) {
 		this.isSerializing = true;
 		long start = System.currentTimeMillis();
 		if (!serverProperties.getProperty("MysqlConnector.db.url").contains("test")) {
@@ -1412,27 +1451,7 @@ public class MysqlConnector implements IsSerializable {
 								rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"),getAnnotations(rs.getInt("DepictionID")), getImageSortInfo(rs.getInt("DepictionID")));
 						if (result.getAccessLevel() == 2) {
 							result.setModifiedOn("");
-							String json = prepareDepictionForElastic(result);
-							try {
-								updateResult = doUploadToElastic(result.getUniqueID(),"{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
-							} catch (Exception ex){
-								updateResult = doUploadToElastic(result.getUniqueID(),json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
-								System.out.println("exception:" + ex.getLocalizedMessage());
-								System.out.println("depictionentry was written new:" + updateResult);
-							}															
-							er = gson.fromJson(updateResult, ElasticResult.class);
-							System.out.println(er.result + " "+ updateResult);
-							if (er.result != null) {
-								if (!er.result.equals("noop")) {
-									System.out.println(doUploadToElastic(result.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
-								}								
-							} else {
-								System.out.println(doUploadToElastic(result.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false));							
-								System.out.println(doUploadToElastic(result.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
-							}
-   						    
-   						    //System.out.println(doUploadToElastic(result.getUniqueID(),   "{\"versions\":[{\"timestamp\":\""+df.format(date)+"\", \"content\":"+json+"}]}", url,index_backup, Integer.toString(port), elastic_user,elastic_pw, false));
-						    myWriter.write(json+String.format("%n"));
+							doUploadDepictionEntryToElastic(result);
 						}
 
 						//Gson gson = new GsonBuilder().create();//.setPrettyPrinting().create();
@@ -1459,6 +1478,317 @@ public class MysqlConnector implements IsSerializable {
 		System.out.println("Writing Elastic Indices took "+diff + " Milliseconds.");
 		this.isSerializing = false;
 		return true;
+	}
+//	public Integer updateAllEntries(String sessionID) {
+//	    File original = new File("/srv/home/radische/versions.json");
+//	    File copied = new File("/srv/storage/kucha/json/versions.json");
+//	    try (
+//	      InputStream in = new BufferedInputStream(
+//	        new FileInputStream(original));
+//	      OutputStream out = new BufferedOutputStream(
+//	        new FileOutputStream(copied))) {
+//	 
+//	        byte[] buffer = new byte[1024];
+//	        int lengthRead;
+//	        while ((lengthRead = in.read(buffer)) > 0) {
+//	            out.write(buffer, 0, lengthRead);
+//	            out.flush();
+//	        }
+//	    System.out.println("Datei geschrieben.");
+//	    } catch(IOException e) {
+//	    	System.out.println("fehler beim schreiben. " + e.getLocalizedMessage());
+//	    }
+//	    return -1;
+//	}
+	public int updateAllEntries(String sessionID) {
+		int updateNumber = 0;
+		this.isSerializing = true;
+		long start = System.currentTimeMillis();
+		if (!serverProperties.getProperty("MysqlConnector.db.url").contains("test")) {
+			try {
+				System.out.println("Started DataUpdate!");
+				DepictionEntry result = null;
+				Statement stmt;
+				Connection dbc = getConnection();
+				stmt = dbc.createStatement();
+				ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE deleted=0");
+				System.out.println("Start Select");
+				System.out.println("Starting serialization for: "+serverProperties.getProperty("MysqlConnector.db.url"));
+				int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+				String url = serverProperties.getProperty("home.elastic.url");
+				String index_data = serverProperties.getProperty("home.elastic.index_data");
+				String index_dic = serverProperties.getProperty("home.elastic.index_dic");
+				String index_backup = serverProperties.getProperty("home.elastic.index_backup");
+				String elastic_user = serverProperties.getProperty("home.elastic.login");
+				String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+				String mapping_data = serverProperties.getProperty("home.elastic.mapping.kucha_data");
+				String mapping_dic = serverProperties.getProperty("home.elastic.mapping.kucha_dic");
+				String mapping_backup = serverProperties.getProperty("home.elastic.mapping.kucha_backup");
+				String elastic_role = serverProperties.getProperty("home.elastic.role");
+				String elasticReadOnlyUser = serverProperties.getProperty("home.elastic.user");
+				int accessLevel=-1;
+				accessLevel = getAccessLevelForSessionID(sessionID);
+				// we only need to call this once, since we do not expect more than 1 result!
+				String filename=serverProperties.getProperty("home.jsons")+"result.json";
+				String dicFilename=serverProperties.getProperty("home.jsons")+"dic.json";
+				Gson gson = new Gson();
+				Date date = new Date(System.currentTimeMillis());
+				DateFormat df = DateFormat.getDateInstance();
+		        System.out.println("Starting preparing Kucha-Dictionary");
+				Gson gson2 = new Gson();
+				String json2 = gson2.toJson(getDistricts());
+
+				json2 = json2.replace("\"text\"", "\"name\"");
+				String updateResult = doUploadToElastic("districts","{\"doc\":{\"districts\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("districts-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"districts\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					doUploadToElastic("districts","{\"districts\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("districts-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"districts\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+				}
+				json2 = gson2.toJson(getLocations());
+				json2 = json2.replace("\"text\"", "\"name\"");
+				updateResult = doUploadToElastic("locations","{\"doc\":{\"locations\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("locations-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"locations\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					doUploadToElastic("locations","{\"locations\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("locations-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"locations\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					updateNumber +=1;
+				}
+				json2 = gson2.toJson(getSites());
+				json2 = json2.replace("\"text\"", "\"name\"");
+				updateResult = doUploadToElastic("sites","{\"doc\":{\"sites\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {				
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("sites-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"sites\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					updateResult = doUploadToElastic("sites","{\"sites\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("sites-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"sites\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+					updateNumber +=1;
+				}
+				json2 = gson2.toJson(getRegions());
+				json2 = json2.replace("\"text\"", "\"name\"");
+				updateResult = doUploadToElastic("regions","{\"doc\":{\"regions\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("regions-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"regions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					updateResult = doUploadToElastic("regions","{\"regions\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("regions-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"regions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+					updateNumber +=1;
+				}
+				json2 = gson2.toJson(getCaveTypes());
+				json2 = json2.replace("\"text\"", "\"name\"");
+				updateResult = doUploadToElastic("caveTypes","{\"doc\":{\"caveTypes\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("caveTypes-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"caveTypes\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					updateResult = doUploadToElastic("caveTypes","{\"caveTypes\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("caveTypes-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"caveTypes\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+					updateNumber +=1;
+				}
+				json2 = gson2.toJson(getIconography(0));
+				json2 = json2.replace("\"text\"", "\"name\"");
+				updateResult = doUploadToElastic("iconographyTree","{\"doc\":{\"iconographyTree\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconographyTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					updateResult = doUploadToElastic("iconographyTree","{\"iconography\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconographyTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+					updateNumber +=1;
+				}
+				json2 = gson2.toJson(getWallTree(0));
+				json2 = json2.replace("\"text\"", "\"name\"");
+				updateResult = doUploadToElastic("wallTree","{\"doc\":{\"wallTree\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("wallTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"wallTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					doUploadToElastic("wallTree","{\"wallTree\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("wallTree-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"wallTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+					updateNumber +=1;
+				}
+				json2 = gson2.toJson(getPosition());
+				json2 = json2.replace("\"text\"", "\"name\"");
+				updateResult = doUploadToElastic("positions","{\"doc\":{\"positions\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("positions-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"positions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					updateResult = doUploadToElastic("positions","{\"positions\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);					
+					System.out.println(doUploadToElastic("positions-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"positions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					updateNumber +=1;
+				}
+				json2 = gson2.toJson(getBibKeywords());
+				json2 = json2.replace("\"text\"", "\"name\"");
+				updateResult = doUploadToElastic("bibKeywords","{\"bibKeywords\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+				er = gson.fromJson(updateResult, ElasticResult.class);
+				System.out.println(er.result + " "+ updateResult);
+				if (er.result != null) {
+					if (!er.result.equals("noop")) {
+						System.out.println(doUploadToElastic("bibKeywords-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"bibKeywords\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					}
+				} else {
+					updateResult = doUploadToElastic("bibKeywords","{\"bibKeywords\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
+					System.out.println(doUploadToElastic("bibKeywords-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"bibKeywords\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+					updateNumber +=1;
+				}
+				ArrayList<CaveEntry> caves = getCaves();
+				for (CaveEntry cave : caves) {
+					//System.out.println(filename);
+					String json = prepareCaveEntryForElastic(cave);
+					try {
+						updateResult = doUploadToElastic(cave.getUniqueID(), "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
+					} catch (Exception ex){
+						updateResult = doUploadToElastic(cave.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
+						System.out.println("exception:" + ex.getLocalizedMessage());
+						System.out.println("depictionentry was written new:" + updateResult);
+						updateNumber +=1;
+					}
+					er = gson.fromJson(updateResult, ElasticResult.class);
+					System.out.println(er.result + " "+ updateResult);
+					if (er.result != null) {
+						if (!er.result.equals("noop")) {
+							System.out.println(doUploadToElastic(cave.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						}					
+					} else {
+						updateResult = doUploadToElastic(cave.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);							
+						System.out.println(doUploadToElastic(cave.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						updateNumber +=1;
+					}
+				}
+				ArrayList<AnnotatedBibliographyEntry> bibs = getAnnotatedBiblography();
+				for (AnnotatedBibliographyEntry bib : bibs) {
+					String json = gson.toJson(bib);
+					System.out.println("Annotated Bibliography jason" + json);
+					try {
+						updateResult = doUploadToElastic(bib.getUniqueID(), "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
+					} catch (Exception ex){
+						updateResult = doUploadToElastic(bib.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
+						System.out.println("exception:" + ex.getLocalizedMessage());
+						System.out.println("depictionentry was written new:" + updateResult);
+					}							
+					er = gson.fromJson(updateResult, ElasticResult.class);
+					System.out.println(er.result + " "+ updateResult);
+					if (er.result != null) {
+						if (!er.result.equals("noop")) {
+							System.out.println(doUploadToElastic(bib.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						}
+						
+					} else {
+						updateResult = doUploadToElastic(bib.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);							
+						System.out.println(doUploadToElastic(bib.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						updateNumber +=1;
+					}					
+				}
+				ArrayList<IconographyEntry> icos = getIconographyEntries("IconographyID > -1");
+				ArrayList<OrnamentEntry> ornaments = getOrnaments();
+				for (IconographyEntry ico : icos) {
+					for (OrnamentEntry orn: ornaments) {
+						if (orn.getIconographyID() == ico.getIconographyID()) {
+							if (orn.getAccessLevel() == 2) {
+								ico.setOrnamentEntry(orn);
+								System.out.println("Found Ornamententry for:"+ Integer.toString(ico.getIconographyID())+", ornament:" +Integer.toString(ico.getOrnamentEntry().getTypicalID()));									
+							}
+						}
+					}
+					String json = gson.toJson(ico);
+					//System.out.println(filename);
+					try {
+						updateResult = doUploadToElastic(ico.getUniqueID(), "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
+					} catch (Exception ex){
+						updateResult = doUploadToElastic(ico.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
+						System.out.println("exception:" + ex.getLocalizedMessage());
+						System.out.println("depictionentry was written new:" + updateResult);
+					}							
+
+					er = gson.fromJson(updateResult, ElasticResult.class);
+					System.out.println(er.result + " "+ updateResult);
+					if (er.result != null) {
+						if (!er.result.equals("noop")) {
+							System.out.println(doUploadToElastic(ico.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						}							
+					} else {
+						updateResult = doUploadToElastic(ico.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);							
+						System.out.println(doUploadToElastic(ico.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						updateNumber +=1;
+					}					
+				}
+				date = new Date(System.currentTimeMillis());
+				while (rs.next()) { 
+					//System.out.println("got result");				
+					result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
+							rs.getString("SeparateAksaras"), rs.getString("Dating"), stripAccents(rs.getString("Description")), rs.getString("BackgroundColour"),
+							rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
+							getExpedition(rs.getInt("ExpeditionID")), rs.getDate("PurchaseDate"), getLocation(rs.getInt("CurrentLocationID")), rs.getString("InventoryNumber"),
+							getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), getwallsbyDepictionID(rs.getInt("DepictionID")), rs.getInt("AbsoluteLeft"),
+							rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), stripAccents(rs.getString("ShortName")), rs.getString("PositionNotes"),
+							rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"),getAnnotations(rs.getInt("DepictionID")), getImageSortInfo(rs.getInt("DepictionID")));
+					if (result.getAccessLevel() == 2) {
+						result.setModifiedOn("");
+						String json = prepareDepictionForElastic(result);
+						try {
+							updateResult = doUploadToElastic(result.getUniqueID(),"{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
+						} catch (Exception ex){
+							updateResult = doUploadToElastic(result.getUniqueID(),json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
+							System.out.println("exception:" + ex.getLocalizedMessage());
+							System.out.println("depictionentry was written new:" + updateResult);
+						}															
+						er = gson.fromJson(updateResult, ElasticResult.class);
+						System.out.println(er.result + " "+ updateResult);
+						if (er.result != null) {
+							if (!er.result.equals("noop")) {
+								System.out.println(doUploadToElastic(result.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+							}								
+						} else {
+							System.out.println(doUploadToElastic(result.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false));							
+							System.out.println(doUploadToElastic(result.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+							updateNumber +=1;
+						}
+					}
+				}
+				rs.close();
+				stmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			}
+			
+		}
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		System.out.println("Writing Elastic Indices took "+diff + " Milliseconds.");
+		this.isSerializing = false;
+		return updateNumber;
 	}
 	public HashMap<Integer, Integer> getImageSortInfo(Integer depictionID){
 		Connection dbc = getConnection();
@@ -1500,6 +1830,370 @@ public class MysqlConnector implements IsSerializable {
 			e.printStackTrace();
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
+	}
+
+
+    public static String tagChineseTextInHTML(String htmlString) {
+        // Regulärer Ausdruck zum Identifizieren von zusammenhängenden chinesischen Schriftzeichen
+        String chineseRegex = "([\\p{InCJKUnifiedIdeographs}])+";
+
+        // Muster für chinesische Schriftzeichen im HTML-String finden
+        Pattern pattern = Pattern.compile(chineseRegex);
+        Matcher matcher = pattern.matcher(htmlString);
+
+        // Neuen HTML-String erstellen, der <span>-Tags für chinesische Schriftzeichen enthält
+        StringBuilder result = new StringBuilder();
+        int lastEnd = 0;
+
+        while (matcher.find()) {
+            // Text vor den chinesischen Schriftzeichen
+            String textBeforeChinese = htmlString.substring(lastEnd, matcher.start());
+
+            // Chinesische Schriftzeichen
+            String chineseText = matcher.group();
+
+            // <span>-Tag um die chinesischen Schriftzeichen setzen
+            String taggedChineseText = "<span lang=\"zh\">" + chineseText + "</span>";
+
+            // Ergebnis mit Text vor den chinesischen Schriftzeichen und <span>-Tag aktualisieren
+            result.append(textBeforeChinese).append(taggedChineseText);
+
+            // Aktualisieren Sie die letzte Endposition
+            lastEnd = matcher.end();
+        }
+
+        // Restlichen Text (nach den letzten chinesischen Schriftzeichen) hinzufügen
+        result.append(htmlString.substring(lastEnd));
+
+        return result.toString();
+    }
+    public static String tagKoreanTextInHTML(String htmlString) {
+        // Regulärer Ausdruck zum Identifizieren von zusammenhängenden chinesischen Schriftzeichen
+        String chineseRegex = "[가-힣]+";
+
+        // Muster für chinesische Schriftzeichen im HTML-String finden
+        Pattern pattern = Pattern.compile(chineseRegex);
+        Matcher matcher = pattern.matcher(htmlString);
+
+        // Neuen HTML-String erstellen, der <span>-Tags für chinesische Schriftzeichen enthält
+        StringBuilder result = new StringBuilder();
+        int lastEnd = 0;
+
+        while (matcher.find()) {
+            // Text vor den chinesischen Schriftzeichen
+            String textBeforeChinese = htmlString.substring(lastEnd, matcher.start());
+
+            // Chinesische Schriftzeichen
+            String chineseText = matcher.group();
+
+            // <span>-Tag um die chinesischen Schriftzeichen setzen
+            String taggedChineseText = "<span lang=\"ko\">" + chineseText + "</span>";
+
+            // Ergebnis mit Text vor den chinesischen Schriftzeichen und <span>-Tag aktualisieren
+            result.append(textBeforeChinese).append(taggedChineseText);
+
+            // Aktualisieren Sie die letzte Endposition
+            lastEnd = matcher.end();
+        }
+
+        // Restlichen Text (nach den letzten chinesischen Schriftzeichen) hinzufügen
+        result.append(htmlString.substring(lastEnd));
+
+        return result.toString();
+    }
+    private static String tagJapaneseTextInHTML(String text) {
+        StringBuilder markedText = new StringBuilder();
+        boolean insideJapanese = false;
+
+        for (char c : text.toCharArray()) {
+            if (isJapaneseCharacter(c)) {
+                if (!insideJapanese) {
+                    markedText.append("<span lang=\"ja\">");
+                    insideJapanese = true;
+                }
+                markedText.append(c);
+            } else {
+                if (insideJapanese) {
+                    markedText.append("</span>");
+                    insideJapanese = false;
+                }
+                markedText.append(c);
+            }
+        }
+
+        if (insideJapanese) {
+            markedText.append("</span>");
+        }
+
+        return markedText.toString();
+    }
+
+    private static boolean isJapaneseCharacter(char c) {
+        // Unicode-Bereiche für japanische Schriftzeichen
+        return (c >= '\u3040' && c <= '\u30FF');
+    }
+    private String getBibliographyTitle(AnnotatedBibliographyEntry annotatedBibliographyEntry) {
+		String bib = "";
+		String translit = "";
+		String bold = "";
+		String translat = "";
+		String tail = "";
+		if ((annotatedBibliographyEntry.getPublicationTypeID()==1) || (annotatedBibliographyEntry.getPublicationTypeID()==3)) {
+			if (annotatedBibliographyEntry.getEditors().isEmpty()) {
+				if (!annotatedBibliographyEntry.getAuthors().isEmpty()) {
+					bib=bib+annotatedBibliographyEntry.getAuthors().trim();
+				}
+			}
+			else {
+				bib=bib+annotatedBibliographyEntry.getEditors().trim()+" (ed.)";
+			}
+			if (!annotatedBibliographyEntry.getYearORG().isEmpty()) {
+				bib=bib+", "+annotatedBibliographyEntry.getYearORG().trim()+",";
+			}
+			if (!annotatedBibliographyEntry.getTitleTRFull().isEmpty()) {
+				translit=" "+annotatedBibliographyEntry.getTitleTRFull().trim();
+			}
+			if (!annotatedBibliographyEntry.getTitleORGFull().isEmpty()) {
+				bold=" "+annotatedBibliographyEntry.getTitleORGFull().trim();
+			}
+			if (!annotatedBibliographyEntry.getTitleENFull().isEmpty()) {
+				translat=" "+annotatedBibliographyEntry.getTitleENFull().trim();
+			}
+			if (!annotatedBibliographyEntry.getVolumeORG().isEmpty()) {
+				tail=tail+", Vol."+annotatedBibliographyEntry.getVolumeORG().trim();
+			}
+			if (!annotatedBibliographyEntry.getEditionORG().isEmpty()) {
+				tail=tail+", Edition: "+annotatedBibliographyEntry.getEditionORG().trim();
+			}
+			if (!annotatedBibliographyEntry.getSeriesORG().isEmpty()) {
+				tail=tail+", Series: "+annotatedBibliographyEntry.getSeriesORG().trim();
+			}
+			tail=tail+". ";
+			if (!annotatedBibliographyEntry.getPublisher().isEmpty()) {
+				tail=tail+annotatedBibliographyEntry.getPublisher().trim();
+					}
+			if (!annotatedBibliographyEntry.getThesisType().isEmpty()) {
+				if (annotatedBibliographyEntry.getPublisher().isEmpty()) {
+					tail=tail+annotatedBibliographyEntry.getThesisType().trim()+" thesis";
+					}
+				else {
+					tail=tail+", "+annotatedBibliographyEntry.getThesisType().trim();
+				}
+			}
+			tail=tail+". ";
+			if (annotatedBibliographyEntry.getHasHan()) {
+				return bib + "<i>" + translit + "</i>" + bold + " " + translat + tail;
+			}
+			else {
+				return bib + "<i>" + translit + bold + "</i>" + translat + tail;
+			}
+			
+		}
+		else if ((annotatedBibliographyEntry.getPublicationTypeID()== 5)) {
+			bib=bib+annotatedBibliographyEntry.getAuthors().trim();
+			System.out.println("\""+bib+"\"");
+			if (!annotatedBibliographyEntry.getYearORG().isEmpty()) {
+				bib=bib.trim()+", "+annotatedBibliographyEntry.getYearORG().trim()+",";
+			}
+			if (!annotatedBibliographyEntry.getTitleTRFull().isEmpty()) {
+				bib=bib+" "+annotatedBibliographyEntry.getTitleTRFull().trim();
+			}
+			if (!annotatedBibliographyEntry.getTitleORGFull().isEmpty()) {
+				bib=bib+" "+annotatedBibliographyEntry.getTitleORGFull().trim();
+			}
+			if (!annotatedBibliographyEntry.getTitleENFull().isEmpty()) {
+				bib=bib+" "+annotatedBibliographyEntry.getTitleENFull().trim();
+			}
+			bib=bib+". In: ";
+			if (!annotatedBibliographyEntry.getEditors().isEmpty()) {
+				bib= bib+annotatedBibliographyEntry.getEditors().trim();
+				if (annotatedBibliographyEntry.getEditorType().isEmpty()) {
+					bib=bib+" ("+annotatedBibliographyEntry.getEditorType().trim()+")";
+					}
+			}
+			if (!annotatedBibliographyEntry.getParentTitleTR().isEmpty()) {
+				translit=translit+" "+annotatedBibliographyEntry.getTitleTRFull().trim();
+			}
+			if (!annotatedBibliographyEntry.getParentTitleORG().isEmpty()) {
+				bold=bold+" "+annotatedBibliographyEntry.getParentTitleORG().trim();
+			}
+			if (!annotatedBibliographyEntry.getParentTitleEN().isEmpty()) {
+				translat=translat+" ["+annotatedBibliographyEntry.getParentTitleEN().trim()+"]";
+			}
+			tail=tail+". ";
+			if (!annotatedBibliographyEntry.getPublisher().isEmpty()) {
+				tail=tail+annotatedBibliographyEntry.getPublisher().trim();
+					}
+			if (!annotatedBibliographyEntry.getPagesORG().isEmpty()) {
+				if (annotatedBibliographyEntry.getPublisher().isEmpty()) {
+					tail=tail+". "+annotatedBibliographyEntry.getPagesORG().trim();
+					}
+				else {
+					tail=tail+", "+annotatedBibliographyEntry.getPagesORG().trim();
+				}
+			}
+			if (!annotatedBibliographyEntry.getUrl().isEmpty()) {
+				tail=tail+", "+annotatedBibliographyEntry.getUrl().trim();
+				if (!annotatedBibliographyEntry.getAccessdateORG().isEmpty()) {
+					tail=tail+" ["+annotatedBibliographyEntry.getAccessdateORG().trim()+"]";
+				}
+			}
+			if (tail != ". ") {
+				tail=tail+". ";				
+			}
+			if (annotatedBibliographyEntry.getHasHan()) {
+				return bib + "<i>" + translit + "</i>" + bold + " " + translat + tail;
+			}
+			else {
+				System.out.println(bib + "<i>" + translit + bold + "</i>" + translat + tail);
+				return bib + "<i>" + translit + bold + "</i>" + translat + tail;
+			}
+		}
+		else if ((annotatedBibliographyEntry.getPublicationTypeID()==4)||(annotatedBibliographyEntry.getPublicationTypeID()==7)) {
+			bib=bib+annotatedBibliographyEntry.getAuthors().trim();
+			if (!annotatedBibliographyEntry.getYearORG().isEmpty()) {
+				bib=bib+", "+annotatedBibliographyEntry.getYearORG().trim()+",";
+			}
+			if (!annotatedBibliographyEntry.getTitleTRFull().isEmpty()) {
+				bib=bib+" "+annotatedBibliographyEntry.getTitleTRFull().trim();
+			}
+			if (!annotatedBibliographyEntry.getTitleORGFull().isEmpty()) {
+				bib=bib+" "+annotatedBibliographyEntry.getTitleORGFull().trim();
+			}
+			if (!annotatedBibliographyEntry.getTitleENFull().isEmpty()) {
+				bib=bib+" "+annotatedBibliographyEntry.getTitleENFull().trim();
+			}
+			bib=bib+". In: ";
+			if (!annotatedBibliographyEntry.getEditors().isEmpty()) {
+				bib= bib+annotatedBibliographyEntry.getEditors().trim();
+				if (annotatedBibliographyEntry.getEditorType().isEmpty()) {
+					bib=bib+" ("+annotatedBibliographyEntry.getEditorType()+")";
+					}
+			}
+			if (!annotatedBibliographyEntry.getParentTitleTR().isEmpty()) {
+				translit=translit+" "+annotatedBibliographyEntry.getTitleTRFull().trim();
+			}
+			if (!annotatedBibliographyEntry.getParentTitleORG().isEmpty()) {
+				bold=bold+" "+annotatedBibliographyEntry.getParentTitleORG().trim();
+			}
+			if (!annotatedBibliographyEntry.getParentTitleEN().isEmpty()) {
+				translat=translat+" ["+annotatedBibliographyEntry.getParentTitleEN().trim()+"]";
+			}
+			tail=tail+". ";
+			if (!annotatedBibliographyEntry.getPublisher().isEmpty()) {
+				tail=tail+annotatedBibliographyEntry.getPublisher().trim();
+					}
+			if (!annotatedBibliographyEntry.getPagesORG().isEmpty()) {
+				if (annotatedBibliographyEntry.getPublisher().isEmpty()) {
+					tail=tail+". "+annotatedBibliographyEntry.getPagesORG().trim();
+					}
+				else {
+					tail=tail+", "+annotatedBibliographyEntry.getPagesORG().trim();
+				}
+			}
+			if (!annotatedBibliographyEntry.getUrl().isEmpty()) {
+				tail=tail+", "+annotatedBibliographyEntry.getUrl().trim();
+				if (!annotatedBibliographyEntry.getAccessdateORG().isEmpty()) {
+					tail=tail+" ["+annotatedBibliographyEntry.getAccessdateORG().trim()+"]";
+				}
+			}
+			if (tail != ". ") {
+				tail=tail+". ";				
+			}
+			if (annotatedBibliographyEntry.getHasHan()) {
+				return bib + "<i>" + translit + "</i>" + bold + " " + translat + tail;
+			}
+			else {
+				return bib + "<i>" + translit + bold + "</i>" + translat + tail;
+			}
+		}
+		else if (annotatedBibliographyEntry.getPublicationTypeID()==8) {
+			bib=bib+annotatedBibliographyEntry.getAuthors().trim();
+			if (!annotatedBibliographyEntry.getYearORG().isEmpty()) {
+				bib=bib+", "+annotatedBibliographyEntry.getYearORG().trim()+",";
+			}
+			if (!annotatedBibliographyEntry.getTitleTRFull().isEmpty()) {
+				bib=bib+" "+annotatedBibliographyEntry.getTitleTRFull().trim();
+			}
+			if (!annotatedBibliographyEntry.getTitleORGFull().isEmpty()) {
+				bib=bib+" "+annotatedBibliographyEntry.getTitleORGFull().trim();
+			}
+			if (!annotatedBibliographyEntry.getTitleENFull().isEmpty()) {
+				bib=bib+" "+annotatedBibliographyEntry.getTitleENFull().trim();
+			}
+			if (!annotatedBibliographyEntry.getParentTitleORG().isEmpty()) {
+				bold=bold+", "+annotatedBibliographyEntry.getParentTitleORG().trim();
+			}
+			if (!annotatedBibliographyEntry.getVolumeORG().isEmpty()) {
+				tail=tail+" "+annotatedBibliographyEntry.getVolumeORG().trim();
+			}
+			if (!annotatedBibliographyEntry.getIssueORG().isEmpty()) {
+				tail=tail+" "+annotatedBibliographyEntry.getIssueORG().trim();
+			}
+			if (!annotatedBibliographyEntry.getPagesORG().isEmpty()) {
+				if (annotatedBibliographyEntry.getPublisher().isEmpty()) {
+					tail=tail+". "+annotatedBibliographyEntry.getPagesORG().trim();
+					}
+				else {
+					tail=tail+", "+annotatedBibliographyEntry.getPagesORG().trim();
+				}
+			}
+			if (annotatedBibliographyEntry.getHasHan()) {
+				return bib + "<i>" + translit + "</i>" + bold + " " + translat + tail;
+			}
+			else {
+				return bib + "<i>" + translit + bold + "</i>" + translat + tail;
+			}
+
+		}
+		else {
+			return "undefined";
+		}
+    }
+	public Document generatePDF(int annoID) {
+		AnnotatedBibliographyEntry bibEntry = getAnnotatedBibliographybyID(annoID, "");
+		if (!bibEntry.getAnnotationHTML().isEmpty()) {
+			String html = bibEntry.getAnnotationHTML();// .replaceAll("Times New Roman", "'Linux Libertine O','Batang','SimSun'");
+//			html = html.replaceAll("Arial", "'Linux Libertine O','Batang','SimSun'");
+			String heading = "<H1 style=\"font-size: 1.2em;margin-bottom: 1.2em!important;margin-left: 0;margin-right: 0;\">Annotation for: " + getBibliographyTitle(bibEntry) + "<br></H1>";
+			Safelist sl = Safelist.relaxed();
+			sl.addAttributes(":all", "class");
+			sl.addAttributes(":all", "lang");
+			sl.addAttributes("td", "style");
+			sl.addAttributes("p", "style");
+			html = Jsoup.clean(html, sl);
+			html = tagChineseTextInHTML(html);
+			html = tagKoreanTextInHTML(html);
+			html = tagJapaneseTextInHTML(html);
+			heading = tagChineseTextInHTML(heading);
+			heading = tagKoreanTextInHTML(heading);
+			heading = tagJapaneseTextInHTML(heading);
+			html = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+					+ "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \n"
+					+ "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
+					+ "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+					+ "<head>\n"
+					+"<title>" + getBibliographyTitle(bibEntry) + "</title>\n"
+					+ "</head>\n"
+					+ "<body>"
+					+ heading
+					+ "<H2>Source: <a href=\"https://kucha.saw-leipzig.de/bibliography/" + Integer.toString(bibEntry.getAnnotatedBibliographyID()) + "\">https://kucha.saw-leipzig.de/bibliography/" + Integer.toString(bibEntry.getAnnotatedBibliographyID()) + "</a><br><br></H2><p/><p/>"
+					+ html
+					+ "</body>\n"
+					+ "</html>";
+			byte[] bytes = html.getBytes(StandardCharsets.UTF_8);
+			
+			String utf8EncodedString = new String(bytes, StandardCharsets.UTF_8);
+			Parser p = Parser.xmlParser();
+			System.out.println(html);
+			// Document annotation = Jsoup.parse(utf8EncodedString, "utf-8");
+			Document annotation = Jsoup.parse(html, "", Parser.xmlParser());
+
+			annotation.outputSettings().escapeMode(org.jsoup.nodes.Entities.EscapeMode.xhtml);			
+			annotation.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
+			return annotation;
+		}
+		return null;
 	}
 	public String saveWebPageUser(UserEntry user) {
 		Connection dbc = getConnection();
@@ -1638,7 +2332,6 @@ public class MysqlConnector implements IsSerializable {
 			Connection dbc = getConnection();
 			PreparedStatement pstmt;
 			try {
-				System.out.println("SELECT * FROM Images WHERE ImageID in (" + imgSourceIds + ") and deleted=0;");
 				pstmt = dbc.prepareStatement( "SELECT * FROM Images WHERE ImageID in (" + imgSourceIds + ") and deleted=0;");
 
 				
@@ -1706,7 +2399,7 @@ public class MysqlConnector implements IsSerializable {
 						// all others shouldn't see anything
 						filename = "accessNotPermitted.png";
 					}
-				URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.jpg");
+				URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/" + tnSize + ",/0/default.jpg");;
 				InputStream in = imageURL.openStream();
 				ByteArrayOutputStream bab = new ByteArrayOutputStream();
 				//ByteArrayBuffer bab = new ByteArrayBuffer(0);
@@ -1721,7 +2414,6 @@ public class MysqlConnector implements IsSerializable {
 				result.put(imgEntry.getImageID(), "data:image/jpg;base64,"+base64);
 				}
 				catch (Exception e) {
-					//System.out.println("                <><><>"+e.getMessage());
 					result.put(imgEntry.getImageID(), "icons/close_icon.png");
 				}
 			}
@@ -1893,6 +2585,111 @@ public class MysqlConnector implements IsSerializable {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von createNewImageEntry brauchte "+diff + " Millisekunden.");;}}
 		return entry;
 	}
+	/**
+	 * Creates a new wall sketch entry in the table 'WallSketches'
+	 * 
+	 * @return WallsSetchEntry'
+	 */
+	public synchronized int insertWallSketchEntry(WallSketchEntry entry) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von createNewImageEntry wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+
+		try {
+			pstmt = dbc.prepareStatement(
+					"INSERT INTO WallSketches (Filename, Title) VALUES (?, ?)",
+					Statement.RETURN_GENERATED_KEYS);
+			pstmt.setString(1, entry.getFilename());
+			pstmt.setString(2, entry.getTitle());
+			pstmt.executeUpdate();
+			ResultSet keys = pstmt.getGeneratedKeys();
+			if (keys.next()) { // there should only be 1 key returned here
+				return keys.getInt(1);
+			}
+			keys.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			return -1;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von createNewImageEntry brauchte "+diff + " Millisekunden.");;}}
+		return -1;
+	}
+	
+	/**
+	 * 
+	 * @param caveID
+	 * @return
+	 */
+	public WallSketchEntry getWallSketchEntryByID(int wallSketchID) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getC14Documents wurde ausgelöst.");;
+		}
+		WallSketchEntry wallSketch = null;
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM WallSketches where WallSketchID = " + Integer.toString(wallSketchID));
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				wallSketch = new WallSketchEntry(rs.getInt("WallSketchID"), rs.getString("Title"), rs.getString("Filename"));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			return null;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getC14Documents brauchte "+diff + " Millisekunden.");;}}
+		return wallSketch;
+	}
+	
+	/**
+	 * 
+	 * @param caveID
+	 * @return
+	 */
+	public ArrayList<WallSketchEntry> getWallSketches() {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getC14Documents wurde ausgelöst.");;
+		}
+		ArrayList<WallSketchEntry> wallSketches = new ArrayList<WallSketchEntry>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM WallSketches");
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				WallSketchEntry entry = new WallSketchEntry(rs.getInt("WallSketchID"), rs.getString("Title"), rs.getString("Filename"));
+				wallSketches.add(entry);
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			return null;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getC14Documents brauchte "+diff + " Millisekunden.");;}}
+		return wallSketches;
+	}
+	
 	
 	/**
 	 * 
@@ -2041,8 +2838,8 @@ public class MysqlConnector implements IsSerializable {
 		
 		try {
 			ArrayList<Integer> des = new ArrayList<Integer>();
-			System.out.println("SELECT DepictionID FROM DepictionIconographyRelation INNER JOIN depictions  where depictions.deleted=0 and DepictionIconographyRelation.IconographyID="+Integer.toString(IconographyID) + " UNION SELECT DepcitionPolygonRelation.DepictionID FROM Annotations inner join Polygon on (Annotations.AnnotoriousID=Polygon.AnnotoriousID) inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) inner join Depictions (on DepcitionPolygonRelation.DepictionID=Depictions.DepictionID) where Polygon.deleted = 0 and Depiction.deleted = 0 and IconographyID="+Integer.toString(IconographyID));
-			pstmt = dbc.prepareStatement("SELECT DepictionIconographyRelation.DepictionID FROM DepictionIconographyRelation INNER JOIN Depictions on (Depictions.DepictionID = DepictionIconographyRelation.DepictionID) where Depictions.deleted=0 and DepictionIconographyRelation.IconographyID="+Integer.toString(IconographyID) + " UNION SELECT DepcitionPolygonRelation.DepictionID FROM Annotations inner join Polygon on (Annotations.AnnotoriousID=Polygon.AnnotoriousID) inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) inner join Depictions on ( DepcitionPolygonRelation.DepictionID=Depictions.DepictionID) where Polygon.deleted = 0 and Depictions.deleted = 0 and IconographyID="+Integer.toString(IconographyID));
+			System.out.println("SELECT Depictions.DepictionID FROM DepictionIconographyRelation INNER JOIN Depictions  where Depictions.deleted=0 and DepictionIconographyRelation.IconographyID= "+Integer.toString(IconographyID) + " UNION SELECT DepictionPolygonRelation.DepictionID  FROM Polygon inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) inner join Depictions on (DepictionPolygonRelation.DepictionID = Depictions.DepictionID) where Polygon.deleted = 0 and Depictions.deleted = 0 and IconographyID = "+Integer.toString(IconographyID));
+			pstmt = dbc.prepareStatement("SELECT DepictionIconographyRelation.DepictionID FROM DepictionIconographyRelation INNER JOIN Depictions on (Depictions.DepictionID = DepictionIconographyRelation.DepictionID) where Depictions.deleted=0 and DepictionIconographyRelation.IconographyID="+Integer.toString(IconographyID) + " UNION SELECT DepictionPolygonRelation.DepictionID  FROM Polygon inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) inner join Depictions on (DepictionPolygonRelation.DepictionID = Depictions.DepictionID) where Polygon.deleted = 0 and Depictions.deleted = 0 and IconographyID = "+Integer.toString(IconographyID));
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
 				DepictionEntry de= getDepictionEntry(rs.getInt("DepictionID"),sessionID);
@@ -2077,16 +2874,16 @@ public class MysqlConnector implements IsSerializable {
 						else {
 							resWallByDe.setParentID(Integer.parseInt(Integer.toString(resWallByDe.getParentID())+Integer.toString(item.getCaveID())));
 						}
-						Dictionary<Integer,PositionEntry> newPositions = new Hashtable();
+						Dictionary<Integer,WallDimensionEntry> newPositions = new Hashtable();
 						int i = 0;
 						for (WallTreeEntry res : results) {
 							if (resWallByDe.getWallLocationID()==res.getWallLocationID()) {
 								found2=true;
-								if (resWallByDe.getPosition()!=null) {
-									for (PositionEntry pe : resWallByDe.getPosition()) {
+								if (resWallByDe.getDimensions()!=null) {
+									for (WallDimensionEntry pe : resWallByDe.getDimensions()) {
 										boolean foundPos = false;
-										for (PositionEntry posOld : res.getPosition()) {
-											if (pe.getPositionID()==posOld.getPositionID()) {
+										for (WallDimensionEntry posOld : res.getDimensions()) {
+											if (pe.getWallDimensionID()==posOld.getWallDimensionID()) {
 												foundPos=true;
 												break;
 											}
@@ -2103,7 +2900,7 @@ public class MysqlConnector implements IsSerializable {
 						Enumeration<Integer> e = newPositions.keys();
 						while (e.hasMoreElements()) {
 							int key = e.nextElement();
-							results.get(key).addPosition(newPositions.get(key));
+							results.get(key).addDimension(newPositions.get(key));
 						}
 					
 						if (!found2){ 
@@ -2773,11 +3570,11 @@ public class MysqlConnector implements IsSerializable {
 
 			while (rsKlauselRelatedBibliographyList.next()) {
 				if (ABEs.containsKey(rsKlauselRelatedBibliographyList.getInt("CaveID"))){
-					ABEs.get(rsKlauselRelatedBibliographyList.getInt("CaveID")).add(getAnnotatedBiblographybyID(rsKlauselRelatedBibliographyList.getInt("BibID"),rsKlauselRelatedBibliographyList.getString("Page")));
+					ABEs.get(rsKlauselRelatedBibliographyList.getInt("CaveID")).add(getAnnotatedBibliographybyID(rsKlauselRelatedBibliographyList.getInt("BibID"),rsKlauselRelatedBibliographyList.getString("Page")));
 				}
 				else {
 					ArrayList<AnnotatedBibliographyEntry> BibEntries = new ArrayList<AnnotatedBibliographyEntry>();
-					BibEntries.add(getAnnotatedBiblographybyID(rsKlauselRelatedBibliographyList.getInt("BibID"),rsKlauselRelatedBibliographyList.getString("Page")));
+					BibEntries.add(getAnnotatedBibliographybyID(rsKlauselRelatedBibliographyList.getInt("BibID"),rsKlauselRelatedBibliographyList.getString("Page")));
 					ABEs.put(rsKlauselRelatedBibliographyList.getInt("CaveID"),BibEntries);
 				}
 							}
@@ -2965,12 +3762,12 @@ public class MysqlConnector implements IsSerializable {
 			while (rs.next()) {
 				//System.out.println("Durchlauf"+Integer.toString(rs.getInt("OrnamentID")));
 				results.add(new OrnamentEntry(rs.getInt("OrnamentID"), rs.getString("Code"), rs.getString("Description"), rs.getString("Remarks"),
-						//rs.getString("Annotation"),
-						rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
-						getImagesbyOrnamentID(rs.getInt("OrnamentID")), 
-						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
-						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour")));
+					//rs.getString("Annotation"),
+					rs.getString("Interpretation"), rs.getString("OrnamentReferences"), rs.getInt("OrnamentClassID"),
+					getImagesbyOrnamentID(rs.getInt("OrnamentID")), 
+					getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
+					new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
+					getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"), getOrnamentRessourceList(rs.getInt("OrnamentID"))));
 				// Aufruf der h�heren Hierarchie Ebenen der Ornamentik mittels getCaveRelation
 				// Aufruf der Tabellen OrnamentComponentsRelation, OrnamentImageRelation und InnerSecondaryPatternRelation
 			}
@@ -2990,7 +3787,188 @@ public class MysqlConnector implements IsSerializable {
 
 		return results;
 	}
+	public List<ExternalRessourceTypeEntry> getOrnamentRessourceTypeList(){
+		long start = System.currentTimeMillis();
+		//System.err.println("Entering getAnnotations for DepictionID: "+Integer.toString(depictionID));
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		List<ExternalRessourceTypeEntry> results = new ArrayList<ExternalRessourceTypeEntry>();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
 
+			String sqlText = "SELECT * FROM ExternalRessourceType";
+			ResultSet rs = stmt.executeQuery(sqlText);
+			while (rs.next()) {
+				ExternalRessourceTypeEntry extRes = new ExternalRessourceTypeEntry(rs.getInt("ExternalRessourceTypeID"), rs.getString("Description"), rs.getString("Source"));
+				results.add(extRes);
+				//System.err.println("Polygon2SVG:"+newAnno.getPolygone());
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDepictionEntry brauchte "+diff + " Millisekunden.");;}}
+		return results;
+	}
+	private List<ExternalRessourceEntry> getOrnamentRessourceList(Integer typicalID){
+		long start = System.currentTimeMillis();
+		//System.err.println("Entering getAnnotations for DepictionID: "+Integer.toString(depictionID));
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		List<ExternalRessourceEntry> results = new ArrayList<ExternalRessourceEntry>();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+
+			String sqlText = "SELECT * FROM OrnamentExternalRessource where OrnamentID = " + Integer.toString(typicalID);
+			ResultSet rs = stmt.executeQuery(sqlText);
+			while (rs.next()) {
+				ExternalRessourceEntry extRes = new ExternalRessourceEntry(rs.getInt("OrnamentExternalRessourceID"), rs.getString("Entity"), geExternalRessourceType(rs.getInt("ExternalRessourceTypeID")));
+				ArrayList<IconographyEntry> icoResults = new ArrayList<IconographyEntry>();
+				results.add(extRes);
+				//System.err.println("Polygon2SVG:"+newAnno.getPolygone());
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDepictionEntry brauchte "+diff + " Millisekunden.");;}}
+		return results;
+	}
+	public Boolean insertExternalRessourceType (ExternalRessourceTypeEntry ert) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertOrnamentRelatedExternalRessources wurde ausgelöst.");;
+		}
+		System.err.println("insertOrnamentRelatedExternalRessources started");
+		Connection dbc = getConnection();
+		PreparedStatement relationStatement;
+		try {
+			relationStatement = dbc.prepareStatement("INSERT INTO ExternalRessourceType (Source, Description) VALUES (?, ?)");
+			relationStatement.setString(1, ert.getSource());
+			relationStatement.setString(2, ert.getDescription());
+			relationStatement.executeUpdate();
+			relationStatement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return false;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionIconographyRelation brauchte "+diff + " Millisekunden.");;}}
+		return true;
+	}
+	public boolean updateExternalRessourceType (ExternalRessourceTypeEntry ert) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertOrnamentRelatedExternalRessources wurde ausgelöst.");;
+		}
+		System.err.println("insertOrnamentRelatedExternalRessources started");
+		Connection dbc = getConnection();
+		PreparedStatement relationStatement;
+		try {
+			relationStatement = dbc.prepareStatement("UPDATE ExternalRessourceType SET Source=?, Description=? WHERE ExternalRessourceTypeID=?");
+			relationStatement.setString(1, ert.getSource());
+			relationStatement.setString(2, ert.getDescription());
+			relationStatement.setInt(3, ert.getExternalRessourceTypeID());
+			relationStatement.executeUpdate();
+			relationStatement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return false;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionIconographyRelation brauchte "+diff + " Millisekunden.");;}}
+		return true;
+
+	}
+	private ExternalRessourceTypeEntry geExternalRessourceType(Integer ExternalRessourceType) {
+		long start = System.currentTimeMillis();
+		//System.err.println("Entering getAnnotations for DepictionID: "+Integer.toString(depictionID));
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		List<ExternalRessourceEntry> results = new ArrayList<ExternalRessourceEntry>();
+		Statement stmt;
+		ExternalRessourceTypeEntry extResType = null;
+		try {
+			stmt = dbc.createStatement();
+
+			String sqlText = "SELECT * FROM ExternalRessourceType where ExternalRessourceTypeID = " + Integer.toString(ExternalRessourceType);
+			ResultSet rs = stmt.executeQuery(sqlText);
+			if (rs.next()) {
+				extResType = new ExternalRessourceTypeEntry(rs.getInt("ExternalRessourceTypeID"), rs.getString("Description"), rs.getString("Source"));
+				rs.close();
+				stmt.close();
+				//System.err.println("Polygon2SVG:"+newAnno.getPolygone());
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDepictionEntry brauchte "+diff + " Millisekunden.");;}}
+		return extResType;
+	}
+	private void insertOrnamentRelatedExternalRessources(OrnamentEntry oe) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertOrnamentRelatedExternalRessources wurde ausgelöst.");;
+		}
+		System.err.println("insertOrnamentRelatedExternalRessources started");
+		deleteEntry("DELETE FROM OrnamentExternalRessource WHERE OrnamentID=" + oe.getTypicalID());
+		Connection dbc = getConnection();
+		PreparedStatement relationStatement;
+		try {
+			relationStatement = dbc.prepareStatement("INSERT INTO OrnamentExternalRessource (OrnamentID, Entity, ExternalRessourceTypeID) VALUES (?, ?, ?)");
+			for (ExternalRessourceEntry ere: oe.getrelatedExternalRessourcesList()) {
+				relationStatement.setInt(1, oe.getTypicalID());
+				relationStatement.setString(2, ere.getEntity());
+				relationStatement.setInt(3, ere.getSource().getExternalRessourceTypeID());
+				relationStatement.executeUpdate();
+			}
+			relationStatement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionIconographyRelation brauchte "+diff + " Millisekunden.");;}}
+
+	}
 	public ArrayList<OrnamentOfOtherCulturesEntry> getOrnametsOfOtherCultures() {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
@@ -3086,31 +4064,62 @@ public class MysqlConnector implements IsSerializable {
 		return results;
 
 	}
-	public Boolean saveWallDimension(ArrayList<WallTreeEntry> wtes, Integer caveID) {
+	private Boolean saveWallDimension(ArrayList<WallDimensionEntry> wdes, Integer wallID, Integer caveID) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveWallDimension wurde ausgelöst.");;
 		}
 		Connection dbc = getConnection();
-		PreparedStatement ornamentStatement;	
-		deleteEntry("DELETE FROM CavePositionRelation WHERE CaveID = "+Integer.toString(caveID));
+		PreparedStatement dimensionsStatement;	
+		//deleteEntry("DELETE FROM CaveWallDimension WHERE CaveID = "+Integer.toString(caveID));
 		try {
-			for (WallTreeEntry wte: wtes) {
-				if (wte.getPosition() != null) {
-					for (PositionEntry pe: wte.getPosition()) {
-						ornamentStatement = dbc.prepareStatement("INSERT INTO CavePositionRelation (CaveID, WallID, PositionID, Type, Direction, Registers, Columns) VALUES (?, ?, ?, ?, ?, ?, ?)",
-//								ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , OrnamentClassID, StructureOrganizationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+			if (wdes != null) {
+				for (WallDimensionEntry wde: wdes) {
+					if (wde.getWallDimensionID() == -1) {
+						System.err.println("Inserting wall Dimension " + Integer.toString(wallID));
+						dimensionsStatement = dbc.prepareStatement("INSERT INTO CaveWallDimension (CaveID, WallID, Registers, Columns, Name, WallSketchID, WallPosition, Direction, Type, X, Y, W, H) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+//									ornamentStatement = dbc.prepareStatement("INSERT INTO Ornaments (Code, Description, Remarks, Interpretation, OrnamentReferences, Annotation , OrnamentClassID, StructureOrganizationID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 								Statement.RETURN_GENERATED_KEYS);
-						ornamentStatement.setInt(1, caveID);
-						ornamentStatement.setInt(2, wte.getWallLocationID());
-						ornamentStatement.setInt(3, pe.getPositionID());
-						ornamentStatement.setInt(4, pe.getType());
-						ornamentStatement.setInt(5, pe.getDirection());
-						ornamentStatement.setInt(6, pe.getRegisters());
-						ornamentStatement.setInt(7, pe.getColumns());
-						ornamentStatement.executeUpdate();
-						ornamentStatement.close();
+						dimensionsStatement.setInt(1, caveID);
+						dimensionsStatement.setInt(2, wallID);
+						dimensionsStatement.setInt(3, wde.getRegisters());
+						dimensionsStatement.setInt(4, wde.getColumns());
+						dimensionsStatement.setString(5, wde.getName());
+						dimensionsStatement.setInt(6, wde.getWallSketch().getWallSketchID());
+						dimensionsStatement.setString(7, wde.getWallPosition());
+						dimensionsStatement.setInt(8, wde.getDirection());
+						dimensionsStatement.setInt(9, wde.getType());
+						dimensionsStatement.setDouble(10, wde.getX());
+						dimensionsStatement.setDouble(11, wde.getY());
+						dimensionsStatement.setDouble(12, wde.getW());
+						dimensionsStatement.setDouble(13, wde.getH());
+						dimensionsStatement.executeUpdate();
+						ResultSet keys = dimensionsStatement.getGeneratedKeys();
+						if (keys.next()) { // there should only be 1 key returned here
+							wde.setWallDimensionID(keys.getInt(1));
+						}
+						dimensionsStatement.close();						
+					} else {
+								System.err.println("Inserting wall Dimension " + Integer.toString(wallID));
+								dimensionsStatement = dbc.prepareStatement("UPDATE CaveWallDimension SET CaveID=?, WallID=?, Registers=?, Columns=?, Name=?, WallSketchID=?, WallPosition=?, Direction=?, Type=?, X=?, Y=?, W=?, H=?, deleted=? WHERE CaveWallDimensionID=?");
+								dimensionsStatement.setInt(1, caveID);
+								dimensionsStatement.setInt(2, wallID);
+								dimensionsStatement.setInt(3, wde.getRegisters());
+								dimensionsStatement.setInt(4, wde.getColumns());
+								dimensionsStatement.setString(5, wde.getName());
+								dimensionsStatement.setInt(6, wde.getWallSketch().getWallSketchID());
+								dimensionsStatement.setString(7, wde.getWallPosition());
+								dimensionsStatement.setInt(8, wde.getDirection());
+								dimensionsStatement.setInt(9, wde.getType());
+								dimensionsStatement.setDouble(10, wde.getX());
+								dimensionsStatement.setDouble(11, wde.getY());
+								dimensionsStatement.setDouble(12, wde.getW());
+								dimensionsStatement.setDouble(13, wde.getH());
+								dimensionsStatement.setBoolean(14, wde.isdeleted());
+								dimensionsStatement.setInt(15, wde.getWallDimensionID());
+								dimensionsStatement.executeUpdate();
 					}
+					saveWallDimensionPositions(wde.getPositions(), wde.getWallDimensionID());
 				}
 			}
 
@@ -3130,27 +4139,81 @@ public class MysqlConnector implements IsSerializable {
 		return true;
 
 	}
-	public Map<Integer,ArrayList<PositionEntry>> getWallDimension(Integer caveID) {
+	public Boolean saveWallDimensionPositions(ArrayList<PositionEntry> pes, Integer wallDimensionID) {
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveWallDimension wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement positionStatement;
+		System.err.println("saveWallDimensionPositions started");
+		try {
+			for (PositionEntry pe: pes) {
+				if (pe.getPositionID() == -1) {
+					System.err.println("inserting position " + pe.getDepictionID() + " - " + pe.getName());
+					positionStatement = dbc.prepareStatement("INSERT INTO DepictionWallDimensionRelation (DepictionID, CaveWallDimensionID, Register, Number, Exact, Name) VALUES (?, ?, ?, ?, ?, ?)",
+							Statement.RETURN_GENERATED_KEYS);
+					positionStatement.setInt(1, pe.getDepictionID());
+					positionStatement.setInt(2, wallDimensionID);
+					positionStatement.setInt(3, pe.getRegister());
+					positionStatement.setInt(4, pe.getNumber());
+					positionStatement.setBoolean(5, pe.getExact());
+					positionStatement.setString(6, pe.getName());
+					positionStatement.executeUpdate();
+					positionStatement.close();
+				} else {
+					positionStatement = dbc.prepareStatement("UPDATE DepictionWallDimensionRelation SET DepictionID=?, CaveWallDimensionID=?, Register=?, Number=?, Exact=?, Name=?, deleted=? WHERE DepictionWallDimensionRelationID = ?",
+							Statement.RETURN_GENERATED_KEYS);
+					positionStatement.setInt(1, pe.getDepictionID());
+					positionStatement.setInt(2, wallDimensionID);
+					positionStatement.setInt(3, pe.getRegister());
+					positionStatement.setInt(4, pe.getNumber());
+					positionStatement.setBoolean(5, pe.getExact());
+					positionStatement.setString(6, pe.getName());
+					positionStatement.setBoolean(7, pe.isdeleted());
+					positionStatement.setInt(8, pe.getPositionID());
+					positionStatement.executeUpdate();
+					positionStatement.close();
+					
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return false;
+		}
+		if (dologging){
+		long end = System.currentTimeMillis();
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveOrnamentEntry brauchte "+diff + " Millisekunden.");;}}
+		return true;
+
+	}
+	public Map<Integer,ArrayList<WallDimensionEntry>> getWallDimension(Integer caveID) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveWallDimension wurde ausgelöst.");;
 		}
 		Connection dbc = getConnection();
 		Statement stmt;	
-		Map<Integer,ArrayList<PositionEntry>> result = new HashMap<Integer,ArrayList<PositionEntry>>();
+		Map<Integer,ArrayList<WallDimensionEntry>> result = new HashMap<Integer,ArrayList<WallDimensionEntry>>();
 		try {
 			stmt = dbc.createStatement();
-			ResultSet rs = stmt.executeQuery("Select * from CavePositionRelation inner join Position on (CavePositionRelation.PositionID = Position.PositionID) where CaveID = "+Integer.toString(caveID));
+			ResultSet rs = stmt.executeQuery("Select * from CaveWallDimension where deleted = 0 and CaveID = "+Integer.toString(caveID));
 			while (rs.next()) { 
 				//System.out.println("got result");				
-				PositionEntry pe = new PositionEntry(rs.getInt("Position.PositionID"), rs.getString("Position.Name"), rs.getInt("CavePositionRelation.Type"),rs.getInt("CavePositionRelation.Direction"), rs.getInt("CavePositionRelation.Registers"),rs.getInt("CavePositionRelation.Columns"), null, rs.getBoolean("Position.Name"));
-				Integer wallID = rs.getInt("CavePositionRelation.WallID");
+				WallDimensionEntry wde = new WallDimensionEntry(rs.getInt("CaveWallDimensionID"), rs.getString("Name"), getWallSketchEntryByID(rs.getInt("WallSketchID")), rs.getString("WallPosition"), rs.getInt("Type"),rs.getInt("Direction"), rs.getInt("Registers"),rs.getInt("Columns"),rs.getInt("X"),rs.getInt("Y"),rs.getInt("W"),rs.getInt("H"), getPositionsbyDimension(rs.getInt("CaveWallDimensionID")));
+				Integer wallID = rs.getInt("CaveWallDimension.WallID");
 				if (result.containsKey(wallID)) {
-					result.get(wallID).add(pe);
+					result.get(wallID).add(wde);
 				} else {
-					ArrayList<PositionEntry> pes = new ArrayList<PositionEntry>();
-					pes.add(pe);
-					result.put(wallID, pes);
+					ArrayList<WallDimensionEntry> wdes = new ArrayList<WallDimensionEntry>();
+					wdes.add(wde);
+					result.put(wallID, wdes);
 				}
 			}
 
@@ -3194,7 +4257,8 @@ public class MysqlConnector implements IsSerializable {
 				newOrnamentID = keys.getInt(1);
 			}
 			keys.close();
-
+			ornamentEntry.setOrnamentID(newOrnamentID);
+			insertOrnamentRelatedExternalRessources(ornamentEntry);
 			updateOrnamentImageRelations(newOrnamentID, ornamentEntry.getImages());
 			writeOrnamenticBibliographyRelation(newOrnamentID, ornamentEntry.getRelatedBibliographyList());
 			deleteEntry("DELETE FROM OrnamentIconographyRelation WHERE OrnamentID =" + ornamentEntry.getTypicalID());
@@ -3213,7 +4277,31 @@ public class MysqlConnector implements IsSerializable {
 		Date date = new Date(System.currentTimeMillis());
 		DateFormat df = DateFormat.getDateTimeInstance();
 		ornamentEntry.setModifiedOn(df.format(date));
-		protocollModifiedAbstractEntry(ornamentEntry,"");
+		if (ornamentEntry.getAccessLevel() == 2) {
+			protocollModifiedAbstractEntry(ornamentEntry,"");
+			ornamentEntry.setModifiedOn("");
+			IconographyEntry ico = getIconographyEntry(ornamentEntry.getIconographyID());
+			ico.setOrnamentEntry(ornamentEntry);
+			ico.setModifiedOn("");
+			Gson gson = new Gson();
+			String json = gson.toJson(ico);	
+			date = new Date(System.currentTimeMillis());
+			df = DateFormat.getDateTimeInstance();
+
+			String url = serverProperties.getProperty("home.elastic.url");
+			int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+			String elastic_user = serverProperties.getProperty("home.elastic.login");
+			String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+			System.err.println("test");
+			String updateResult = doUploadToElastic(ico.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
+			System.err.println("elastic request: " + updateResult);
+			ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+			System.out.println(er.result + " "+ updateResult);
+		    if (!er.result.equals("noop")) {
+		    	doUploadToElastic(ico.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false);
+		    }
+		    ico.setModifiedOn(df.format(date));			
+		}
 
 		long diff = (end-start);
 		if (diff>100){
@@ -3258,14 +4346,20 @@ public class MysqlConnector implements IsSerializable {
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+		insertOrnamentRelatedExternalRessources(ornamentEntry);
+		ornamentEntry.setModifiedOn(df.format(date));
+		protocollModifiedAbstractEntry(ornamentEntry, "");
 		if (ornamentEntry.getAccessLevel() == 2) {
+			ornamentEntry.setModifiedOn("");
 			IconographyEntry ico = getIconographyEntry(ornamentEntry.getIconographyID());
 			ico.setOrnamentEntry(ornamentEntry);
 			ico.setModifiedOn("");
 			Gson gson = new Gson();
 			String json = gson.toJson(ico);	
-			Date date = new Date(System.currentTimeMillis());
-			DateFormat df = DateFormat.getDateTimeInstance();
+			date = new Date(System.currentTimeMillis());
+			df = DateFormat.getDateTimeInstance();
 
 			String url = serverProperties.getProperty("home.elastic.url");
 			int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
@@ -4970,7 +6064,9 @@ public boolean isHan(String s) {
 		if (searchEntry.getPublisherSearch() != null && !searchEntry.getPublisherSearch().isEmpty()) {
 			where += where.isEmpty() ? "Publisher LIKE ?" : "AND Publisher LIKE ?";
 		}
-
+		if (searchEntry.getID() > 0) {
+			where += where.isEmpty() ? "BibID = '"+Integer.toString(searchEntry.getID())+"' ": " AND BibID = '"+Integer.toString(searchEntry.getID())+"' ";
+		}
 		if (searchEntry.getTitleSearch() != null && !searchEntry.getTitleSearch().isEmpty()) {
 			where += (where.isEmpty() ? "" : " AND ") + 
 					"((TitleORG LIKE ?) OR (TitleEN LIKE ?) OR (TitleTR LIKE ?) OR (ParentTitleORG LIKE ?) OR (ParentTitleEN LIKE ?) OR (ParentTitleTR LIKE ?) OR "
@@ -5063,7 +6159,7 @@ public boolean isHan(String s) {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")),null, rs.getBoolean("Annotation"), rs.getBoolean("hasOtherAuthors"), rs.getBoolean("hasOtherEditors"));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")),null, rs.getBoolean("hasOtherAuthors"), rs.getBoolean("hasOtherEditors"),rs.getString("Annotation") );
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
@@ -5076,7 +6172,6 @@ public boolean isHan(String s) {
 					System.err.println("started Update updateAnnotatedBiblographyEntry due to updating BibtexKey");
 					updateAnnotatedBiblographyEntry(entry);
 				}
-				entry.setAnnotation(bibHasAnnotation(entry.getUniqueID()));
 				entry.setArticle(bibHasArticle(entry.getUniqueID()));
 				result.add(entry);
 			}
@@ -5145,11 +6240,10 @@ public boolean isHan(String s) {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")),null, rs.getBoolean("Annotation"), rs.getBoolean("hasOtherAuthors"), rs.getBoolean("hasOtherEditors"));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")),null, rs.getBoolean("hasOtherAuthors"), rs.getBoolean("hasOtherEditors"), rs.getString("Annotation"));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
-				entry.setAnnotation(bibHasAnnotation(entry.getUniqueID()));
 				entry.setArticle(bibHasArticle(entry.getUniqueID()));
 				if ((entry.getBibtexKey().isEmpty())&(entry.getAuthorList().size()>0)) {
 					if (!entry.getAuthorList().isEmpty()) {
@@ -5217,11 +6311,10 @@ public boolean isHan(String s) {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")), null, rs.getBoolean("Annotation"), rs.getBoolean("hasOtherAuthors"), rs.getBoolean("hasOtherEditors"));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")), null, rs.getBoolean("hasOtherAuthors"), rs.getBoolean("hasOtherEditors"), rs.getString("Annotation"));
 				entry.setAuthorList(getAuthorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setEditorList(getEditorBibRelation(entry.getAnnotatedBibliographyID()));
 				entry.setKeywordList(getRelatedBibKeywords(entry.getAnnotatedBibliographyID()));
-				entry.setAnnotation(bibHasAnnotation(entry.getUniqueID()));
 				entry.setArticle(bibHasArticle(entry.getUniqueID()));
 				result.add(entry);
 			}
@@ -5258,7 +6351,7 @@ public boolean isHan(String s) {
 			pstmt.setInt(1, depictionID);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				entry = getAnnotatedBiblographybyID(rs.getInt("BibID"), rs.getString("Page"));
+				entry = getAnnotatedBibliographybyID(rs.getInt("BibID"), rs.getString("Page"));
 				result.add(entry);
 			}
 			rs.close();
@@ -5352,7 +6445,7 @@ public boolean isHan(String s) {
 		return result;
 	}
 	
-	public AnnotatedBibliographyEntry getAnnotatedBiblographybyID(int bibID, String page) {
+	public AnnotatedBibliographyEntry getAnnotatedBibliographybyID(int bibID, String page) {
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAnnotatedBiblographybyID wurde ausgelöst.");;
@@ -5380,7 +6473,7 @@ public boolean isHan(String s) {
 						rs.getString("PagesTR"), rs.getString("Comments"), rs.getString("Notes"), rs.getString("URL"), rs.getString("URI"),
 						rs.getBoolean("Unpublished"), rs.getInt("FirstEditionBibID"), rs.getInt("AccessLevel"), rs.getString("AbstractText"),
 						rs.getString("ThesisType"), rs.getString("EditorType"), rs.getBoolean("OfficialTitleTranslation"), rs.getString("BibTexKey"),
-						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")), page, rs.getBoolean("Annotation"), rs.getBoolean("hasOtherAuthors"), rs.getBoolean("hasOtherEditors"));
+						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")), isHan(rs.getString("TitleORG")), page, rs.getBoolean("hasOtherAuthors"), rs.getBoolean("hasOtherEditors"), rs.getString("Annotation"));
 				if (result.getAnnotatedBibliographyID() == 417) {
 					System.out.println("Bibliography nummer 417:");
 					System.out.println(result);
@@ -5388,7 +6481,6 @@ public boolean isHan(String s) {
 				result.setAuthorList(getAuthorBibRelation(result.getAnnotatedBibliographyID()));
 				result.setEditorList(getEditorBibRelation(result.getAnnotatedBibliographyID()));
 				result.setKeywordList(getRelatedBibKeywords(result.getAnnotatedBibliographyID()));
-				result.setAnnotation(bibHasAnnotation(result.getUniqueID()));
 				result.setArticle(bibHasArticle(result.getUniqueID()));
 			}
 			rs.close();
@@ -5721,7 +6813,8 @@ public boolean isHan(String s) {
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")),
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),
-						rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")), getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"));
+						rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")), getOrnamentAnnotations(rs.getInt("OrnamentID")),
+						rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"), getOrnamentRessourceList(rs.getInt("OrnamentID")));
 				resultList.add(entry);
 			}
 		} catch (SQLException e) {
@@ -5757,7 +6850,7 @@ public boolean isHan(String s) {
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")),
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
-						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour")));
+						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"), getOrnamentRessourceList(rs.getInt("OrnamentID"))));
 			}
 			rs.close();
 			stmt.close();
@@ -5795,7 +6888,7 @@ public boolean isHan(String s) {
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")),
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
-						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"));
+						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"), getOrnamentRessourceList(rs.getInt("OrnamentID")));
 			}
 			rs.close();
 			pstmt.close();
@@ -6003,6 +7096,10 @@ public boolean isHan(String s) {
 			writeC14AnalysisUrlEntry(caveEntry.getCaveID(), caveEntry.getC14AnalysisUrlList());
 			writeC14DocumentEntry(caveEntry.getCaveID(), caveEntry.getC14DocumentList());
 			writeCaveBibliographyRelation(caveEntry.getCaveID(), caveEntry.getRelatedBibliographyList());
+			for (Map.Entry<Integer, ArrayList<WallDimensionEntry>> wallDimensions : caveEntry.getWallDimensions().entrySet()) {
+				saveWallDimension(wallDimensions.getValue(), wallDimensions.getKey(), caveEntry.getCaveID());
+			}
+			
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 			return false;
@@ -7011,7 +8108,7 @@ public boolean isHan(String s) {
 				String updateResult = doUploadToElastic(de.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
 				ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
 				System.out.println(er.result + " "+ updateResult);
-			    if (er.result == null || !er.result.equals("noop")) {
+			    if (er.result == null || !er.result.equals("noop") || updateResult.contains("document_missing_exception")) {
 			    	doUploadToElastic(de.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false);
 			    }
 			} catch (Exception ex){
@@ -7067,9 +8164,6 @@ public boolean isHan(String s) {
 				pstmt.setInt(3, entry.getPositionID());
 				pstmt.setBoolean(4, entry.getExact());
 				pstmt.executeUpdate();
-				if (entry.getCoodinates() != null) {
-					insertPositionsCoordinatesRelation(depictionID, wallID, entry.getPositionID(), entry.getCoodinates());
-				}
 			}
 			pstmt.close();
 		} catch (SQLException ex) {
@@ -7126,9 +8220,6 @@ public boolean isHan(String s) {
 				pstmt.setInt(1, depictionID);
 				pstmt.setInt(2, entry.getWallLocationID());
 				pstmt.executeUpdate();
-				if (entry.getPosition() !=null) {
-					insertWallPositionsRelation(depictionID, entry.getWallLocationID(), entry.getPosition());
-				}
 
 
 			}
@@ -7248,7 +8339,7 @@ public boolean isHan(String s) {
 			relationStatement.setInt(1, depictionID);
 			ResultSet rs = relationStatement.executeQuery();
 			while (rs.next()) {
-				AnnotatedBibliographyEntry res = getAnnotatedBiblographybyID(rs.getInt("BibID"), rs.getString("Page"));
+				AnnotatedBibliographyEntry res = getAnnotatedBibliographybyID(rs.getInt("BibID"), rs.getString("Page"));
 				if (depictionID == 157) {
 					System.out.println("found RelatedBibliography for 157");
 					System.out.println(res);
@@ -7358,7 +8449,7 @@ public boolean isHan(String s) {
 			relationStatement.setInt(1, caveID);
 			ResultSet rs = relationStatement.executeQuery();
 			while (rs.next()) {
-				result.add(getAnnotatedBiblographybyID(rs.getInt("BibID"),rs.getString("Page")));
+				result.add(getAnnotatedBibliographybyID(rs.getInt("BibID"),rs.getString("Page")));
 			}
 			rs.close();
 			relationStatement.close();
@@ -7388,7 +8479,7 @@ public boolean isHan(String s) {
 			relationStatement.setInt(1, ornamentID);
 			ResultSet rs = relationStatement.executeQuery();
 			while (rs.next()) {
-				result.add(getAnnotatedBiblographybyID(rs.getInt("BibID"), rs.getString("Page")));
+				result.add(getAnnotatedBibliographybyID(rs.getInt("BibID"), rs.getString("Page")));
 			}
 			rs.close();
 			relationStatement.close();
@@ -7629,7 +8720,7 @@ public boolean isHan(String s) {
 				path = buildPath(path, polys);
 			}
 		} else {
-			path = buildPath(path, polygons.getAsJsonObject().get("coordinates"));
+				path = buildPath(path, polygons.getAsJsonObject().get("coordinates"));				
 		}
 		JsonArray bodies = new JsonArray();
 		for (IconographyEntry ico: anno.getTags()) {
@@ -7679,11 +8770,11 @@ public boolean isHan(String s) {
 		ResultSet proposedAnnosRS2;
 		for (ImageEntry ie: images) {
 			try {
-				proposedAnnosStatement = dbc.prepareStatement("SELECT Polygon.PolygonID,AnnotoriousID,ST_AsGeoJSON(ProposedPolygon.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,ProposedPolygon.deleted, IconographyID FROM ProposedPolygon left join Images on( ProposedPolygon.ImageID=Images.ImageID) WHERE ProposedPolygon.ImageID=?");
+				proposedAnnosStatement = dbc.prepareStatement("SELECT ProposedPolygon.PolygonID,AnnotoriousID,ST_AsGeoJSON(ProposedPolygon.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,ProposedPolygon.deleted, IconographyID FROM ProposedPolygon left join Images on( ProposedPolygon.ImageID=Images.ImageID) WHERE ProposedPolygon.ImageID=?");
 				proposedAnnosStatement.setInt(1, ie.getImageID());
 				proposedAnnosRS = proposedAnnosStatement.executeQuery();
 				while (proposedAnnosRS.next()) {
-					AnnotationEntry entry = new AnnotationEntry(depictionID, proposedAnnosRS.getString("Polygon.AnnotoriousID"), null , proposedAnnosRS.getString("Polygon"), proposedAnnosRS.getString("Filename"), false, false, 0, 0, true);
+					AnnotationEntry entry = new AnnotationEntry(depictionID, proposedAnnosRS.getString("AnnotoriousID"), null , proposedAnnosRS.getString("Polygon"), proposedAnnosRS.getString("Filename"), false, false, 0, 0, true);
 					ArrayList<IconographyEntry> tags = new ArrayList<IconographyEntry>();
 					try {
 						proposedIcoStatement = dbc2.createStatement();
@@ -7815,7 +8906,7 @@ public boolean isHan(String s) {
 		Statement stmt2 = null;
 		try {
 			stmt = dbc.createStatement();
-			String sqlText = "SELECT Polygon.PolygonID, Polygon.AnnotoriousID, ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\", Images.ImageID, Images.Filename, DepictionPolygonRelation.DepictionID, Polygon.deleted, CreationTime, ModificationTime, IsProposed FROM Polygon left join Images on(Polygon.ImageID=Images.ImageID) inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) WHERE DepictionPolygonRelation.DepictionID="+depictionID+" and Polygon.deleted=0 and Polygon.Polygon is not null";
+			String sqlText = "SELECT Polygon.PolygonID, Polygon.AnnotoriousID, ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\", Images.ImageID, Images.Filename, DepictionPolygonRelation.DepictionID, Polygon.deleted, CreationTime, ModificationTime, IsProposed FROM Polygon left join Images on(Polygon.ImageID=Images.ImageID) inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) WHERE DepictionPolygonRelation.DepictionID="+depictionID+" and Polygon.deleted=0 and Polygon.Polygon is not null GROUP  BY Polygon.AnnotoriousID";
 			//System.err.println(sqlText);
 			ResultSet rs = stmt.executeQuery(sqlText);
 			while (rs.next()) {
@@ -7825,8 +8916,8 @@ public boolean isHan(String s) {
 				try {
 					stmt2 = dbc2.createStatement();
 					ResultSet rs2 = stmt2.executeQuery(
-							"SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM Annotations WHERE deleted=0 and AnnotoriousID='"
-									+ newAnno.getAnnotoriousID() + "')");
+							"SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM DepictionPolygonRelation WHERE deleted=0 and AnnotoriousID='"
+									+ newAnno.getAnnotoriousID() + "' and DepictionID = " + newAnno.getDepictionID() + ")");
 					while (rs2.next()) {
 						//System.err.println("Entering Iteration 2");
 						IconographyEntry icoRes = new IconographyEntry(rs2.getInt("IconographyID"), rs2.getInt("ParentID"), rs2.getString("Text")==null ? "" : rs2.getString("Text"), rs2.getString("search")==null ? "" : rs2.getString("search"));
@@ -7866,32 +8957,31 @@ public boolean isHan(String s) {
 		return results;
 	}
 	public String getGame(){
-		// Level 1
+		Connection dbc = getConnection();
+		PreparedStatement levelStmt;
 		ArrayList<GameEntry> games = new ArrayList<GameEntry>();
-		ArrayList<AnnotationEntry> annotationsLevel1 = getAnnotationsByIconography(803, 2063, 26823);
-		ArrayList<AnnotationEntry> annotationsLevel2 = getAnnotationsByIconography(193, 1173, 3140);
-		ArrayList<AnnotationEntry> annotationsLevel3 = getAnnotationsByIconography(913, 1169, 6621);
-		GameEntry level1 = new GameEntry(1, "Monkeys", "26823.png", annotationsLevel1, "Find all Mokeys in the Painting!");
-		GameEntry level2 = new GameEntry(2, "Man sacrifying himself to a tiger", "26823.png", annotationsLevel2, "A Brahmin with bare upper body and a long lower garment a ribbon, jewellery around his neck and probably a top knot, falls down from a height with his hands held in anjali gesture; he is shown again stretched out lifeless on the ground with his head to the left.\n"
-				+ "There is a nimbus behind the Brahmin's head.\n"
-				+ "A tigress with a split tail stands on the body of the Brahmin and feeds on the chest.\n"
-				+ "In the background there is a tree, and two birds.");
-		GameEntry level3 = new GameEntry(3, "Good son, shot to death by a king", "26823.png", annotationsLevel3, "Syama-Jataka.\n"
-				+ "A young ascetic named Syama took care of his old parents who lived in the seclusion of a forest, in a hermitage. One day he was fetching water with a jar for them. At the same time the king was hunting in the forest. He accidently hit Syama with his arrow. \n"
-				+ "\n"
-				+ "The young ascetic Syama kneels in front of a pond and scoops warer with a bowl(?). He wears a cord around his naked torso, a loincloth and his hair is tied up into a topknot. The king with a nimbus around his head, rides on his horse with a drawn bow. Adorned with jewellery, he wears a scarf and a long waist robe.\n");
-		games.add(level1);
-		games.add(level2);
-		games.add(level3);
-		Gson gson = new Gson();
+		ResultSet levelRs;
+		try {
+			levelStmt = dbc.prepareStatement("Select * from Levels l inner join Images i on (i.ImageID = l.ImageID) where i.AccessLevel = 2 and i.deleted = 0 and (i.IsExpiring = 0 or FROM_UNIXTIME(i.ExpiresAt/1000) > CURRENT_TIMESTAMP()) ORDER BY LevelID Asc");
+			levelRs = levelStmt.executeQuery();
+			while (levelRs.next()) {
+				ArrayList<AnnotationEntry> annotationsLevel = getAnnotationsByIconography(levelRs.getInt("DepictionID"), levelRs.getString("IconographyID"), levelRs.getInt("Levels.ImageID"));
+				GameEntry entry = new GameEntry(levelRs.getInt("LevelID"), levelRs.getString("Caption"), levelRs.getString("Filename"), annotationsLevel, levelRs.getString("Text"), levelRs.getBoolean("is18+"), levelRs.getInt("Difficulty"));
+				games.add(entry);
+			}
+			levelStmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+		Gson gson = new GsonBuilder().disableHtmlEscaping().create();;
 		String json = gson.toJson(games);
 		return json;
-
 	}
 	/**
 	 * @return
 	 */
-	private ArrayList<AnnotationEntry> getAnnotationsByIconography(int depictionID, int iconographyID, int imageID) {
+	private ArrayList<AnnotationEntry> getAnnotationsByIconography(int depictionID, String iconographyID, int imageID) {
 		long start = System.currentTimeMillis();
 		//System.err.println("Entering getAnnotations for DepictionID: "+Integer.toString(depictionID));
 		if (dologgingbegin){
@@ -7904,7 +8994,7 @@ public boolean isHan(String s) {
 		Statement stmt2 = null;
 		try {
 			stmt = dbc.createStatement();
-			String sqlText = "SELECT Polygon.PolygonID, Polygon.AnnotoriousID, ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\", Images.ImageID,Images.Filename, DepictionID, Polygon.deleted FROM Polygon inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) inner join Annotations on (Annotations.AnnotoriousID = Polygon.AnnotoriousID) left join Images on( Polygon.ImageID=Images.ImageID) WHERE DepictionPolygonRelation.DepictionID = " + depictionID + " and Polygon.ImageID = " + imageID + " and Annotations.IconographyID =" + iconographyID + " and Polygon.deleted=0 and Polygon.Polygon is not null";
+			String sqlText = "SELECT Polygon.PolygonID, Polygon.AnnotoriousID, ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\", Images.ImageID,Images.Filename, DepictionPolygonRelation.DepictionID, Polygon.deleted FROM Polygon inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) left join Images on( Polygon.ImageID=Images.ImageID) WHERE DepictionPolygonRelation.DepictionID = " + depictionID + " and Polygon.ImageID = " + imageID + " and DepictionPolygonRelation.IconographyID in (" + iconographyID + ") and Polygon.deleted=0 and DepictionPolygonRelation.deleted = 0 and Polygon.Polygon is not null group by Polygon.AnnotoriousID";
 			System.err.println(sqlText);
 			ResultSet rs = stmt.executeQuery(sqlText);
 			while (rs.next()) {
@@ -7914,8 +9004,8 @@ public boolean isHan(String s) {
 				try {
 					stmt2 = dbc2.createStatement();
 					ResultSet rs2 = stmt2.executeQuery(
-							"SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM Annotations WHERE deleted=0 and AnnotoriousID='"
-									+ newAnno.getAnnotoriousID() + "')");
+							"SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM DepictionPolygonRelation WHERE deleted=0 and AnnotoriousID='"
+									+ newAnno.getAnnotoriousID() + "' and DepictionID = " +depictionID + ")");
 					while (rs2.next()) {
 						//System.err.println("Entering Iteration 2");
 						IconographyEntry icoRes = new IconographyEntry(rs2.getInt("IconographyID"), rs2.getInt("ParentID"), rs2.getString("Text")==null ? "" : rs2.getString("Text"), rs2.getString("search")==null ? "" : rs2.getString("search"));
@@ -7966,7 +9056,7 @@ public boolean isHan(String s) {
 		Statement stmt2 = null;
 		try {
 			stmt = dbc.createStatement();
-			String sqlText = "SELECT Polygon.PolygonID,Polygon.AnnotoriousID,ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,OrnamentID,Polygon.deleted, CreationTime, ModificationTime, IsProposed FROM Polygon inner join OrnamentPolygonRelation on (Polygon.AnnotoriousID = OrnamentPolygonRelation.AnnotoriousID) left join Images on( Polygon.ImageID=Images.ImageID) WHERE OrnamentPolygonRelation.OrnamentID="+depictionID+" and Polygon.deleted=0 and Polygon.Polygon is not null";
+			String sqlText = "SELECT Polygon.PolygonID,Polygon.AnnotoriousID,ST_AsGeoJSON(Polygon.Polygon) as \"Polygon\",Images.ImageID,Images.Filename,OrnamentID,Polygon.deleted, CreationTime, ModificationTime, IsProposed FROM Polygon inner join OrnamentPolygonRelation on (Polygon.AnnotoriousID = OrnamentPolygonRelation.AnnotoriousID) left join Images on( Polygon.ImageID=Images.ImageID) WHERE OrnamentPolygonRelation.OrnamentID="+depictionID+" and Polygon.deleted=0 and Polygon.Polygon is not null group by Polygon.AnnotoriousID";
 			//System.err.println(sqlText);
 			ResultSet rs = stmt.executeQuery(sqlText);
 			while (rs.next()) {
@@ -7976,7 +9066,7 @@ public boolean isHan(String s) {
 				try {
 					stmt2 = dbc2.createStatement();
 					ResultSet rs2 = stmt2.executeQuery(
-							"SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM Annotations WHERE deleted=0 and AnnotoriousID='"
+							"SELECT * FROM Iconography WHERE IconographyID IN (SELECT IconographyID FROM OrnamentPolygonRelation WHERE deleted=0 and AnnotoriousID='"
 									+ newAnno.getAnnotoriousID() + "')");
 					while (rs2.next()) {
 						//System.err.println("Entering Iteration 2");
@@ -8029,11 +9119,18 @@ public boolean isHan(String s) {
 			try {
 				for (IconographyEntry tag : annoEntry.getTags()) {
 					System.err.println("Annotation (for Depiction: "+Integer.toString(annoEntry.getDepictionID())+") recieved: Tag: "+tag.getText()+", Polygon: "+annoEntry.getGeoJson()+", Image: "+annoEntry.getImage()+", delete: "+Boolean.toString(annoEntry.getDelete())+", update: "+Boolean.toString(annoEntry.getUpdate()));
-					annoStatement = dbc.prepareStatement(
-							"INSERT INTO Annotations ( AnnotoriousID, iconographyID) VALUES ( ?, ?)",
-							Statement.RETURN_GENERATED_KEYS);
+					if (isOrnament) {
+						annoStatement = dbc.prepareStatement(
+								"INSERT INTO OrnamentPolygonRelation ( AnnotoriousID, OrnamentID, IconographyID) VALUES (?, ?, ?)",
+								Statement.RETURN_GENERATED_KEYS);
+					} else {
+						annoStatement = dbc.prepareStatement(
+								"INSERT INTO DepictionPolygonRelation ( AnnotoriousID, DepictionID, IconographyID) VALUES (?, ?, ?)",
+								Statement.RETURN_GENERATED_KEYS);
+					}					
 					annoStatement.setString(1, annoEntry.getAnnotoriousID());
-					annoStatement.setInt(2, tag.getIconographyID());
+					annoStatement.setInt(2, annoEntry.getDepictionID());
+					annoStatement.setInt(3, tag.getIconographyID());
 					annoStatement.executeUpdate();
 					ResultSet keys = annoStatement.getGeneratedKeys();
 					int annoID = -1;
@@ -8058,20 +9155,8 @@ public boolean isHan(String s) {
 //						polygoneStatement = dbc.prepareStatement("Update Polygon set OrnamentID = ?, AnnotoriousID = ?, Polygon = PolygonFromText(?), ImageID = ? where AnnotoriousID = '"+annoEntry.getAnnotoriousID()+"'");					
 //					}					
 //				} else {
-				System.err.println("INSERT INTO Polygon (DepictionID, AnnotoriousID, Polygon, ImageID) VALUES ("+Integer.toString(annoEntry.getDepictionID())+", "+annoEntry.getAnnotoriousID()+", PolygonFromText(\""+poly+"\"),"+part1+")");
-				if (isOrnament) {
-					polygonRelationStatement = dbc.prepareStatement("INSERT INTO OrnamentPolygonRelation (OrnamentID, AnnotoriousID) VALUES (?, ?)");					
-				} else {
-					polygonRelationStatement = dbc.prepareStatement("INSERT INTO DepictionPolygonRelation (DepictionID, AnnotoriousID) VALUES (?, ?)");					
-				}					
-					
-//				}
-				polygonRelationStatement.setInt(1, annoEntry.getDepictionID());
-				polygonRelationStatement.setString(2, annoEntry.getAnnotoriousID());
-				polygonRelationStatement.executeUpdate();
-				polygonRelationStatement.close();
 				PreparedStatement polygonStatement;
-				
+				deleteEntry("UPDATE Polygon SET deleted=1 WHERE AnnotoriousID = '" + annoEntry.getAnnotoriousID() +"'");
 				polygonStatement = dbc.prepareStatement("INSERT INTO Polygon (AnnotoriousID, Polygon, ImageID, CreationTime, ModificationTime, isProposed) VALUES (?, PolygonFromText(?),?,?,?,?)");					
 //				if (annoEntry.getPolygone().indexOf("\"></polygon></svg>")>0) {
 //					polygoneStatement.setString(3, "POLYGON(("+poly.substring(22,annoEntry.getPolygone().indexOf("\"></polygon></svg>"))+"))");					
@@ -8094,8 +9179,7 @@ public boolean isHan(String s) {
 			
 			
 
-		}
-		else {
+		} else {
 			deleteAnnotationEntry(annoEntry, isOrnament);
 		}
 		Date date = new Date(System.currentTimeMillis());
@@ -8344,7 +9428,7 @@ public boolean isHan(String s) {
 			pstmt.setString(54, bibEntry.getEditorType());
 			pstmt.setBoolean(55, bibEntry.isOfficialTitleTranslation());
 			pstmt.setString(56, bibEntry.getBibtexKey());
-			pstmt.setBoolean(57, bibEntry.getAnnotation());
+			pstmt.setString(57, bibEntry.getAnnotationHTML());
 			pstmt.setBoolean(58, bibEntry.getHasOtherAuthors());
 			pstmt.setBoolean(59, bibEntry.getHasOtherEditors());
 			pstmt.executeUpdate();
@@ -9566,7 +10650,7 @@ public boolean isHan(String s) {
 			pstmt.setString(54, bibEntry.getEditorType());
 			pstmt.setBoolean(55, bibEntry.isOfficialTitleTranslation());
 			pstmt.setString(56, bibEntry.getBibtexKey());
-			pstmt.setBoolean(57, bibEntry.getAnnotation());
+			pstmt.setString(57, bibEntry.getAnnotationHTML());
 			pstmt.setBoolean(58, bibEntry.getHasOtherAuthors());
 			pstmt.setBoolean(59, bibEntry.getHasOtherEditors());
 			pstmt.setInt(60, bibEntry.getAnnotatedBibliographyID());
@@ -9579,25 +10663,27 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return null;
 		}
-		if (bibEntry.getAccessLevel() == 2) {
-			bibEntry.setModifiedOn("");
-			Gson gson = new Gson();
-			String json = gson.toJson(bibEntry);	
-			Date date = new Date(System.currentTimeMillis());
-			DateFormat df = DateFormat.getDateTimeInstance();
-			String url = serverProperties.getProperty("home.elastic.url");
-			int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
-			String elastic_user = serverProperties.getProperty("home.elastic.login");
-			String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+		bibEntry.setModifiedOn("");
+		Gson gson = new Gson();
+		String json = gson.toJson(bibEntry);	
+		Date date = new Date(System.currentTimeMillis());
+		DateFormat df = DateFormat.getDateTimeInstance();
+		String url = serverProperties.getProperty("home.elastic.url");
+		int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+		String elastic_user = serverProperties.getProperty("home.elastic.login");
+		String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+		try {
 			String updateResult = doUploadToElastic(bibEntry.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
-
 			ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
 			System.out.println(er.result + " "+ updateResult);
-		    if (!er.result.equals("noop")) {
-		    	System.out.println(doUploadToElastic(bibEntry.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
-		    }
-		    bibEntry.setModifiedOn(df.format(date));			
+		    if (er.result == null || !er.result.equals("noop") || updateResult.contains("document_missing_exception")) {
+		    	doUploadToElastic(bibEntry.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false);			    }
+		} catch (Exception ex){
+			String updateResult = doUploadToElastic(bibEntry.getUniqueID(),  json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
+			System.out.println("exception:" + ex.getLocalizedMessage());
+			System.out.println("depictionentry was written new:" + updateResult);
 		}
+	    bibEntry.setModifiedOn(df.format(date));			
 		protocollModifiedAbstractEntry(bibEntry,"");
 		if (dologging){
 		long end = System.currentTimeMillis();
@@ -10563,12 +11649,14 @@ public boolean isHan(String s) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement(entry.getDescription().equals("Painted Representation") ? "INSERT INTO DepictionPolygonRelation (AnnotoriousID, DepictionID) VALUES (?,?)": "INSERT INTO OrnamentPolygonRelation (AnnotoriousID, OrnamentID) VALUES (?,?)", Statement.RETURN_GENERATED_KEYS);				
-			pstmt.setString(1, annotoriousID);
-			pstmt.setInt(2, entry.getId());
-			pstmt.executeQuery();
-
-			pstmt.close();
+			for (Integer ico: entry.getIconography()) {
+				pstmt = dbc.prepareStatement(entry.getDescription().equals("Painted Representation") ? "INSERT INTO DepictionPolygonRelation (AnnotoriousID, DepictionID, IconographyID) VALUES (?,?,?)": "INSERT INTO OrnamentPolygonRelation (AnnotoriousID, OrnamentID, IconographyID) VALUES (?,?, ?)", Statement.RETURN_GENERATED_KEYS);				
+				pstmt.setString(1, annotoriousID);
+				pstmt.setInt(2, entry.getId());
+				pstmt.setInt(3, ico);
+				pstmt.executeQuery();
+				pstmt.close();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
@@ -10582,7 +11670,7 @@ public boolean isHan(String s) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
-			pstmt = dbc.prepareStatement("SELECT * FROM DepictionImageRelation inner join Images on (DepictionImageRelation.ImageID = Images.ImageID) WHERE Images.Filename = ? and DepictionImageRelation.DepictionID not in (Select DepictionID from DepictionPolygonRelation where AnnotoriousID = ?)" );
+			pstmt = dbc.prepareStatement("SELECT * FROM DepictionImageRelation inner join Images on (DepictionImageRelation.ImageID = Images.ImageID) WHERE Images.Filename = ? and DepictionImageRelation.DepictionID not in (Select DepictionID from DepictionPolygonRelation where AnnotoriousID = ? and DepictionPolygonRelation.deleted = 0)" );
 			pstmt.setString(1, imageID);
 			pstmt.setString(2, annotoriousID);
 			ResultSet rs = pstmt.executeQuery();
@@ -10598,7 +11686,7 @@ public boolean isHan(String s) {
 		Connection dbc2 = getConnection();
 		PreparedStatement pstmt2;
 		try {
-			pstmt2 = dbc2.prepareStatement("SELECT * FROM OrnamentImageRelation inner join Images on (OrnamentImageRelation.ImageID = Images.ImageID) WHERE Images.Filename =  ? and OrnamentImageRelation.OrnamentID not in (Select OrnamentId from OrnamentPolygonRelation where AnnotoriousID = ?)" );
+			pstmt2 = dbc2.prepareStatement("SELECT * FROM OrnamentImageRelation inner join Images on (OrnamentImageRelation.ImageID = Images.ImageID) WHERE Images.Filename =  ? and OrnamentImageRelation.OrnamentID not in (Select OrnamentId from OrnamentPolygonRelation where AnnotoriousID = ? and OrnamentPolygonRelation.deleted = 0)" );
 			pstmt2.setString(1, imageID);
 			pstmt2.setString(2, annotoriousID);
 			ResultSet rs = pstmt2.executeQuery();
@@ -10659,9 +11747,9 @@ public boolean isHan(String s) {
 		if (!iconographyIDs.isEmpty()) {
 			where += where.isEmpty() 
 					? "(DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
-						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT DepcitionPolygonRelation.DepictionID FROM Annotations inner join Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") and Polygon.deleted=0 and Polygon.Polygon is not null and Annotations.deleted=0  GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+")))"
+						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT DepictionPolygonRelation.DepictionID from Polygon inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) WHERE DepictionPolygonRelation.IconographyID IN ("+iconographyIDs+") and Polygon.deleted=0 and Polygon.Polygon is not null and DepictionPolygonRelation.deleted=0  GROUP BY DepictionPolygonRelation.DepictionID HAVING (COUNT(DepictionPolygonRelation.DepictionID) >= "+searchEntry.getCorrelationFactor()+")))"
 					: " AND (DepictionID IN (SELECT DepictionID FROM DepictionIconographyRelation WHERE IconographyID IN (" + iconographyIDs + ") GROUP BY DepictionID HAVING (COUNT(DepictionID) >= " 
-						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT DepcitionPolygonRelation.DepictionID FROM Annotations inner join Polygon on (Polygon.AnnotoriousID=Annotations.AnnotoriousID) inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) WHERE Annotations.IconographyID IN ("+iconographyIDs+") and Polygon.deleted=0 and Polygon.Polygon is not null and Annotations.deleted=0  GROUP BY DepictionID HAVING (COUNT(DepictionID) >= "+searchEntry.getCorrelationFactor()+")))";
+						+ searchEntry.getCorrelationFactor() + ")) or DepictionID in (SELECT DepictionPolygonRelation.DepictionID FROM Polygon inner join DepictionPolygonRelation on (Polygon.AnnotoriousID = DepictionPolygonRelation.AnnotoriousID) WHERE DepictionPolygonRelation.IconographyID IN ("+iconographyIDs+") and Polygon.deleted=0 and Polygon.Polygon is not null and DepictionPolygonRelation.deleted=0  GROUP BY DepictionPolygonRelation.DepictionID HAVING (COUNT(DepictionPolygonRelation.DepictionID) >= "+searchEntry.getCorrelationFactor()+")))";
 		}
 		String wallTreeIDs = "";
 		for (int wallTreeID : searchEntry.getWallIDList()) {
@@ -10770,8 +11858,8 @@ public boolean isHan(String s) {
 			ResultSet rs = pstmt.executeQuery();
 			zaehler1+=1;
 			while (rs.next()) {
-				ArrayList<PositionEntry> positions = getPositionsbyWallrelation(depictionID, rs.getInt("WallID"));
-				WallTreeEntry wte = new WallTreeEntry(rs.getInt("WallID"),rs.getInt("ParentID"),rs.getString("Text"),rs.getString("search"),positions );
+				// ArrayList<PositionEntry> positions = getPositionsbyWallrelation(depictionID, rs.getInt("WallID"));
+				WallTreeEntry wte = new WallTreeEntry(rs.getInt("WallID"),rs.getInt("ParentID"),rs.getString("Text"),rs.getString("search"),null );
 				results.add(wte);
 				zaehler2+=1;
 				}
@@ -10782,20 +11870,17 @@ public boolean isHan(String s) {
 		}
 		return results;
 	}	
-	private ArrayList<PositionEntry> getPositionsbyWallrelation (int depictionID, int wallID){
+	private ArrayList<PositionEntry> getPositionsbyDimension(int wallDimensionID){
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		ArrayList<PositionEntry> results = new ArrayList<PositionEntry>();
 		try {
-			pstmt = dbc.prepareStatement("SELECT DepictionID, WallID, Position.PositionID, Name, Exact FROM WallPositionsRelation inner join Position on (WallPositionsRelation.PositionID=Position.PositionID) WHERE DepictionID = "+depictionID+" and WallID = "+wallID);
+			pstmt = dbc.prepareStatement("SELECT * from DepictionWallDimensionRelation WHERE deleted = 0 and CaveWallDimensionID = " + wallDimensionID);
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				if (rs.getInt("PositionID")!=-1){
-					PositionEntry pe = new PositionEntry(rs.getInt("PositionID"),rs.getString("Name"));
-					pe.setExact(rs.getBoolean("Exact"));
-					pe.setCoodinates(getCoordinatesbyPositionRelation(depictionID, wallID, pe.getPositionID()));
+				System.err.println("blubb");
+					PositionEntry pe = new PositionEntry(rs.getInt("DepictionWallDimensionRelationID"), rs.getInt("DepictionID"),rs.getString("Name"), rs.getInt("Register"), rs.getInt("Number"), rs.getBoolean("Exact"));
 					results.add(pe);
-				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -11050,7 +12135,7 @@ public boolean isHan(String s) {
 				String entryClass = rs.getString("EntryClass");
 				switch (entryClass) {
 					case "AnnotatedBibliographyEntry":
-						resultList.add(getAnnotatedBiblographybyID(entryID, ""));
+						resultList.add(getAnnotatedBibliographybyID(entryID, ""));
 						break;
 					case "CaveEntry":
 						resultList.add(getCave(entryID));

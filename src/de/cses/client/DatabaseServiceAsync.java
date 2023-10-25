@@ -39,6 +39,7 @@ import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.ExportEntry;
+import de.cses.shared.ExternalRessourceTypeEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageSearchEntry;
@@ -70,19 +71,25 @@ import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
+import de.cses.shared.WallDimensionEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
+import de.cses.shared.WallSketchEntry;
 import de.cses.shared.WallTreeEntry;
 
 public interface DatabaseServiceAsync {
 
 	void getDistricts(AsyncCallback<ArrayList<DistrictEntry>> callback) throws IllegalArgumentException;
 
-	void serializeAllDepictionEntries(String sessionId, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+	void serializeAllEntries(String sessionId, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+	
+	void updateAllEntries(String sessionId, AsyncCallback<Integer> callback) throws IllegalArgumentException;
 	
 	void getContext(AsyncCallback<String> callback) throws IllegalArgumentException;
 
 	void getOSDContext(AsyncCallback<String> callback) throws IllegalArgumentException;
+
+	void getOSDContextWallSketches(AsyncCallback<String> callback) throws IllegalArgumentException;
 
 	void getImage(int imageID, AsyncCallback<ImageEntry> callback) throws IllegalArgumentException;
 
@@ -96,9 +103,13 @@ public interface DatabaseServiceAsync {
 
 	void getMasterImageFromOrnament(int tnSize,String sessionID,AsyncCallback<Map<Integer,String>> callback) throws IllegalArgumentException;	
 	
-	void saveWallDimension(ArrayList<WallTreeEntry> pe, Integer caveID, AsyncCallback<Boolean> callback) throws IllegalArgumentException;	
+	void getWallSketchEntryByID(int wallSketchID, AsyncCallback<WallSketchEntry> callback) throws IllegalArgumentException;	
 	
-	void getWallDimension(Integer caveID, AsyncCallback<Map<Integer,ArrayList<PositionEntry>>> callback) throws IllegalArgumentException;	
+	void getWallSketches(AsyncCallback<ArrayList<WallSketchEntry>> callback) throws IllegalArgumentException;	
+	
+	void getWallDimension(Integer caveID, AsyncCallback<Map<Integer,ArrayList<WallDimensionEntry>>> callback) throws IllegalArgumentException;	
+	
+	void insertWallSketchEntry(WallSketchEntry wse, AsyncCallback<Integer> callback) throws IllegalArgumentException;	
 	
 	void getImages(String sqlWhere, AsyncCallback<ArrayList<ImageEntry>> callback) throws IllegalArgumentException;
 
@@ -130,6 +141,10 @@ public interface DatabaseServiceAsync {
 	 * @throws IllegalArgumentException
 	 */
 	void updateEntry(String sqlUpdate, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+
+	void updateExternalRessourceType(ExternalRessourceTypeEntry ert, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+
+	void insertExternalRessourceType(ExternalRessourceTypeEntry ert, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
 	void isHan(String title, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
 
@@ -413,4 +428,5 @@ public interface DatabaseServiceAsync {
 	
 	void addPreservationClassification(PreservationClassificationEntry pcEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 
+	void getOrnamentRessourceTypeList( AsyncCallback<List<ExternalRessourceTypeEntry>> asyncCallback) throws IllegalArgumentException;
 }

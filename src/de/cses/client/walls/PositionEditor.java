@@ -107,6 +107,7 @@ import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.PositionEntry;
 import de.cses.shared.UserEntry;
+import de.cses.shared.WallDimensionEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallTreeEntry;
 
@@ -116,16 +117,16 @@ import de.cses.shared.WallTreeEntry;
  */
 public class PositionEditor {
 
-
-	private ListStore<PositionEntry> positionEntryLS;
+	private ListStore<WallDimensionEntry> wallDimensionEntryLS;
 	private ListStore<CoordinatesEntry> coordinatesEntryLS;
-	private ListView<PositionEntry, PositionEntry> PositionSelectionLV;
+	private ListView<WallDimensionEntry, WallDimensionEntry> PositionSelectionLV;
 	private ListView<CoordinatesEntry, CoordinatesEntry> coordinatesLV;
 	private CoordinatesProperties coordinatesProps;
-	private PositionProperties positionProps;
+	private WallDimensionProperties wallDimensionProps;
 	private WallTree wallTree;
 	private CaveEntry entry;
-	private WallView wv = new WallView();
+	private WallViewListener wvl;
+	private WallView wv;;
 	private List<WallTreeEntry> walls;
 	private boolean setSearch;
 	private CheckBox exact;
@@ -138,37 +139,30 @@ public class PositionEditor {
 	private boolean isWallDimension = false;
 	private Grid<PositionEntry> grid = null;
 	private PositionDeimensionProperties positionDimensionProps = GWT.create(PositionDeimensionProperties.class);
-	private ListStore<PositionEntry> sourceStore;
+	private ListStore<WallDimensionEntry> sourceStore;
 	private SimpleComboBox<String> positionEntriesCB;
 	private GridRowEditing<PositionEntry> editing;
 	private boolean isCheckable = true;
 	PositionEntry peEdit = null;
 	NumberField<Integer> register = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
 	NumberField<Integer> number = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
-	private SimpleComboBox<PositionEntry> selectedPosition = new SimpleComboBox<PositionEntry>(new LabelProvider<PositionEntry>() {
-
-		@Override
-		public String getLabel(PositionEntry item) {
-			return item.getName();
-		}
-	});
 	SimpleComboBox<Integer> directionNF = new SimpleComboBox<Integer>(new LabelProvider<Integer>() {
 
 		@Override
 		public String getLabel(Integer item) {
-			return PositionEntry.DIRECTION_LABEL.get(item);
+			return WallDimensionEntry.DIRECTION_LABEL.get(item);
 		}
 	});
 	SimpleComboBox<Integer> typeNF = new SimpleComboBox<Integer>(new LabelProvider<Integer>() {
 
 		@Override
 		public String getLabel(Integer item) {
-			return PositionEntry.TYPE_LABEL.get(item);
+			return WallDimensionEntry.TYPE_LABEL.get(item);
 		}
 	});
 	
-	interface PositionProperties extends PropertyAccess<PositionEntry> {
-		ModelKeyProvider<PositionEntry> positionID();
+	interface WallDimensionProperties extends PropertyAccess<WallDimensionEntry> {
+		ModelKeyProvider<WallDimensionEntry> wallDimensionID();
 										
 
 		LabelProvider<PositionEntry> name();
@@ -204,26 +198,25 @@ public class PositionEditor {
 		this.setSearch=setSearch;
 		this.isWallDimension = isWallDimension;
 		this.isCheckable = isCheckable;
-		positionProps = GWT.create(PositionProperties.class);
+		wallDimensionProps = GWT.create(WallDimensionProperties.class);
 		
-		positionEntryLS = new ListStore<PositionEntry>(positionProps.positionID());
-		positionEntriesCB = new SimpleComboBox<String>(new LabelProvider<String>() {
-
-			@Override
-			public String getLabel(String item) {
-				return item;
-			}
-		});
-	
-		for (PositionEntry ope : StaticTables.getInstance().getPositionEntries().values()) {
-			positionEntryLS.add(ope);
-			positionEntriesCB.add(ope.getName());
-		}
+		wallDimensionEntryLS = new ListStore<WallDimensionEntry>(wallDimensionProps.wallDimensionID());
 		if (isCheckable) {
 			wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), walls, false, true, entry);			
 		} else {
 			wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), walls, false, false, entry);						
 		}
+		wvl = new WallViewListener() {
+
+			@Override
+			public void saveWall(WallTreeEntry wte) {
+				save(getSelectedWalls());
+				
+			}
+			
+		};
+		wv = new WallView(wvl);
+
 	}
 	public ArrayList<WallTreeEntry> getSelectedWalls() {
 		if (this.isCheckable) {
@@ -324,17 +317,6 @@ public class PositionEditor {
 
 		selectWallFP.add(wallTree.wallSelectorBLC);
 	
-		PositionSelectionLV = new ListView<PositionEntry, PositionEntry>(positionEntryLS,
-				new IdentityValueProvider<PositionEntry>(),
-				new SimpleSafeHtmlCell<PositionEntry>(new AbstractSafeHtmlRenderer<PositionEntry>() {
-
-					@Override
-					public SafeHtml render(PositionEntry entry) {
-						return pvTemplates.positionView(entry.getName());
-					}
-
-				}));
-		PositionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
 		//PositionSelectionLV.set;
 		
 	
@@ -459,249 +441,250 @@ public class PositionEditor {
 				popup.hide();
 			}
 		});
+		
 		ToolButton editTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
-		PopupPanel editWallGrid = new PopupPanel();
-		FramedPanel positionFP = new FramedPanel();
-		positionFP.setHeading("Set Wall Layout");
-		ColumnConfig<PositionEntry, String> posCol = new ColumnConfig<PositionEntry, String>(positionDimensionProps.name(), 300, "Position");
-		ColumnConfig<PositionEntry, Integer> directionCol = new ColumnConfig<PositionEntry, Integer>(positionDimensionProps.direction(), 300, "Direction");
-		ColumnConfig<PositionEntry, Integer> typeCol = new ColumnConfig<PositionEntry, Integer>(positionDimensionProps.type(), 300, "Type");
-		ColumnConfig<PositionEntry, Integer> regCol = new ColumnConfig<PositionEntry, Integer>(positionDimensionProps.registers(), 300, "Register");
-		ColumnConfig<PositionEntry, Integer> colCol = new ColumnConfig<PositionEntry, Integer>(positionDimensionProps.columns(), 300, "Amount");
-	    List<ColumnConfig<PositionEntry, ?>> sourceColumns = new ArrayList<ColumnConfig<PositionEntry, ?>>();
-//	    sourceColumns.add(selectionModel.getColumn());
-	    sourceColumns.add(posCol);
-	    sourceColumns.add(directionCol);
-	    sourceColumns.add(typeCol);
-	    sourceColumns.add(regCol);
-	    sourceColumns.add(colCol);
-	    ColumnModel<PositionEntry> sourceColumnModel = new ColumnModel<PositionEntry>(sourceColumns);
-	    
-	    sourceStore = new ListStore<PositionEntry>(positionDimensionProps.key());
-	    // hier daten laden
-	    grid = new Grid<PositionEntry>(sourceStore, sourceColumnModel);
-//	    grid.setSelectionModel(selectionModel);
-//	    grid.setColumnReordering(true);
-	    grid.getView().setAutoExpandColumn(posCol);
-	    grid.setBorders(false);
-	    grid.getView().setStripeRows(true);
-	    grid.getView().setColumnLines(true);
-	    grid.getView().setForceFit(true);
-    
-		positionEntriesCB.setEditable(false);
-		positionEntriesCB.setTypeAhead(false);
-		positionEntriesCB.setTriggerAction(TriggerAction.ALL);
-	    editing = new GridRowEditing<PositionEntry>(grid);
-	    editing.addEditor(posCol, positionEntriesCB);
-		directionNF.add(PositionEntry.LEFT);
-		directionNF.add(PositionEntry.RIGHT);
-
-		directionNF.setEditable(false);
-		directionNF.setTypeAhead(false);
-		directionNF.setTriggerAction(TriggerAction.ALL);
-	    directionNF.setAllowBlank(false);
-	    editing.addEditor(directionCol, directionNF);
-		typeNF.add(PositionEntry.RHOMBUS);
-		typeNF.add(PositionEntry.SQHARE);
-
-		typeNF.setEditable(false);
-		typeNF.setTypeAhead(false);
-		typeNF.setTriggerAction(TriggerAction.ALL);
-		typeNF.setAllowBlank(false);
-	    editing.addEditor(typeCol, typeNF);
-	    NumberField<Integer> registerNF = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
-	    registerNF.setAllowBlank(false);
-	    editing.addEditor(regCol, registerNF);
-	    NumberField<Integer> colNF = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
-	    colNF.setAllowBlank(false);
-	    editing.addEditor(colCol, colNF);				    				    
-	    editing.addCancelEditHandler(new CancelEditHandler<PositionEntry>() {
-				
-				@Override
-				public void onCancelEdit(CancelEditEvent<PositionEntry> event) {
-					PositionEntry entry = event.getSource().getEditableGrid().getSelectionModel().getSelectedItem();
-					if (entry!=null) {
-						if (entry.getPositionID() == 0 && (!positionEntriesCB.isValid() || !directionNF.isValid() || !typeNF.isValid() || !registerNF.isValid())) {
-							sourceStore.remove(entry);
-						}
-					}
-				}
-			});
-	    editing.addStartEditHandler(new StartEditHandler<PositionEntry>() {
-
-			@Override
-			public void onStartEdit(StartEditEvent<PositionEntry> event) {
-				// TODO Auto-generated method stub
-				peEdit = event.getSource().getEditableGrid().getSelectionModel().getSelectedItem();
-			}
-	    	
-	    });
-	    editing.addCompleteEditHandler(new CompleteEditHandler<PositionEntry>() {
-				
-				@Override
-				public void onCompleteEdit(CompleteEditEvent<PositionEntry> event) {
-					PositionEntry peNew = event.getSource().getEditableGrid().getSelectionModel().getSelectedItem();
-					if (peNew!=null) {
-						if (peNew.getPositionID() == 0 && (!positionEntriesCB.isValid() || !directionNF.isValid() || !typeNF.isValid() || !registerNF.isValid())) {
-							sourceStore.remove(peNew);
-						} else {
-							dbService.isGoodDimension(entry.getCaveID(), peNew.getRegisters(), peNew.getColumns(), new AsyncCallback<Boolean>() {
-
-								@Override
-								public void onFailure(Throwable caught) {
-									// TODO Auto-generated method stub
-									Util.doLogging(caught.getLocalizedMessage());
-								}
-
-								@Override
-								public void onSuccess(Boolean result) {
-									if (result) {
-										Info.display("New Walldimensions", "good");
-									} else {
-										Info.display("New Walldimensions declined!", "there are Entries, which would be outside the new dimensions.");
-										sourceStore.remove(peNew);
-										sourceStore.add(peEdit);
-									}
-								}
-							});
-						}
-					}
-				}
-			});
-
-
-		positionFP.add(grid);
-		positionFP.setHeight(500);
-		ToolButton cancelpositionTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
-		cancelpositionTB.setToolTip(Util.createToolTip("close"));
-		cancelpositionTB.addSelectHandler(new SelectHandler() {
-
-			@Override
-			public void onSelect(SelectEvent event) {
-				editWallGrid.hide();
-			};
-		});
-		ToolButton savepositionTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
-		savepositionTB.setToolTip(Util.createToolTip("Save Wall Positions"));
-		savepositionTB.addSelectHandler(new SelectHandler() {
-
-			@Override
-			public void onSelect(SelectEvent event) {
-				ArrayList<PositionEntry> positions = new ArrayList<PositionEntry>();
-				Collection<Store<PositionEntry>.Record> records = sourceStore.getModifiedRecords();
-				for (Store<PositionEntry>.Record record : sourceStore.getModifiedRecords()) {
-					String positionName = record.getValue(positionDimensionProps.name());
-					PositionEntry peChosen = null;
-					for (PositionEntry pe : StaticTables.getInstance().getPositionEntries().values()) {
-						if (pe.getName().equals(positionName)) {
-							peChosen = pe;
-							break;
-						}
-					}
-					peChosen.setdirection(record.getValue(positionDimensionProps.direction()));
-					peChosen.setType(record.getValue(positionDimensionProps.type()));
-					peChosen.setRegisters(record.getValue(positionDimensionProps.registers()));
-					peChosen.setColumns(record.getValue(positionDimensionProps.columns()));
-					positions.add(peChosen);
-				};
-				ArrayList<PositionEntry> newPositions = new ArrayList<PositionEntry>();
-				WallTreeEntry wte = wallTree.wallTree.getSelectionModel().getSelectedItem();
-				ArrayList<PositionEntry> oldPositions = entry.getWallPositions().get(wte.getWallLocationID());
-				if (oldPositions != null) {
-					for (PositionEntry pe: oldPositions) {
-						if (!positions.contains(pe)) {
-							newPositions.add(pe);
-						} else {
-							for (PositionEntry peNew: positions) {
-								if (peNew.getPositionID() == pe.getPositionID()) {
-									if ((peNew.getRegisters() < pe.getRegisters())||(peNew.getColumns() < pe.getColumns())) {
-										dbService.isGoodDimension(entry.getCaveID(), peNew.getRegisters(), peNew.getColumns(), new AsyncCallback<Boolean>() {
-
-											@Override
-											public void onFailure(Throwable caught) {
-												// TODO Auto-generated method stub
-												Util.doLogging(caught.getLocalizedMessage());
-											}
-
-											@Override
-											public void onSuccess(Boolean result) {
-												if (result) {
-													Info.display("New Walldimensions", "good");
-												} else {
-													Info.display("New Walldimensions", "bad");
-												}
-											}
-										});
-									}
-								}
-							}
-						}
-					}
-				}
-				newPositions.addAll(positions);
-				wallTree.wallTree.getSelectionModel().getSelectedItem().setPosition(newPositions);
-				wallTree.wallTree.refresh(wallTree.wallTree.getSelectionModel().getSelectedItem());
-				wallTree.wallTree.setAutoExpand(true);
-
-				entry.getWallPositions().put(wte.getWallLocationID(), newPositions);
-				if (!isWallDimension) {
-					ArrayList<WallTreeEntry> wtes = getAllWalls();
-					dbService.saveWallDimension(wtes, entry.getCaveID(), new AsyncCallback<Boolean>() {
-
-						@Override
-						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
-							Util.doLogging(caught.getLocalizedMessage());
-						}
-
-						@Override
-						public void onSuccess(Boolean result) {
-							if (result) {
-								Info.display("Walls saved", "Success!");
-							} else {
-								Info.display("Walls saved", "Failed!");
-							}
-						}
-					});
-				}
-				editWallGrid.hide(true);
-			};
-		});
-		ToolButton addPositionTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
-		addPositionTB.addSelectHandler(new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-				PositionEntry newUser = new PositionEntry(0,"");
-				sourceStore.add(newUser);
-				editing.startEditing(new GridCell(sourceStore.size()-1, 0));
-			}
-		});
-		ToolButton delPositionTB = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
-		delPositionTB.addSelectHandler(new SelectHandler() {
-			
-			@Override
-			public void onSelect(SelectEvent event) {
-				WallTreeEntry wte = wallTree.wallTree.getSelectionModel().getSelectedItem();
-				ArrayList<PositionEntry> removedEntries = new ArrayList<PositionEntry>(grid.getSelectionModel().getSelectedItems());
-				ArrayList<PositionEntry> newPositions = new ArrayList<PositionEntry>();
-				for (PositionEntry pe: entry.getWallPositions().get(wte.getWallLocationID())){
-					if (!removedEntries.contains(pe)) {
-						newPositions.add(pe);
-					}
-				}
-				entry.getWallPositions().put(wte.getWallLocationID(), newPositions);
-				wallTree.wallTree.getSelectionModel().getSelectedItem().setPosition(newPositions);
-				wallTree.wallTree.refresh(wallTree.wallTree.getSelectionModel().getSelectedItem());
-				wallTree.wallTree.setAutoExpand(true);
-
-				editWallGrid.hide();
-			}
-		});
-		positionFP.addTool(delPositionTB);
-		positionFP.addTool(addPositionTB);
-		positionFP.addTool(savepositionTB);
-		positionFP.addTool(cancelpositionTB);
+//		PopupPanel editWallGrid = new PopupPanel();
+//		FramedPanel positionFP = new FramedPanel();
+//		positionFP.setHeading("Set Wall Layout");
+//		ColumnConfig<PositionEntry, String> posCol = new ColumnConfig<PositionEntry, String>(positionDimensionProps.name(), 300, "Position");
+//		ColumnConfig<PositionEntry, Integer> directionCol = new ColumnConfig<PositionEntry, Integer>(positionDimensionProps.direction(), 300, "Direction");
+//		ColumnConfig<PositionEntry, Integer> typeCol = new ColumnConfig<PositionEntry, Integer>(positionDimensionProps.type(), 300, "Type");
+//		ColumnConfig<PositionEntry, Integer> regCol = new ColumnConfig<PositionEntry, Integer>(positionDimensionProps.registers(), 300, "Register");
+//		ColumnConfig<PositionEntry, Integer> colCol = new ColumnConfig<PositionEntry, Integer>(positionDimensionProps.columns(), 300, "Amount");
+//	    List<ColumnConfig<PositionEntry, ?>> sourceColumns = new ArrayList<ColumnConfig<PositionEntry, ?>>();
+////	    sourceColumns.add(selectionModel.getColumn());
+//	    sourceColumns.add(posCol);
+//	    sourceColumns.add(directionCol);
+//	    sourceColumns.add(typeCol);
+//	    sourceColumns.add(regCol);
+//	    sourceColumns.add(colCol);
+//	    ColumnModel<PositionEntry> sourceColumnModel = new ColumnModel<PositionEntry>(sourceColumns);
+//	    
+//	    sourceStore = new ListStore<PositionEntry>(positionDimensionProps.key());
+//	    // hier daten laden
+//	    grid = new Grid<PositionEntry>(sourceStore, sourceColumnModel);
+////	    grid.setSelectionModel(selectionModel);
+////	    grid.setColumnReordering(true);
+//	    grid.getView().setAutoExpandColumn(posCol);
+//	    grid.setBorders(false);
+//	    grid.getView().setStripeRows(true);
+//	    grid.getView().setColumnLines(true);
+//	    grid.getView().setForceFit(true);
+//    
+//		positionEntriesCB.setEditable(false);
+//		positionEntriesCB.setTypeAhead(false);
+//		positionEntriesCB.setTriggerAction(TriggerAction.ALL);
+//	    editing = new GridRowEditing<PositionEntry>(grid);
+//	    editing.addEditor(posCol, positionEntriesCB);
+//		directionNF.add(PositionEntry.LEFT);
+//		directionNF.add(PositionEntry.RIGHT);
+//
+//		directionNF.setEditable(false);
+//		directionNF.setTypeAhead(false);
+//		directionNF.setTriggerAction(TriggerAction.ALL);
+//	    directionNF.setAllowBlank(false);
+//	    editing.addEditor(directionCol, directionNF);
+//		typeNF.add(PositionEntry.RHOMBUS);
+//		typeNF.add(PositionEntry.SQHARE);
+//
+//		typeNF.setEditable(false);
+//		typeNF.setTypeAhead(false);
+//		typeNF.setTriggerAction(TriggerAction.ALL);
+//		typeNF.setAllowBlank(false);
+//	    editing.addEditor(typeCol, typeNF);
+//	    NumberField<Integer> registerNF = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
+//	    registerNF.setAllowBlank(false);
+//	    editing.addEditor(regCol, registerNF);
+//	    NumberField<Integer> colNF = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
+//	    colNF.setAllowBlank(false);
+//	    editing.addEditor(colCol, colNF);				    				    
+//	    editing.addCancelEditHandler(new CancelEditHandler<PositionEntry>() {
+//				
+//				@Override
+//				public void onCancelEdit(CancelEditEvent<PositionEntry> event) {
+//					PositionEntry entry = event.getSource().getEditableGrid().getSelectionModel().getSelectedItem();
+//					if (entry!=null) {
+//						if (entry.getPositionID() == 0 && (!positionEntriesCB.isValid() || !directionNF.isValid() || !typeNF.isValid() || !registerNF.isValid())) {
+//							sourceStore.remove(entry);
+//						}
+//					}
+//				}
+//			});
+//	    editing.addStartEditHandler(new StartEditHandler<PositionEntry>() {
+//
+//			@Override
+//			public void onStartEdit(StartEditEvent<PositionEntry> event) {
+//				// TODO Auto-generated method stub
+//				peEdit = event.getSource().getEditableGrid().getSelectionModel().getSelectedItem();
+//			}
+//	    	
+//	    });
+//	    editing.addCompleteEditHandler(new CompleteEditHandler<PositionEntry>() {
+//				
+//				@Override
+//				public void onCompleteEdit(CompleteEditEvent<PositionEntry> event) {
+//					PositionEntry peNew = event.getSource().getEditableGrid().getSelectionModel().getSelectedItem();
+//					if (peNew!=null) {
+//						if (peNew.getPositionID() == 0 && (!positionEntriesCB.isValid() || !directionNF.isValid() || !typeNF.isValid() || !registerNF.isValid())) {
+//							sourceStore.remove(peNew);
+//						} else {
+//							dbService.isGoodDimension(entry.getCaveID(), peNew.getRegisters(), peNew.getColumns(), new AsyncCallback<Boolean>() {
+//
+//								@Override
+//								public void onFailure(Throwable caught) {
+//									// TODO Auto-generated method stub
+//									Util.doLogging(caught.getLocalizedMessage());
+//								}
+//
+//								@Override
+//								public void onSuccess(Boolean result) {
+//									if (result) {
+//										Info.display("New Walldimensions", "good");
+//									} else {
+//										Info.display("New Walldimensions declined!", "there are Entries, which would be outside the new dimensions.");
+//										sourceStore.remove(peNew);
+//										sourceStore.add(peEdit);
+//									}
+//								}
+//							});
+//						}
+//					}
+//				}
+//			});
+//
+//
+//		positionFP.add(grid);
+//		positionFP.setHeight(500);
+//		ToolButton cancelpositionTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+//		cancelpositionTB.setToolTip(Util.createToolTip("close"));
+//		cancelpositionTB.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				editWallGrid.hide();
+//			};
+//		});
+//		ToolButton savepositionTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+//		savepositionTB.setToolTip(Util.createToolTip("Save Wall Positions"));
+//		savepositionTB.addSelectHandler(new SelectHandler() {
+//
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				ArrayList<PositionEntry> positions = new ArrayList<PositionEntry>();
+//				Collection<Store<PositionEntry>.Record> records = sourceStore.getModifiedRecords();
+//				for (Store<PositionEntry>.Record record : sourceStore.getModifiedRecords()) {
+//					String positionName = record.getValue(positionDimensionProps.name());
+//					PositionEntry peChosen = null;
+//					for (PositionEntry pe : StaticTables.getInstance().getPositionEntries().values()) {
+//						if (pe.getName().equals(positionName)) {
+//							peChosen = pe;
+//							break;
+//						}
+//					}
+//					peChosen.setdirection(record.getValue(positionDimensionProps.direction()));
+//					peChosen.setType(record.getValue(positionDimensionProps.type()));
+//					peChosen.setRegisters(record.getValue(positionDimensionProps.registers()));
+//					peChosen.setColumns(record.getValue(positionDimensionProps.columns()));
+//					positions.add(peChosen);
+//				};
+//				ArrayList<PositionEntry> newPositions = new ArrayList<PositionEntry>();
+//				WallTreeEntry wte = wallTree.wallTree.getSelectionModel().getSelectedItem();
+//				ArrayList<PositionEntry> oldPositions = entry.getWallPositions().get(wte.getWallLocationID());
+//				if (oldPositions != null) {
+//					for (PositionEntry pe: oldPositions) {
+//						if (!positions.contains(pe)) {
+//							newPositions.add(pe);
+//						} else {
+//							for (PositionEntry peNew: positions) {
+//								if (peNew.getPositionID() == pe.getPositionID()) {
+//									if ((peNew.getRegisters() < pe.getRegisters())||(peNew.getColumns() < pe.getColumns())) {
+//										dbService.isGoodDimension(entry.getCaveID(), peNew.getRegisters(), peNew.getColumns(), new AsyncCallback<Boolean>() {
+//
+//											@Override
+//											public void onFailure(Throwable caught) {
+//												// TODO Auto-generated method stub
+//												Util.doLogging(caught.getLocalizedMessage());
+//											}
+//
+//											@Override
+//											public void onSuccess(Boolean result) {
+//												if (result) {
+//													Info.display("New Walldimensions", "good");
+//												} else {
+//													Info.display("New Walldimensions", "bad");
+//												}
+//											}
+//										});
+//									}
+//								}
+//							}
+//						}
+//					}
+//				}
+//				newPositions.addAll(positions);
+//				wallTree.wallTree.getSelectionModel().getSelectedItem().setPosition(newPositions);
+//				wallTree.wallTree.refresh(wallTree.wallTree.getSelectionModel().getSelectedItem());
+//				wallTree.wallTree.setAutoExpand(true);
+//
+//				entry.getWallPositions().put(wte.getWallLocationID(), newPositions);
+//				if (!isWallDimension) {
+//					ArrayList<WallTreeEntry> wtes = getAllWalls();
+//					dbService.saveWallDimension(wtes, entry.getCaveID(), new AsyncCallback<Boolean>() {
+//
+//						@Override
+//						public void onFailure(Throwable caught) {
+//							// TODO Auto-generated method stub
+//							Util.doLogging(caught.getLocalizedMessage());
+//						}
+//
+//						@Override
+//						public void onSuccess(Boolean result) {
+//							if (result) {
+//								Info.display("Walls saved", "Success!");
+//							} else {
+//								Info.display("Walls saved", "Failed!");
+//							}
+//						}
+//					});
+//				}
+//				editWallGrid.hide(true);
+//			};
+//		});
+//		ToolButton addPositionTB = new ToolButton(new IconConfig("addButton", "addButtonOver"));
+//		addPositionTB.addSelectHandler(new SelectHandler() {
+//			
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				PositionEntry newUser = new PositionEntry(0,"");
+//				sourceStore.add(newUser);
+//				editing.startEditing(new GridCell(sourceStore.size()-1, 0));
+//			}
+//		});
+//		ToolButton delPositionTB = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
+//		delPositionTB.addSelectHandler(new SelectHandler() {
+//			
+//			@Override
+//			public void onSelect(SelectEvent event) {
+//				WallTreeEntry wte = wallTree.wallTree.getSelectionModel().getSelectedItem();
+//				ArrayList<PositionEntry> removedEntries = new ArrayList<PositionEntry>(grid.getSelectionModel().getSelectedItems());
+//				ArrayList<PositionEntry> newPositions = new ArrayList<PositionEntry>();
+//				for (PositionEntry pe: entry.getWallPositions().get(wte.getWallLocationID())){
+//					if (!removedEntries.contains(pe)) {
+//						newPositions.add(pe);
+//					}
+//				}
+//				entry.getWallPositions().put(wte.getWallLocationID(), newPositions);
+//				wallTree.wallTree.getSelectionModel().getSelectedItem().setPosition(newPositions);
+//				wallTree.wallTree.refresh(wallTree.wallTree.getSelectionModel().getSelectedItem());
+//				wallTree.wallTree.setAutoExpand(true);
+//
+//				editWallGrid.hide();
+//			}
+//		});
+//		positionFP.addTool(delPositionTB);
+//		positionFP.addTool(addPositionTB);
+//		positionFP.addTool(savepositionTB);
+//		positionFP.addTool(cancelpositionTB);
 		if (this.isWallDimension) {
 			this.wallTree.wallTree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 			editTB.setToolTip(Util.createToolTip("Add Wall Dimension"));
@@ -709,20 +692,21 @@ public class PositionEditor {
 
 				@Override
 				public void onSelect(SelectEvent event) {
-					editWallGrid.clear();
-					sourceStore.clear();
-				    WallTreeEntry wte = wallTree.wallTree.getSelectionModel().getSelectedItem();
-				    ArrayList<PositionEntry> positions = null;
-				    if (wte != null) {
-					    positions = entry.getWallPositions().get(wte.getWallLocationID());	    	
-				    }
-				    if (positions != null) {
-						for (PositionEntry pe: positions) {
-							sourceStore.add(pe);
-						}				    	
-				    }
-					editWallGrid.add(positionFP);
-					editWallGrid.center();
+					wv.setWall(wallTree.wallTree.getSelectionModel().getSelectedItem());
+//					editWallGrid.clear();
+//					sourceStore.clear();
+//				    WallTreeEntry wte = wallTree.wallTree.getSelectionModel().getSelectedItem();
+//				    ArrayList<PositionEntry> positions = null;
+//				    if (wte != null) {
+//					    positions = entry.getWallPositions().get(wte.getWallLocationID());
+//					    if (positions != null) {
+//							for (PositionEntry pe: positions) {
+//								sourceStore.add(pe);
+//							}				    	
+//					    }
+//						editWallGrid.add(positionFP);
+//						editWallGrid.center();
+//				    }
 				}
 			});					
 		} else {
@@ -732,116 +716,29 @@ public class PositionEditor {
 					PopupPanel editWallPosition = new PopupPanel();					
 					sourceStore.clear();
 				    WallTreeEntry wte = wallTree.wallTree.getSelectionModel().getSelectedItem();
-				    ArrayList<PositionEntry> positions = null;
+				    ArrayList<WallDimensionEntry> dimensions = null;
 				    if (wte != null) {
-					    positions = entry.getWallPositions().get(wte.getWallLocationID());	    	
+					    dimensions = entry.getWallDimensions().get(wte.getWallLocationID());	    	
 				    }
-				    if (positions != null) {
-						for (PositionEntry pe: positions) {
-							sourceStore.add(pe);
+				    if (dimensions != null) {
+						for (WallDimensionEntry wde: dimensions) {
+							sourceStore.add(wde);
 						}				    	
 				    }
 				    FramedPanel positionCombiFP = new FramedPanel();
 					
 					positionCombiFP.setHeading("Set position");
-					if (wallTree.wallTree.getSelectionModel().getSelectedItem().getPosition()==null) {
+					if (wallTree.wallTree.getSelectionModel().getSelectedItem().getDimensions()==null) {
 						PositionSelectionLV.getSelectionModel().deselectAll();
 					}
 					else {
 						PositionSelectionLV.getSelectionModel().deselectAll();
 //						PositionSelectionLV.getSelectionModel().setSelection(wallTree.wallTree.getSelectionModel().getSelectedItem().getPosition());
-						ArrayList<PositionEntry> selected = wallTree.wallTree.getSelectionModel().getSelectedItem().getPosition();
-						for (PositionEntry pe : selected) {
+						ArrayList<WallDimensionEntry> selected = wallTree.wallTree.getSelectionModel().getSelectedItem().getDimensions();
+						for (WallDimensionEntry pe : selected) {
 							PositionSelectionLV.getSelectionModel().select(true, pe);
 						}
 					}
-					selectedPosition.getStore().clear();
-					selectedPosition.add(PositionSelectionLV.getSelectionModel().getSelectedItems());
-					selectedPosition.addValueChangeHandler(new ValueChangeHandler<PositionEntry>() {
-
-						@Override
-						public void onValueChange(ValueChangeEvent event) {
-							coordinatesEntryLS.clear();
-							CaveEntry cEntry = entry;
-							Map<Integer,ArrayList<PositionEntry>> map = cEntry.getWallPositions();
-							WallTreeEntry wall = wallTree.wallTree.getSelectionModel().getSelectedItem();
-							Integer wallLocationID = wall.getWallLocationID();
-							ArrayList<PositionEntry> peList = map.get(wallLocationID);
-							if (peList == null) {
-								peList = new ArrayList<PositionEntry>();
-							}
-							Boolean found = false;
-							for (PositionEntry pe: peList) {
-								PositionEntry changedPosition = (PositionEntry)(event.getValue());
-								PositionEntry depictionPositionChosen = null;
-								for (PositionEntry depictionPosition: wallTree.wallTree.getSelectionModel().getSelectedItem().getPosition()) {
-									if (depictionPosition.getPositionID() == changedPosition.getPositionID()) {
-										depictionPositionChosen =  depictionPosition;
-										exact.setValue(depictionPositionChosen.getExact());
-										break;
-									}
-								}
-								if (changedPosition.getPositionID()== pe.getPositionID()) {
-									found = true;
-									if ((pe.getColumns()>-1)&&(pe.getRegisters()>-1)) {
-										for (int i=1;i<=pe.getRegisters();i++) {
-											for (int j=1;j<=pe.getColumns();j++) {
-												CoordinatesEntry ce = new CoordinatesEntry(i, j);
-												coordinatesEntryLS.add(ce);
-												if (depictionPositionChosen != null) {
-													for (CoordinatesEntry ceSelected: depictionPositionChosen.getCoodinates()) {
-														if ((ce.getRegister() == ceSelected.getRegister()) && (ce.getNumber() == ceSelected.getNumber())) {
-															coordinatesLV.getSelectionModel().select(ce, true);
-														}
-													}	
-												}
-											}
-										}
-										break;	
-									}
-								}
-							}
-							if (found != true) {
-								Util.showYesNo("No Dimensions are stored for this position!", "Do you wish to store dimensions now?", new SelectHandler() {
-									@Override
-									public void onSelect(SelectEvent event) {
-										editWallGrid.clear();
-										editWallGrid.add(positionFP);
-										editWallGrid.center();
-									}
-								}, new SelectHandler() {
-
-									@Override
-									public void onSelect(SelectEvent event) {
-									}
-								}, new KeyDownHandler() {
-
-									@Override
-									public void onKeyDown(KeyDownEvent e) {
-										editWallGrid.clear();
-										editWallGrid.add(positionFP);
-										editWallGrid.center();
-									}
-							
-									
-								});
-							}
-						}
-						
-					});
-					PositionSelectionLV.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<PositionEntry>() {
-
-						@Override
-						public void onSelectionChanged(SelectionChangedEvent<PositionEntry> event) {
-							selectedPosition.clear();
-							selectedPosition.getStore().clear();
-							for (PositionEntry pe: event.getSelection()) {
-								selectedPosition.add(pe);
-								selectedPosition.select(pe);
-							}
-						}
-						
-					});
 					FramedPanel fpPosition = new FramedPanel();
 					fpPosition.setHeading("Position");
 					fpPosition.add(PositionSelectionLV);
@@ -850,95 +747,9 @@ public class PositionEditor {
 					VerticalLayoutContainer dimensionVLC = new VerticalLayoutContainer();
 					FramedPanel fpSelectedPosition = new FramedPanel();
 					fpSelectedPosition.setHeading("Selected Position");
-					fpSelectedPosition.add(selectedPosition);
 					exact = new CheckBox();
 					exact.setBoxLabel("exact");
 					//exact.setValue(bibEntry.isOfficialTitleTranslation());
-					FramedPanel coordinatesFP = new FramedPanel();
-					coordinatesFP.setHeading("Set Coordinates");
-					coordinatesProps  = GWT.create(CoordinatesProperties.class);
-					coordinatesEntryLS = new ListStore<CoordinatesEntry>(coordinatesProps.coordinatesID());
-					coordinatesLV = new ListView<CoordinatesEntry, CoordinatesEntry>(coordinatesEntryLS,
-							new IdentityValueProvider<CoordinatesEntry>(),
-							new SimpleSafeHtmlCell<CoordinatesEntry>(new AbstractSafeHtmlRenderer<CoordinatesEntry>() {
-
-								@Override
-								public SafeHtml render(CoordinatesEntry entry) {
-									return pvTemplates.positionView(entry.getName());
-								}
-
-							}));
-					coordinatesLV.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
-					coordinatesLV.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<CoordinatesEntry>() {
-
-						@Override
-						public void onSelectionChanged(SelectionChangedEvent<CoordinatesEntry> event) {
-							ArrayList<CoordinatesEntry> coordinates = new ArrayList<CoordinatesEntry>();
-							for (CoordinatesEntry pe: event.getSelection()) {
-								coordinates.add(pe);
-							}
-							PositionEntry pos = selectedPosition.getStore().get(selectedPosition.getSelectedIndex());
-							pos.setCoodinates(coordinates);
-						}
-						
-					});
-					coordinatesFP.add(coordinatesLV);
-
-					dimensionVLC.setHeight(600);
-					dimensionVLC.setWidth(400);
-					dimensionVLC.add(fpSelectedPosition, new VerticalLayoutData(1.0, 0.2));
-					dimensionVLC.add(exact, new VerticalLayoutData(1.0, 0.1));
-					dimensionVLC.add(coordinatesFP, new VerticalLayoutData(1.0, 0.7));
-					
-					fpDimension.add(dimensionVLC);
-					VerticalLayoutContainer positionVLC = new VerticalLayoutContainer();
-					positionVLC.setHeight(600);
-					positionVLC.setWidth(400);
-					positionVLC.add(fpPosition, new VerticalLayoutData(1.0, 0.3));
-					positionVLC.add(fpDimension, new VerticalLayoutData(1.0, 0.7));
-					positionCombiFP.add(positionVLC);
-					editWallPosition.add(positionCombiFP);
-					ToolButton cancelpositionTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
-					cancelpositionTB.setToolTip(Util.createToolTip("close"));
-					cancelpositionTB.addSelectHandler(new SelectHandler() {
-
-						@Override
-						public void onSelect(SelectEvent event) {
-							editWallPosition.hide();
-						};
-					});
-					ToolButton savepositionTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
-					savepositionTB.setToolTip(Util.createToolTip("save Position for"+wallTree.wallTree.getSelectionModel().getSelectedItem().getText()));
-					savepositionTB.addSelectHandler(new SelectHandler() {
-
-						@Override
-						public void onSelect(SelectEvent event) {
-							ArrayList<PositionEntry> positions = new ArrayList<PositionEntry>();
-							for (PositionEntry pe : PositionSelectionLV.getSelectionModel().getSelectedItems()) {
-								positions.add(pe);
-							};
-							wallTree.wallTree.getSelectionModel().getSelectedItem().setPosition(positions);
-					
-							Info.display("Test: ", wallTree.wallTree.getSelectionModel().getSelectedItem().getText());
-							wallTree.wallTree.refresh(wallTree.wallTree.getSelectionModel().getSelectedItem());
-							wallTree.wallTree.setAutoExpand(true);
-							editWallPosition.hide();
-						};
-					});
-					ToolButton editPositionAreas = new ToolButton(new IconConfig("editButton", "editButtonOver"));
-					editPositionAreas.setToolTip(Util.createToolTip("Edit Position Areas for "+wallTree.wallTree.getSelectionModel().getSelectedItem().getText()));
-					editPositionAreas.addSelectHandler(new SelectHandler() {
-
-						@Override
-						public void onSelect(SelectEvent event) {
-							editWallGrid.clear();
-							editWallGrid.add(positionFP);
-							editWallGrid.center();
-						};
-					});
-					positionCombiFP.addTool(savepositionTB);
-					fpPosition.addTool(editPositionAreas);					
-					positionCombiFP.addTool(cancelpositionTB);
 					editWallPosition.center();
 				}
 			});			
@@ -955,7 +766,7 @@ public class PositionEditor {
 		});
 		if (!setSearch) {
 			selectWallFP.addTool(editTB);
-			selectWallFP.addTool(saveTB);
+			//selectWallFP.addTool(saveTB);
 		}
 		selectWallFP.addTool(cancelTB);
 		Util.doLogging("WallOrnamentCaveRelationEditor.createForm() finished");

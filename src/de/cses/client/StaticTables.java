@@ -45,6 +45,7 @@ import de.cses.shared.SiteEntry;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.VendorEntry;
 import de.cses.shared.WallLocationEntry;
+import de.cses.shared.WallSketchEntry;
 import de.cses.shared.WallTreeEntry;
 
 /**
@@ -83,6 +84,7 @@ public class StaticTables {
 	protected HashMap<Integer, OrientationEntry> orientationEntryMap;
 	protected Map<Integer,String> ornamentMasterPics = new HashMap<Integer,String>();
 	private ArrayList<OrnamentEntry> ornamentEntries;
+	private ArrayList<WallSketchEntry> wallSketchEntries;
 	private static Map<Character, Character> MAP_NORM;
 
 	private int loadCounter;
@@ -109,7 +111,7 @@ public class StaticTables {
 	 */
 	public StaticTables(ListsLoadedListener l) {
 		listener = l;
-		loadCounter = 23;
+		loadCounter = 24;
 		loadDistricts();
 		loadSites();
 		loadRegions();
@@ -133,12 +135,13 @@ public class StaticTables {
 		loadOrientation();
 		loadWallEntries();
 		loadPositionTable();
+		loadWallSketches();
 	}
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((23.0 - loadCounter) / 23.0);
-		Double loaded = (23.0 - loadCounter) / 23.0;
+		listener.listsLoaded((24.0 - loadCounter) / 24.0);
+		Double loaded = (24.0 - loadCounter) / 24.0;
 	}
 	public Map<Character, Character> getMAP_NORM() {
 	    if (MAP_NORM == null || MAP_NORM.size() == 0)
@@ -240,6 +243,25 @@ public class StaticTables {
 				for (SiteEntry se : result) {
 					siteEntryMap.put(se.getSiteID(), se);
 				}
+				listLoaded();
+			}
+		});
+	}
+	public void reloadWallSketches(ArrayList<WallSketchEntry> newWallSketches) {
+		wallSketchEntries = newWallSketches;
+	}
+	private void loadWallSketches() {
+		dbService.getWallSketches(new AsyncCallback<ArrayList<WallSketchEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				listLoaded();
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<WallSketchEntry> result) {
+				wallSketchEntries = result;
 				listLoaded();
 			}
 		});
@@ -783,6 +805,10 @@ public class StaticTables {
 
 	public Map<Integer, IconographyEntry> getIconographyForOrnamenticEntries() {
 		return iconographyForOrnamenticEntryMap;
+	}
+
+	public ArrayList<WallSketchEntry> getWallSketchEntry() {
+		return wallSketchEntries;
 	}
 
 	public Map<Integer, ModeOfRepresentationEntry> getModesOfRepresentationEntries() {

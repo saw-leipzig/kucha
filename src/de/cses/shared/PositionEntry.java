@@ -5,47 +5,24 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PositionEntry extends AbstractEntry {
-
-	
-	public static final int LEFT = 0;
-	public static final int RIGHT = 1;
-	public static final int RHOMBUS = 0;
-	public static final int SQHARE = 1;
-	public static final int EXACT = 0;
-	public static final int VAGUE = 1;
-	public static final List<String> DIRECTION_LABEL = Arrays.asList("left", "right");
-	public static final List<String> TYPE_LABEL = Arrays.asList("rhombus", "square");
 	
 	private int positionID;
 	private String name;
-	private int registers = -1;
-	private int columns = -1;
-	private int type;
-	private int direction;
+	private int register = -1;
+	private int number = -1;
 	private boolean exact;
+	private int depictionID;
 	
-	private ArrayList<CoordinatesEntry> coordinates;
 	public PositionEntry(int positionID, String name) {
 		this.positionID = positionID;
 		this.name = name;
 	}
-	public PositionEntry(int positionID, String name, Integer type, Integer direction, Integer registers, Integer columns, ArrayList<CoordinatesEntry> coordinates, boolean exact) {
+	public PositionEntry(int positionID, int depictionID, String name, Integer register, Integer number, boolean exact) {
 		this.positionID = positionID;
+		this.depictionID = depictionID;
 		this.name = name;
-		this.type = type;
-		this.direction = direction;
-		this.registers = registers;
-		this.columns = columns;
-		this.coordinates = coordinates;
-	}
-	public int getDirection() {
-		return this.direction;
-	}
-	public void setdirection(int direction) {
-		this.direction = direction;
-	}
-	public int getType() {
-		return this.type;
+		this.register = register;
+		this.number = number;
 	}
 	public void setExact(boolean exact) {
 		this.exact = exact;
@@ -53,20 +30,23 @@ public class PositionEntry extends AbstractEntry {
 	public boolean getExact() {
 		return this.exact;
 	}
-	public void setType(int type) {
-		this.type = type;
+	public int getDepictionID() {
+		return this.depictionID;
 	}
-	public int getRegisters() {
-		return this.registers;
+	public void setDepictionID(int depictionID) {
+		this.depictionID = depictionID;
 	}
-	public void setRegisters(int register) {
-		this.registers = register;
+	public int getRegister() {
+		return this.register;
 	}
-	public int getColumns() {
-		return this.columns;
+	public void setRegister(int register) {
+		this.register = register;
 	}
-	public void setColumns(int columns) {
-		this.columns = columns;
+	public int getNumber() {
+		return this.number;
+	}
+	public void setNumber(int number) {
+		this.number = number;
 	}
 	public PositionEntry() {
 		this(-1, "");
@@ -83,36 +63,32 @@ public class PositionEntry extends AbstractEntry {
 	public String getName() {
 		return name;
 	}
-	
-	public String getNameWithPosition() {
-		String position = " (";
-		if (coordinates != null) {
-			Boolean first = true;
-			for (CoordinatesEntry ce: coordinates) {
-				if (first) {
-					position = position + "Reg. " + Integer.toString(ce.getRegister()) + ", No. " + Integer.toString(ce.getNumber());
-					first = false;
-				} else {
-					position = position + "; Reg. " + Integer.toString(ce.getRegister()) + ", No. " + Integer.toString(ce.getNumber());
-				}
-			}
-			position = position + ")";
-			return name+position;
-		} else {
-			return name;
-		}
-		
+	public String getPosition() {
+		String position = "Reg. " + Integer.toString(getRegister()) + ", No. " + Integer.toString(getNumber());
+		return position;
 	}
+//	public String getNameWithPosition() {
+//		String position = " (";
+//		if (coordinates != null) {
+//			Boolean first = true;
+//			for (CoordinatesEntry ce: coordinates) {
+//				if (first) {
+//					position = position + "Reg. " + Integer.toString(ce.getRegister()) + ", No. " + Integer.toString(ce.getNumber());
+//					first = false;
+//				} else {
+//					position = position + "; Reg. " + Integer.toString(ce.getRegister()) + ", No. " + Integer.toString(ce.getNumber());
+//				}
+//			}
+//			position = position + ")";
+//			return name+position;
+//		} else {
+//			return name;
+//		}
+//		
+//	}
 
 	public void setName(String name) {
 		this.name = name;
-	}
-	public ArrayList<CoordinatesEntry> getCoodinates() {
-		return coordinates;
-	}
-
-	public void setCoodinates(ArrayList<CoordinatesEntry> coordinates) {
-		this.coordinates = coordinates;
 	}
 
 	/*

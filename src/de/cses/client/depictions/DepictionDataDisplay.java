@@ -35,7 +35,6 @@ import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 
 import de.cses.client.DatabaseService;
-//import de.cses.client.depictions.GetInfo;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;

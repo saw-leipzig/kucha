@@ -17,8 +17,11 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -37,16 +40,26 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.XmlDeclaration;
+import org.jsoup.select.Elements;
+import org.xhtmlrenderer.layout.SharedContext;
+import org.xhtmlrenderer.pdf.ITextRenderer;
+
 import com.gargoylesoftware.htmlunit.javascript.host.dom.Comment;
 import com.google.gson.Gson;
 import com.google.gwt.thirdparty.json.JSONException;
 import com.google.gwt.thirdparty.json.JSONObject;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.BaseFont;
 import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.Util;
 import de.cses.server.mysql.MysqlConnector;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.UserEntry;
 
@@ -69,7 +82,6 @@ public class ResourceDownloadServlet extends HttpServlet {
 			  throws ServletException, IOException {
 		  setAccessControlHeaders(response);
 		  if (request.getParameter("registerrequest") != null) {
-				System.out.println( );
 			    StringBuilder sb = new StringBuilder();
 			    BufferedReader reader = request.getReader();
 			    try {
@@ -80,10 +92,8 @@ public class ResourceDownloadServlet extends HttpServlet {
 			    } finally {
 			        reader.close();
 			    }
-			    System.out.println(sb.toString());
 			    Gson gson = new Gson();
 			    UserEntry newUser = gson.fromJson(sb.toString(), UserEntry.class);
-			    System.out.println(newUser.getFirstname());
 			    String answer = connector.saveWebPageUser(newUser);
 			    if (answer != "") {
 			    	response.setContentType("application/json");
@@ -96,7 +106,6 @@ public class ResourceDownloadServlet extends HttpServlet {
 			    }
 			    
 			} else if (request.getParameter("validateUser") != null) {
-				System.out.println( );
 			    StringBuilder sb = new StringBuilder();
 			    BufferedReader reader = request.getReader();
 			    try {
@@ -107,10 +116,8 @@ public class ResourceDownloadServlet extends HttpServlet {
 			    } finally {
 			        reader.close();
 			    }
-			    System.out.println(sb.toString());
 			    Gson gson = new Gson();
 			    UserEntry newUser = gson.fromJson(sb.toString(), UserEntry.class);
-			    System.out.println(newUser.getSessionID());
 			    UserEntry answer = connector.userLoginFrontEnd(newUser.getEmail(), newUser.getSessionID());
 			    if (answer != null) {
 			    	response.setContentType("application/json");
@@ -122,7 +129,6 @@ public class ResourceDownloadServlet extends HttpServlet {
 			    }
 			    
 			} else if (request.getParameter("isLoggedIn") != null) {
-			System.out.println( );
 		    StringBuilder sb = new StringBuilder();
 		    BufferedReader reader = request.getReader();
 		    try {
@@ -133,15 +139,10 @@ public class ResourceDownloadServlet extends HttpServlet {
 		    } finally {
 		        reader.close();
 		    }
-		    System.out.println(sb.toString());
 		    Gson gson = new Gson();
 		    UserEntry newUser = gson.fromJson(sb.toString(), UserEntry.class);
-		    System.out.println("User recieved:" + gson.toJson(newUser));		    
-		    System.out.println(newUser.getSessionID());
 		    UserEntry answer = connector.checkSessionIDFrontEnd(newUser.getSessionID());
-		    System.out.println("Usersession:" + gson.toJson(answer));
 		    if (answer != null) {
-		    	System.out.println("User logged in!");
 		    	response.setContentType("application/json");
 		    	response.getWriter().write(gson.toJson(answer));
 		    	response.setStatus(200);
@@ -150,7 +151,6 @@ public class ResourceDownloadServlet extends HttpServlet {
 		    	response.setStatus(404);
 		    }		    
 		} else if (request.getParameter("changeUser") != null) {
-			System.out.println( );
 		    StringBuilder sb = new StringBuilder();
 		    BufferedReader reader = request.getReader();
 		    try {
@@ -161,7 +161,6 @@ public class ResourceDownloadServlet extends HttpServlet {
 		    } finally {
 		        reader.close();
 		    }
-		    System.out.println(sb.toString());
 		    Gson gson = new Gson();
 		    String email = "";
 		    String pw = "";
@@ -172,7 +171,6 @@ public class ResourceDownloadServlet extends HttpServlet {
 		        byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
 		        String credentials = new String(credDecoded, StandardCharsets.UTF_8);
 		        // credentials = username:password
-		        System.out.println(credentials);
 		        email = credentials.split(":", 2)[0];
 		        pw = credentials.split(":", 2)[1];
 		    }
@@ -185,11 +183,8 @@ public class ResourceDownloadServlet extends HttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		    System.out.println(pw);
 		    boolean answer = connector.updateUserEntryFrontEnd(updatedUser, pw, updatedUser.getSessionID(), email);
-		    System.out.println("Usersession:" + gson.toJson(answer));
 		    if (answer) {
-		    	System.out.println("User cnanged!");
 		    	response.setContentType("application/json");
 		    	response.setStatus(200);
 		    } else {
@@ -213,7 +208,6 @@ public class ResourceDownloadServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("got request: "+ request);
 		setAccessControlHeaders(response);
 		String sessionID = request.getParameter("sessionID");
 		//System.out.println("doGetParameters: ");
@@ -221,10 +215,16 @@ public class ResourceDownloadServlet extends HttpServlet {
 		//	System.out.println("   " +key+ " - "+request.getParameter(key));
 		//}
 		if (request.getParameter("getGames") != null) {
-	    	response.setContentType("application/json");
-	    	response.getWriter().write(connector.getGame());
+	    	response.setCharacterEncoding("UTF-8");
+	    	response.setHeader("Content-Type", "application/json; charset=UTF-8");
+	    	byte[] game = connector.getGame().getBytes("UTF-8");
+	    	Integer bytes = game.length;
+	    	response.addHeader("x-decompressed-content-length", bytes.toString());
+	    	response.setContentLength(bytes);
+	    	response.addIntHeader("content-length", bytes);
+	    	response.getOutputStream().write(game);
 	    	response.setStatus(200);
-	    	response.getWriter().flush();		
+	    	response.getOutputStream().flush();		
 		}
 		if (request.getParameter("imageID") != null) {
 			String imageID = request.getParameter("imageID");
@@ -270,7 +270,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 			if (request.getParameter("thumb") != null) {
 				int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
 				imageURL = new URL(
-						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.jpg"
+						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/" + tnSize + ",/0/default.jpg"
 					);
 			} else {
 
@@ -335,21 +335,38 @@ public class ResourceDownloadServlet extends HttpServlet {
 					return;
 				}
 			}
+		} else if (request.getParameter("wallsketch") != null) {
+			String filename = request.getParameter("wallsketch");
+			if (filename.startsWith(".")) {
+				response.setStatus(400);
+				return;
+			} else {
+				File inputFile = new File(serverProperties.getProperty("home.wallketches"), filename);
+				if (inputFile.exists()) {
+					FileInputStream fis = new FileInputStream(inputFile);
+					response.setContentType(filename.toLowerCase().endsWith("png") ? "image/jpg" : "image/jpeg");
+					ServletOutputStream out = response.getOutputStream();
+					byte buffer[] = new byte[4096];
+					int bytesRead = 0;
+					while ((bytesRead = fis.read(buffer)) > 0) {
+						out.write(buffer, 0, bytesRead);
+					}
+					out.close();
+					fis.close();
+				} else {
+					response.setStatus(404);http://localhost:8080
+					return;
+				}
+			}
 		} else if (request.getParameter("document") != null) {
-			System.out.println("is document");
-			System.out.println(connector.getAccessLevelForSessionID(sessionID));
 			if (connector.getAccessLevelForSessionID(sessionID) >= UserEntry.FULL) {
-				System.out.println("User has rights.");
 				String filename = request.getParameter("document");
-				System.out.println(filename);
 				if (filename.startsWith(".")) {
 					response.setStatus(400);
 					return;
 				} else {
 					File inputFile = new File(serverProperties.getProperty("home.documents"), filename);
-					System.out.println("Document: "+filename+" providing.");
 					if (inputFile.exists()) {
-						System.out.println("Document: "+filename+" found.");
 						FileInputStream fis = new FileInputStream(inputFile);
 						response.setContentType(filename.toLowerCase().endsWith("pdf") ? "application/pdf" : "text/html");
 						ServletOutputStream out = response.getOutputStream();
@@ -360,47 +377,120 @@ public class ResourceDownloadServlet extends HttpServlet {
 						}
 						out.close();
 						fis.close();
-						System.out.println("Document: "+filename+" provided.");
 					} else {
 						response.setStatus(404);
 						return;
 					}
 				}
-			} 
-			else {
-				String filename = request.getParameter("document");
-				if (filename.contains("-annotation")) {
-					System.out.println("Request for annotations atre grented without rights");
-					System.out.println(filename);
-					if (filename.startsWith(".")) {
-						response.setStatus(400);
-						return;
-					} else {
-						File inputFile = new File(serverProperties.getProperty("home.documents"), filename);
-						System.out.println("Document: "+filename+" providing.");
-						if (inputFile.exists()) {
-							System.out.println("Document: "+filename+" found.");
-							FileInputStream fis = new FileInputStream(inputFile);
-							response.setContentType(filename.toLowerCase().endsWith("pdf") ? "application/pdf" : "text/html");
-							ServletOutputStream out = response.getOutputStream();
-							byte buffer[] = new byte[4096];
-							int bytesRead = 0;
-							while ((bytesRead = fis.read(buffer)) > 0) {
-								out.write(buffer, 0, bytesRead);
-							}
-							out.close();
-							fis.close();
-							System.out.println("Document: "+filename+" provided.");
-						} else {
-							response.setStatus(404);
-							return;
-						}
-					}
-				} else {
-					System.out.println("User rights not sufficent.");
-					response.setStatus(403);
-					return;					
+			}
+		} 
+		else if (request.getParameter("annotation") != null) {
+			String fileID = request.getParameter("annotation");
+			Integer bibID = Integer.parseInt(fileID);
+			Document annotation  = connector.generatePDF(bibID);
+			AnnotatedBibliographyEntry bib = connector.getAnnotatedBibliographybyID(bibID, "");
+			// System.out.println(annotation.html());
+			Elements head = annotation.getElementsByTag("head");
+			Element style2 = new Element("style");
+			// we need to add styles because only selected fonts would work.
+			style2.attr("type", "text/css");
+			style2.append("\n    @font-face {\n"
+					+ "    font-family: 'FreeSerif';\n"
+					+ "    src: url(\""+serverProperties.getProperty("home.fonts")+"FreeSerif.ttf\");\n"
+					+ "    -fs-pdf-font-embed: embed;\n"
+					+ "    -fs-pdf-font-encoding: Identity-H;\n"
+					+ "    font-weight: normal;\n"
+					+ "    font-style: normal;\n"
+					+ "    unicode-range: U+0000-10FF;\n"
+					+ "    }\n"
+					+ "    @font-face {\n"
+					+ "    font-family: 'FreeSerif';\n"
+					+ "    src: url(\""+serverProperties.getProperty("home.fonts")+"FreeSerifBold.ttf\");\n"
+					+ "    -fs-pdf-font-embed: embed;\n"
+					+ "    -fs-pdf-font-encoding: Identity-H;\n"
+					+ "    font-weight: bold;\n"
+					+ "    font-style: normal;\n"
+					+ "    unicode-range: U+0000-10FF;\n"
+					+ "    }\n"
+					+ "    @font-face {\n"
+					+ "    font-family: 'FreeSerif';\n"
+					+ "    src: url(\""+serverProperties.getProperty("home.fonts")+"FreeSerifBoldItalic.ttf\");\n"
+					+ "    -fs-pdf-font-embed: embed;\n"
+					+ "    -fs-pdf-font-encoding: Identity-H;\n"
+					+ "    font-weight: bold;\n"
+					+ "    font-style: italic;\n"
+					+ "    unicode-range: U+0000-10FF;\n"
+					+ "    }\n"
+					+ "    @font-face {\n"
+					+ "    font-family: 'FreeSerif';\n"
+					+ "    src: url(\""+serverProperties.getProperty("home.fonts")+"FreeSerifItalic.ttf\");\n"
+					+ "    -fs-pdf-font-embed: embed;\n"
+					+ "    -fs-pdf-font-encoding: Identity-H;\n"
+					+ "    font-weight: normal;\n"
+					+ "    font-style: italic;\n"
+					+ "    unicode-range: U+0000-10FF;\n"
+					+ "    }\n"
+					+ "    @font-face {\n"
+					+ "    font-family: 'Batang';\n"
+					+ "    src: url(\""+serverProperties.getProperty("home.fonts")+"BATANG.ttf\");\n"
+					+ "    -fs-pdf-font-embed: embed;\n"
+					+ "    -fs-pdf-font-encoding: Identity-H;\n"
+					+ "    unicode-range: U+1100-11FF,U+1200-2BFF,U+3130-318F,U+AC00-D7AF;\n"
+					+ "    }\n"
+					+ "    @font-face {\n"
+					+ "    font-family: 'MS Mincho';\n"
+					+ "    src: url(\""+serverProperties.getProperty("home.fonts")+"MSMINCHO.TTF\");\n"
+					+ "    -fs-pdf-font-embed: embed;\n"
+					+ "    -fs-pdf-font-encoding: Identity-H;\n"
+					+ "    }\n"
+					+ "    @font-face {\n"
+					+ "    font-family: 'SimSun';\n"
+					+ "    src: url(\""+serverProperties.getProperty("home.fonts")+"SIMSUN.ttf\");\n"
+					+ "    -fs-pdf-font-embed: embed;\n"
+					+ "    -fs-pdf-font-encoding: Identity-H;\n"
+					+ "    unicode-range: U+4E00-9FFF,U+2E80-312F,U+3190-319F,U+31A0-A4CF;\n"
+					+ "    }\n"
+					+ "\n    * { font-family: 'FreeSerif','Batang','SimSun','MS Mincho';}"
+					+ "\n    *[lang|=\"ko\"] 	{"					
+					+ "\n    font-family: 'Batang';"
+					+ "\n    }"					
+					+ "\n    *[lang|=\"zh\"] 	{"					
+					+ "\n    font-family: 'SimSun';"
+					+ "\n    }"					
+					+ "\n    *[lang|=\"ja\"] 	{"					
+					+ "\n    font-family: 'MS Mincho';"
+					+ "\n    }"
+					+ "\n    h1 	{"					
+					+ "\n    font-size:1.2em;"
+					+ "\n    margin-bottom: 1em;"
+					+ "\n    }"
+					+ "\n    b { font-weight: bold!important;}");
+			head.first().appendChild(style2);
+			response.setContentType("application/pdf; name=\"MyFile.pdf\"");
+		    response.setHeader("Content-Disposition","attachment; name='fieldName';  filename='"+ bib.getBibtexKey() + ".pdf'");
+			if (annotation != null) {
+			    try (ServletOutputStream out = response.getOutputStream()){
+				    ITextRenderer renderer = new ITextRenderer();
+				    SharedContext sharedContext = renderer.getSharedContext();
+				    sharedContext.setPrint(true);
+				    sharedContext.setInteractive(false);
+				    renderer.setDocumentFromString(annotation.html());
+				    renderer.layout();
+				    renderer.createPDF(out);    	
+	
+					out.close();
+			    } catch (FileNotFoundException e) {
+					e.getLocalizedMessage();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.getLocalizedMessage();
+				} catch (DocumentException e) {
+					// TODO Auto-generated catch block
+					e.getLocalizedMessage();
 				}
+			} else {
+				response.setStatus(404);
+				return;
 			}
 		} else if (request.getParameter("dataexport") != null)  {
 	        Map<String, String> map = new HashMap<String, String>();
@@ -409,24 +499,19 @@ public class ResourceDownloadServlet extends HttpServlet {
 	        while (headerNames.hasMoreElements()) {
 	            String key = (String) headerNames.nextElement();
 	            String value = request.getHeader(key);
-	            System.out.println(key+": "+value);
 	        }
-	        System.out.println(request.getLocalAddr());
 	        String ip = "";
 	        try(final DatagramSocket socket = new DatagramSocket()){
 	        	  socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
 	        	  ip = socket.getLocalAddress().getHostAddress();
 	        	}
 			if (request.getLocalAddr().equals("127.0.0.1")) {
-				System.out.println("dataexport paused");				
 				// connector.serializeAllDepictionEntries("");
 			} else {
-				System.out.println("request for dataexport blocked!");
 			}
 		} else if (request.getParameter("imageFile") != null) {
 			String filename = request.getParameter("imageFile");
 			String parts[]=filename.split("\\.");
-			System.out.println("filename "+parts);
             String part1=parts[0];
 			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(part1));
 			File inputFile;
@@ -495,7 +580,6 @@ public class ResourceDownloadServlet extends HttpServlet {
 	@Override
 	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
   	    setAccessControlHeaders(response);
-		System.out.println("got request: "+ request);
 	    if (request.getCharacterEncoding() == null) {
 	        request.setCharacterEncoding("UTF-8");
 	    }

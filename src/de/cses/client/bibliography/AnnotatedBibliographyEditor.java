@@ -75,6 +75,7 @@ import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DualListField;
 import com.sencha.gxt.widget.core.client.form.DualListField.Mode;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.HtmlEditor;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
@@ -143,7 +144,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 	private TextField bibtexKeyTF;
 	private ToolButton saveToolButton;
 	private TextField keywordField;
-
+	private HtmlEditor annotationHE;
 //	interface PublisherViewTemplates extends XTemplates {
 //		@XTemplate("<div>{name}</div>")
 //		SafeHtml publisher(String name);
@@ -189,7 +190,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 	}
 
 	interface DocumentLinkTemplate extends XTemplates {
-		@XTemplate("<a target=\"_blank\" href=\"{documentUri}\" rel=\"noopener\">click here to open {documentDescription}</a>")
+		@XTemplate("<a target=\"_blank\" href=\"{documentUri}\" rel=\"noopener\">click here to download {documentDescription}</a>")
 		SafeHtml documentLink(SafeUri documentUri, String documentDescription);
 	}
 
@@ -216,7 +217,14 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 				((AnnotatedBiblographyView)el).setEditor(bibEntry);
 			}
 		}
-
+		bibEntry.setAnnotationHTML(this.annotationHE.getValue());
+		HTML HTMLText = new HTML(bibEntry.getAnnotationHTML());		
+		String txt = HTMLText.getText();
+		Util.doLogging(bibEntry.getAnnotationHTML());
+		Util.doLogging(txt);
+		if ((txt == null || txt.isEmpty() || txt.trim().isEmpty())) {
+			bibEntry.setAnnotationHTML(""); // We do not want to save empty HTML-Tags.
+		}
 		if (authorListFilterField != null) {
 			authorListFilterField.clear();
 			authorListFilterField.validate();
@@ -1845,6 +1853,29 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 			}
 		});
 
+
+		/**
+		 * Annotation
+		 */
+		annotationHE = new HtmlEditor();
+		annotationHE.forceLayout();
+		
+		FramedPanel annotationFP = new FramedPanel();
+		VerticalLayoutContainer annotationVLC = new VerticalLayoutContainer();
+		annotationVLC.add(annotationFP, new VerticalLayoutData(1.0, 1.0));
+
+		annotationFP.setHeading("Annotation");
+		annotationFP.add(annotationHE);
+		annotationHE.setValue(bibEntry.getAnnotationHTML());
+		annotationHE.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				bibEntry.setAnnotationHTML(event.getValue());
+			}
+		});
+
+		
 		/**
 		 * notes
 		 */
@@ -2116,9 +2147,9 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		 */
 		FramedPanel bibDocAnnotationFP = new FramedPanel();
 		bibDocAnnotationFP.setHeading("annotation");
-		if (bibEntry.getAnnotation()) {
+		if (!(bibEntry.getAnnotationHTML() == null || bibEntry.getAnnotationHTML().isEmpty() || bibEntry.getAnnotationHTML().trim().isEmpty())) {
 			bibDocAnnotationFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
-					"resource?document=" + bibEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
+					"resource?annotation=" + Integer.toString(bibEntry.getAnnotatedBibliographyID())),
 					"annotation")));			
 		}
 
@@ -2138,7 +2169,6 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 					@Override
 					public void uploadCompleted(String documentFilename) {
 						bibDocUploadPanel.hide();
-						bibEntry.setAnnotation(true);
 						bibDocAnnotationFP.add(new HTMLPanel(documentLinkTemplate.documentLink(UriUtils.fromString(
 								"resource?document=" + bibEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri()),
 								"annotation")));	
@@ -2154,7 +2184,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 				bibDocUploadPanel.center();
 			}
 		});
-		bibDocAnnotationFP.addTool(annotationUploadButton);
+		// bibDocAnnotationFP.addTool(annotationUploadButton);
 		
 		HorizontalLayoutContainer bottonHLC = new HorizontalLayoutContainer();
 		bottonHLC.add(unpublishedFP, new HorizontalLayoutData(.25, 1.0));
@@ -2174,7 +2204,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		HorizontalLayoutContainer notesCommtentsAbstractHLC = new HorizontalLayoutContainer();
 		notesCommtentsAbstractHLC.add(notesCommentsLeftVLC, new HorizontalLayoutData(.5, 1.0));
 		notesCommtentsAbstractHLC.add(notesCommentsRightVLC, new HorizontalLayoutData(.5, 1.0));
-		
+				
 		VerticalLayoutContainer thirdTabVLC = new VerticalLayoutContainer();
 		thirdTabVLC.add(notesCommtentsAbstractHLC, new VerticalLayoutData(1.0, .6));
 		thirdTabVLC.add(urlFP, new VerticalLayoutData(1.0, .1));
@@ -2195,11 +2225,14 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		ScrollPanel scrpanel1 = new ScrollPanel();
 		ScrollPanel scrpanel2 = new ScrollPanel();
 		ScrollPanel scrpanel3 = new ScrollPanel();
+		ScrollPanel scrpanel4 = new ScrollPanel();
 		scrpanel1.add(firstTabHLC);
 		scrpanel2.add(secondTabVLC);
 		scrpanel3.add(thirdTabVLC);
+		scrpanel4.add(annotationVLC);
 		tabpanel.add(scrpanel1, "Basics (" + bibEntry.getPublicationType().getName() + ")");
 		tabpanel.add(scrpanel2, "Authors and Editors");
+		tabpanel.add(annotationVLC, "Annotation");
 		tabpanel.add(scrpanel3, "Others");
 		tabpanel.setTabScroll(false);
 		//fpanel.add(tabpanel);

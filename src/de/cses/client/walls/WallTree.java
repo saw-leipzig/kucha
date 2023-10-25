@@ -265,7 +265,7 @@ public class WallTree {
 		    	wallTreeStore.add(child);
 		    }
 		    else {
-		    	wallTreeStore.findModel(child).setPosition(child.getPosition());
+		    	wallTreeStore.findModel(child).setDimensions(child.getDimensions());
 		    }
 		}
 		else {
@@ -278,7 +278,7 @@ public class WallTree {
 				    	wallTreeStore.add(wall, child);
 				    }
 				    else {
-				    	wallTreeStore.findModel(child).setPosition(child.getPosition());
+				    	wallTreeStore.findModel(child).setDimensions(child.getDimensions());
 				    }
 				}
 				
@@ -320,12 +320,12 @@ public class WallTree {
 			for (WallTreeEntry wall : wallIDs) {
 				if (wall.getWallLocationID()==wte.getWallLocationID()) {
 					found=true;
-					wallTree.getStore().findModel(wte).setPosition(wall.getPosition());
+					wallTree.getStore().findModel(wte).setDimensions(wall.getDimensions());
 					break;
 				}
 			}
 			if (!found) {
-				wallTree.getStore().findModel(wte).setPosition(null);
+				wallTree.getStore().findModel(wte).setDimensions(null);
 			}
 		}
 
@@ -338,7 +338,7 @@ public class WallTree {
 				if (wall.getWallLocationID()==wte.getWallLocationID()) {
 					found=true;
 					WallTreeEntry foundWte = wallTree.getStore().findModel(wte);
-					foundWte.setPosition(wall.getPosition());
+					foundWte.setDimensions(wall.getDimensions());
 					wallTree.setChecked(foundWte, CheckState.CHECKED);
 					break;
 				}

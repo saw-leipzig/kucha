@@ -151,8 +151,6 @@ public class DepictionFilter extends AbstractFilter {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml positionLabel(String name);
 	}
-
-
 	
 	interface IconographyViewTemplates extends XTemplates {
 		@XTemplate("<div style=\"border: 1px solid grey;\"><tpl for='name'> {element}<wbr> </tpl></div>")

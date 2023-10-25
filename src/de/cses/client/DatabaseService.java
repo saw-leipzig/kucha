@@ -22,6 +22,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 import de.cses.shared.ExportEntry;
+import de.cses.shared.ExternalRessourceTypeEntry;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
@@ -71,8 +72,10 @@ import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
+import de.cses.shared.WallDimensionEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
+import de.cses.shared.WallSketchEntry;
 import de.cses.shared.WallTreeEntry;
 
 /**
@@ -85,17 +88,23 @@ public interface DatabaseService extends RemoteService {
 
 	ArrayList<DistrictEntry> getDistricts() throws IllegalArgumentException;
 
-	boolean serializeAllDepictionEntries(String sessionId) throws IllegalArgumentException;
-		
+	boolean serializeAllEntries(String sessionId) throws IllegalArgumentException;
+	
+	Integer updateAllEntries(String sessionId) throws IllegalArgumentException;
+	
 	boolean resetPassword(UserEntry currentUser) throws IllegalArgumentException;
 	
 	boolean resetPasswordFrontEnd(UserEntry currentUser) throws IllegalArgumentException;
 	
 	Map<Integer,String> getMasterImageFromOrnament(int tnSize,String sessionID) throws IllegalArgumentException;
 
-	boolean saveWallDimension(ArrayList<WallTreeEntry> pe, Integer caveID) throws IllegalArgumentException;
-	
-	Map<Integer,ArrayList<PositionEntry>> getWallDimension(Integer caveID) throws IllegalArgumentException;
+	Map<Integer,ArrayList<WallDimensionEntry>> getWallDimension(Integer caveID) throws IllegalArgumentException;
+
+	WallSketchEntry getWallSketchEntryByID(int wallSketchID) throws IllegalArgumentException;
+
+	ArrayList<WallSketchEntry> getWallSketches() throws IllegalArgumentException;
+
+	int insertWallSketchEntry(WallSketchEntry wse) throws IllegalArgumentException;
 
 	ArrayList<ImageEntry> getImages() throws IllegalArgumentException;
 
@@ -128,6 +137,10 @@ public interface DatabaseService extends RemoteService {
 	boolean isHan(String title) throws IllegalArgumentException;
 
 	boolean deleteEntry(String sqlDelete) throws IllegalArgumentException;
+
+	boolean insertExternalRessourceType(ExternalRessourceTypeEntry ert) throws IllegalArgumentException;
+	
+	boolean updateExternalRessourceType(ExternalRessourceTypeEntry ert) throws IllegalArgumentException;
 
 	boolean deleteAbstractEntry(AbstractEntry entry) throws IllegalArgumentException;
 
@@ -287,6 +300,8 @@ public interface DatabaseService extends RemoteService {
 	
 	String getOSDContext() throws IllegalArgumentException;
 
+	String getOSDContextWallSketches() throws IllegalArgumentException;
+
 	String getContext() throws IllegalArgumentException;
 
 	OrnamentClassEntry renameOrnamentClass(OrnamentClassEntry entry)  throws IllegalArgumentException;
@@ -388,4 +403,6 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<ModifiedEntry> getModifiedAbstractEntry(AbstractEntry Entry) throws IllegalArgumentException;
 
 	ArrayList<ModifiedEntry> getModifiedAnnoEntry(int ID, boolean isOrnament) throws IllegalArgumentException;
+
+	List<ExternalRessourceTypeEntry> getOrnamentRessourceTypeList() throws IllegalArgumentException;
 }

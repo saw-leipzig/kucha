@@ -20,15 +20,20 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.InvalidEvent;
+import com.sencha.gxt.widget.core.client.event.InvalidEvent.InvalidHandler;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.AnnotatedBibliographySearchEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamenticSearchEntry;
@@ -40,6 +45,8 @@ import de.cses.shared.PositionEntry;
  */
 public class AnnotatedBibliographyFilter extends AbstractFilter {
 	
+	
+	private TextField IDSearchTF;
 	public TextField authorNameTF;
 	public TextField titleTF;
 	private TextField publisherTF;
@@ -61,6 +68,17 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 
 	@Override
 	protected Widget getFilterUI() {
+		IDSearchTF = new TextField();
+		IDSearchTF.addValidator(new RegExValidator("[0-9]", "Only numbers allowed"));
+		IDSearchTF.addInvalidHandler(new InvalidHandler() {
+		      @Override
+		      public void onInvalid(InvalidEvent event) {
+		    	  Info.display("Search field for Ids deleted!", "Due to invalid Input.");
+		    	  IDSearchTF.clear();
+		      }
+		    });
+		IDSearchTF.setEmptyText("search ID");
+		IDSearchTF.addDomHandler(getShortkey() , KeyPressEvent.getType());
 
 		authorNameTF = new TextField();
 		authorNameTF.setEmptyText("search author / editor / institute");
@@ -91,15 +109,17 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 		});
 
 		VerticalLayoutContainer bibFilterVLC = new VerticalLayoutContainer();
-		bibFilterVLC.add(authorNameTF, new VerticalLayoutData(1.0, .25));
-		bibFilterVLC.add(titleTF, new VerticalLayoutData(1.0, .25));
-		bibFilterVLC.add(publisherTF, new VerticalLayoutData(1.0, .25));
-		bibFilterVLC.add(yearSearch, new VerticalLayoutData(1.0, .25));
+		bibFilterVLC.add(IDSearchTF , new VerticalLayoutData(1.0, .2));
+		bibFilterVLC.add(authorNameTF, new VerticalLayoutData(1.0, .2));
+		bibFilterVLC.add(titleTF, new VerticalLayoutData(1.0, .2));
+		bibFilterVLC.add(publisherTF, new VerticalLayoutData(1.0, .2));
+		bibFilterVLC.add(yearSearch, new VerticalLayoutData(1.0, .2));
 		bibFilterVLC.setHeight("120px");
 		return bibFilterVLC;
 	}
 	@Override
 	public void clear() {
+		IDSearchTF.reset();
 		authorNameTF.clear();
 		titleTF.clear();
 		publisherTF.clear();
@@ -112,6 +132,10 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 		if (reset) {
 			clear();
 		}
+		if (((AnnotatedBibliographySearchEntry)searchEntry).getID() > 0) {
+			IDSearchTF.setValue(Integer.toString(((DepictionSearchEntry)searchEntry).getID()));
+		}
+
 		if (((AnnotatedBibliographySearchEntry)searchEntry).getBibIdList()!=null) {
 			if (!((AnnotatedBibliographySearchEntry)searchEntry).getBibIdList().isEmpty()) {
 				for (Integer bibID : ((AnnotatedBibliographySearchEntry)searchEntry).getBibIdList()) {
@@ -130,7 +154,14 @@ public class AnnotatedBibliographyFilter extends AbstractFilter {
 		} else {
 			searchEntry = new AnnotatedBibliographySearchEntry();
 		}
-		
+		try {
+			if (IDSearchTF.getValue() != null ) {			
+				searchEntry.setID(Integer.parseInt(IDSearchTF.getValue()));
+			}
+		} catch (Exception e) {
+			Info.display("Error", "Only numeric IDs are valid");
+			return null;
+		}		
 		if (authorNameTF.getValue() != null && !authorNameTF.getValue().isEmpty()) {
 			searchEntry.setAuthorSearch(authorNameTF.getValue());
 		}

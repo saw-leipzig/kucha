@@ -1,78 +1,82 @@
 <div style='font-size:12px; text-align: left;'> 
 	<p>
-		<tpl if="annotation">
-			<img src="icons/pdf.png" alt="has pdf"></img>
+		
+		<tpl if="bibEntry.annotationHTML != &quot;&quot;">
+			<a href="resource?annotation={bibEntry.annotatedBibliographyID}" target="_blank"><img width="24" height="24" src="icons/annotated pdf-button.ai.svg" onmouseover="this.src='icons/annotated pdf-mouse over.ai.svg'" onmouseout="this.src='icons/annotated pdf-button.ai.svg'" alt="has an annotation"></img></a>
+		</tpl>
+		<tpl if="hasArticle">
+			<a href="resource?document=AnnotatedBibliography.{bibEntry.annotatedBibliographyID}-paper.pdf{uri}" target="_blank"><img width="24" height="24" src="icons/artikel pdf-button.ai.svg" onmouseover="this.src='icons/artikel pdf-mouse over.ai.svg'" onmouseout="this.src='icons/artikel pdf-button.ai.svg'" alt="has a paper"></img></a>
 		</tpl>
 		
-		<tpl if="!parentTitle">
-			<tpl if="authors != &quot;&quot;">
-				{authors} 
-				<tpl if="yearORG != &quot;&quot;">, {yearORG}</tpl> 
-				<tpl if="titleTR != &quot;&quot;">
-					, {titleTR}<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}</tpl>
+		<tpl if="!bibEntry.parentTitle">
+			<tpl if="bibEntry.authors != &quot;&quot;">
+				{bibEntry.authors} 
+				<tpl if="bibEntry.yearORG != &quot;&quot;">, {bibEntry.yearORG}</tpl> 
+				<tpl if="bibEntry.titleTR != &quot;&quot;">
+					, {bibEntry.titleTR}<tpl if="subtitleTR != &quot;&quot;">: {bibEntry.subtitleTR}</tpl>
 				</tpl>
-				<tpl if="titleORG != &quot;&quot;">
-				<tpl if="parentTitleORG == &quot;&quot;">
+				<tpl if="bibEntry.titleORG != &quot;&quot;">
+				<tpl if="bibEntry.parentTitleORG == &quot;&quot;">
 				<i></tpl>
-				<b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b>
-				<tpl if="parentTitleORG == &quot;&quot;"></i></tpl>
+				<b>{bibEntry.titleORG}<tpl if="bibEntry.subtitleORG != &quot;&quot;">: {bibEntry.subtitleORG}</tpl></b>
+				<tpl if="bibEntry.parentTitleORG == &quot;&quot;"></i></tpl>
 				</tpl>
-				<tpl if="titleEN != &quot;&quot;">
-					<tpl if="officialTitleTranslation"> / {titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
+				<tpl if="bibEntry.titleEN != &quot;&quot;">
+					<tpl if="bibEntry.officialTitleTranslation"> / {bibEntry.titleEN}<tpl if="subtitleEN != &quot;&quot;">: {bibEntry.subtitleEN}</tpl></tpl>
 				</tpl>.
-				<tpl if="editors != &quot;&quot;">{editors} ({editorType}).</tpl>
+				<tpl if="bibEntry.editors != &quot;&quot;">{bibEntry.editors} ({bibEntry.editorType}).</tpl>
 			</tpl>
-			<tpl if="authors == &quot;&quot;">
-				{editors} 
-				<tpl if="editorType != &quot;&quot;">({editorType}) </tpl>
-				<tpl if="yearORG != &quot;&quot;"> ,{yearORG}</tpl>
-				<tpl if="titleTR != &quot;&quot;">, {titleTR}
-						<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}
+			<tpl if="bibEntry.authors == &quot;&quot;">
+				{bibEntry.editors} 
+				<tpl if="bibEntry.editorType != &quot;&quot;">({bibEntry.editorType}) </tpl>
+				<tpl if="bibEntry.yearORG != &quot;&quot;"> ,{bibEntry.yearORG}</tpl>
+				<tpl if="bibEntry.titleTR != &quot;&quot;">, {bibEntry.titleTR}
+						<tpl if="bibEntry.subtitleTR != &quot;&quot;">: {bibEntry.subtitleTR}
 						</tpl>
 				</tpl>
-				<tpl if="titleORG != &quot;&quot;">
-					<tpl if="parentTitleORG == &quot;&quot;">
-						<tpl if="!hasHan">ups<i>
+				<tpl if="bibEntry.titleORG != &quot;&quot;">
+					<tpl if="bibEntry.parentTitleORG == &quot;&quot;">
+						<tpl if="!bibEntry.hasHan">ups<i>
 						</tpl>
 					</tpl>
-					<b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b>
-				<tpl if="parentTitleORG == &quot;&quot;">
-					<tpl if="!hasHan">ups<i>
+					<b>{bibEntry.titleORG}<tpl if="bibEntry.subtitleORG != &quot;&quot;">: {bibEntry.subtitleORG}</tpl></b>
+				<tpl if="bibEntry.parentTitleORG == &quot;&quot;">
+					<tpl if="!bibEntry.hasHan">ups<i>
 					</tpl>
 				
 				</tpl>
 				</tpl>
-				<tpl if="titleEN != &quot;&quot;">
-					<tpl if="officialTitleTranslation">  [{titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl>]</tpl>
+				<tpl if="bibEntry.titleEN != &quot;&quot;">
+					<tpl if="bibEntry.officialTitleTranslation">  [{bibEntry.titleEN}<tpl if="bibEntry.subtitleEN != &quot;&quot;">: {bibEntry.subtitleEN}</tpl>]</tpl>
 				</tpl>
 			</tpl>
 		</tpl>
-<tpl if="parentTitle">
-{authors} 
-			<tpl if="yearORG != &quot;&quot;">, {yearORG}</tpl>. 
-				<tpl if="titleTR != &quot;&quot;">
-					{titleTR}<tpl if="subtitleTR != &quot;&quot;">: {subtitleTR}</tpl>
+<tpl if="bibEntry.parentTitle">
+{bibEntry.authors} 
+			<tpl if="bibEntry.yearORG != &quot;&quot;">, {bibEntry.yearORG}</tpl>. 
+				<tpl if="bibEntry.titleTR != &quot;&quot;">
+					{bibEntry.titleTR}<tpl if="bibEntry.subtitleTR != &quot;&quot;">: {bibEntry.subtitleTR}</tpl>
 				</tpl>
-				<tpl if="titleORG != &quot;&quot;">
-				<tpl if="parentTitleORG == &quot;&quot;"><i></tpl>
-				<b>{titleORG}<tpl if="subtitleORG != &quot;&quot;">: {subtitleORG}</tpl></b>
-				<tpl if="parentTitleORG == &quot;&quot;"></i></tpl>
+				<tpl if="bibEntry.titleORG != &quot;&quot;">
+				<tpl if="bibEntry.parentTitleORG == &quot;&quot;"><i></tpl>
+				<b>{bibEntry.titleORG}<tpl if="bibEntry.subtitleORG != &quot;&quot;">: {bibEntry.subtitleORG}</tpl></b>
+				<tpl if="bibEntry.parentTitleORG == &quot;&quot;"></i></tpl>
 				</tpl>
-				<tpl if="titleEN != &quot;&quot;">
-					<tpl if="officialTitleTranslation"> / {titleEN}<tpl if="subtitleEN != &quot;&quot;">: {subtitleEN}</tpl></tpl>
+				<tpl if="bibEntry.titleEN != &quot;&quot;">
+					<tpl if="bibEntry.officialTitleTranslation"> / {bibEntry.titleEN}<tpl if="bibEntry.subtitleEN != &quot;&quot;">: {bibEntry.subtitleEN}</tpl></tpl>
 				</tpl>.
-			<tpl if="editorType != &quot;&quot;"> In: </tpl> 
-			<tpl if="editors != &quot;&quot;">{editors}<tpl if="editorType != &quot;&quot;"> ({editorType})</tpl>,</tpl>
-			 <tpl if="parentTitleTR != &quot;&quot;"><i>{parentTitleTR}</i>.</tpl>
-			<i>{parentTitleORG}</i>.
-			 <tpl if="parentTitleEN != &quot;&quot;"><i>{parentTitleEN}</i>.</tpl>
+			<tpl if="bibEntry.editorType != &quot;&quot;"> In: </tpl> 
+			<tpl if="bibEntry.editors != &quot;&quot;">{bibEntry.editors}<tpl if="bibEntry.editorType != &quot;&quot;"> ({bibEntry.editorType})</tpl>,</tpl>
+			 <tpl if="bibEntry.parentTitleTR != &quot;&quot;"><i>{bibEntry.parentTitleTR}</i>.</tpl>
+			<i>{bibEntry.parentTitleORG}</i>.
+			 <tpl if="bibEntry.parentTitleEN != &quot;&quot;"><i>{bibEntry.parentTitleEN}</i>.</tpl>
 	  </tpl>
-<tpl if="thesisType != &quot;&quot;"> {thesisType} thesis.</tpl>
-<tpl if="editionORG != &quot;&quot;"> Edition: {editionORG}.</tpl>
-<tpl if="numberORG != &quot;&quot;"> No: {numberORG}.</tpl>
-<tpl if="publisher != &quot;&quot;">. {publisher}.</tpl>
-<tpl if="seriesORG != &quot;&quot;">Series: {seriesORG}.</tpl>
-<tpl if="volumeORG != &quot;&quot;">Vol. {volumeORG}<tpl if="issueORG != &quot;&quot;"> / {issueORG}</tpl>.</tpl>  
-<tpl if="pagesORG != &quot;&quot;">{pagesORG}.</tpl>
+<tpl if="bibEntry.thesisType != &quot;&quot;"> {bibEntry.thesisType} thesis.</tpl>
+<tpl if="bibEntry.editionORG != &quot;&quot;"> Edition: {bibEntry.editionORG}.</tpl>
+<tpl if="bibEntry.numberORG != &quot;&quot;"> No: {bibEntry.numberORG}.</tpl>
+<tpl if="bibEntry.publisher != &quot;&quot;">. {bibEntry.publisher}.</tpl>
+<tpl if="bibEntry.seriesORG != &quot;&quot;">Series: {bibEntry.seriesORG}.</tpl>
+<tpl if="bibEntry.volumeORG != &quot;&quot;">Vol. {bibEntry.volumeORG}<tpl if="bibEntry.issueORG != &quot;&quot;"> / {bibEntry.issueORG}</tpl>.</tpl>  
+<tpl if="bibEntry.pagesORG != &quot;&quot;">{bibEntry.pagesORG}.</tpl>
 	</p>
 </div>

@@ -468,25 +468,27 @@ public class BibliographySelector implements IsWidget {
 							
 						}
 					}
-					if (item.getAuthorList()!=null) {
-						if (!item.getAuthorList().isEmpty()) {
+					if (item.getEditorList()!=null) {
+						if (!item.getEditorList().isEmpty()) {
 			        	  for (AuthorEntry ae : item.getEditorList()) {
 							try {
-			        			  if (ae.getName()!=null) {
-					        		  if ((!ae.getName().isEmpty())&(!filter.isEmpty())) {
-						        		  if (StaticTables.getInstance().removeAccents(ae.getName().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
-						        			  return true;
-						        		  }		        			  
-					        		  }			        				  
-			        			  }
-			        			  if (ae.getAlias()!=null) {
-					        		  if ((!ae.getAlias().isEmpty())&(!filter.isEmpty())) {
-					        			  if (StaticTables.getInstance().removeAccents(ae.getAlias().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
-					        				  return true;
-					        			  }
-					        		  }
-			        				  
-			        			  }
+								if (ae != null) {
+				        			  if (ae.getName()!=null) {
+						        		  if ((!ae.getName().isEmpty())&(!filter.isEmpty())) {
+							        		  if (StaticTables.getInstance().removeAccents(ae.getName().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
+							        			  return true;
+							        		  }		        			  
+						        		  }			        				  
+				        			  }
+				        			  if (ae.getAlias()!=null) {
+						        		  if ((!ae.getAlias().isEmpty())&(!filter.isEmpty())) {
+						        			  if (StaticTables.getInstance().removeAccents(ae.getAlias().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
+						        				  return true;
+						        			  }
+						        		  }
+				        				  
+				        			  }
+								}
 			        	  }		        	  
 							catch(Exception e) {
 			        		  Util.doLogging(e.getMessage());

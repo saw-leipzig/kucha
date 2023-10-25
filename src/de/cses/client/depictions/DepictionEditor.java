@@ -187,6 +187,7 @@ public class DepictionEditor extends AbstractEditor {
 	private StyleProperties styleProps;
 	private ListStore<StyleEntry> styleEntryLS;
 	private CaveProperties caveProps;
+	private TextArea otherSuggestedIdentificationsTA;
 	private Map<Integer, String> imgdic;
 	private ListStore<CaveEntry> caveEntryLS;
 	private ComboBox<CaveEntry> caveSelectionCB;
@@ -209,7 +210,7 @@ public class DepictionEditor extends AbstractEditor {
 	private TextField shortNameTF;
 	private BibliographySelector bibliographySelector;
 	private StoreFilterField<ImageEntry> filterField;
-	private OSDLoader osdLoader;
+	private OSDLoaderEditorImageAnnotation osdLoader;
 	private boolean annotationsLoaded = true;
 	private double imageWindowRelation;
 	private OSDListener osdListener;
@@ -1671,6 +1672,7 @@ public class DepictionEditor extends AbstractEditor {
 
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
+				Info.display("Description", "Changed!");
 				correspondingDepictionEntry.setDescription(event.getValue());
 			}
 		});
@@ -1691,7 +1693,7 @@ public class DepictionEditor extends AbstractEditor {
 
 		FramedPanel otherSuggestedIdentificationsFP = new FramedPanel();
 		otherSuggestedIdentificationsFP.setHeading("Other suggested identifications");
-		TextArea otherSuggestedIdentificationsTA = new TextArea();
+		otherSuggestedIdentificationsTA = new TextArea();
 		otherSuggestedIdentificationsTA.setValue(correspondingDepictionEntry.getOtherSuggestedIdentifications());
 		otherSuggestedIdentificationsTA.addValueChangeHandler(new ValueChangeHandler<String>() {
 
@@ -2082,7 +2084,7 @@ public class DepictionEditor extends AbstractEditor {
 			
 
 		};
-		osdLoader = new OSDLoader(correspondingDepictionEntry.getRelatedImages(), true,
+		osdLoader = new OSDLoaderEditorImageAnnotation(correspondingDepictionEntry.getRelatedImages(), true,
 				iconographySelector.getIconographyStore(),
 				osdListener);
 		/**
@@ -2388,6 +2390,11 @@ public class DepictionEditor extends AbstractEditor {
 //		List<WallTreeEntry> test = new ArrayList<WallTreeEntry>(correspondingDepictionEntry.getWalls());
 //		List<WallTreeEntry> test2 = new ArrayList<WallTreeEntry>(correspondingDepictionEntry.getWalls());
 //		test.removeAll(test2);
+		correspondingDepictionEntry.setSeparateAksaras(separateAksarasTextArea.getCurrentValue());
+		correspondingDepictionEntry.setOtherSuggestedIdentifications(otherSuggestedIdentificationsTA.getCurrentValue());
+		correspondingDepictionEntry.setInscriptions(inscriptionsTestArea.getCurrentValue());
+		correspondingDepictionEntry.setGeneralRemarks(generalRemarksArea.getCurrentValue());
+		correspondingDepictionEntry.setDescription(descriptionArea.getCurrentValue());
 		correspondingDepictionEntry.setRelatedIconographyList(iconographySelector.getSelectedIconography());
 		correspondingDepictionEntry.setRelatedImages(relatedImageEntryList);
 		correspondingDepictionEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());

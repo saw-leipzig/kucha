@@ -30,7 +30,7 @@ public class WallTreeEntry extends AbstractEntry {
 	private String text;
 	private String search;
 	private ArrayList<WallTreeEntry> children = new ArrayList<WallTreeEntry>();
-	private ArrayList<PositionEntry> position = new ArrayList<PositionEntry>();
+	private ArrayList<WallDimensionEntry> dimension = new ArrayList<WallDimensionEntry>();
 	
 	public WallTreeEntry() { }
 
@@ -42,15 +42,15 @@ public class WallTreeEntry extends AbstractEntry {
 		this.search = search;
 		this.children = null;
 	}
-	public WallTreeEntry(int wallLocationID, int parentID, String text, String search, ArrayList<PositionEntry> position) {
+	public WallTreeEntry(int wallLocationID, int parentID, String text, String search, ArrayList<WallDimensionEntry> dimension) {
 		super();
 		this.wallLocationID = wallLocationID;
 		this.parentID = parentID;
 		this.text = text;
 		this.search = search;
 		this.children = null;
-		if (position!=null) {
-			this.position=position;			
+		if (dimension!=null) {
+			this.dimension=dimension;			
 		}
 	}
 	public int getWallLocationID() {
@@ -74,25 +74,21 @@ public class WallTreeEntry extends AbstractEntry {
 
 	public String getText() {
 		String name="";
-		String posNames ="";
-		if (position == null) {
+		String dimensions ="";
+		if (dimension.size() == 0) {
 			return text;
-		}
-		else {
-			name=text;
-			for (PositionEntry pos : position) {
-				if (posNames=="") {
-					posNames = pos.getNameWithPosition();
-				}
-				else {
-					posNames = posNames+", "+pos.getNameWithPosition();
+		} else {
+			for (WallDimensionEntry wde: dimension) {
+				String dimensionString = "Register(" + Integer.toString(wde.getRegisters()) + ", " + Integer.toString(wde.getColumns()) + ")";
+				if (dimensions.isEmpty()) {
+					dimensions = dimensionString;
+				} else {
+					dimensions += ", " + dimensionString;
 				}
 			}
-			if (posNames!="") {
-				name=name+" - "+posNames;
-			}
-			return name;
+			return text + " - " + dimensions;
 		}
+
 	}
 
 	public void setText(String text) {
@@ -109,14 +105,14 @@ public class WallTreeEntry extends AbstractEntry {
 	public ArrayList<WallTreeEntry> getChildren() {
 		return children;
 	}
-	public void setPosition(ArrayList<PositionEntry> pe) {
-		this.position=pe;
+	public void setDimensions(ArrayList<WallDimensionEntry> de) {
+		this.dimension=de;
 	}
-	public ArrayList<PositionEntry> getPosition() {
-		return this.position;
+	public ArrayList<WallDimensionEntry> getDimensions() {
+		return this.dimension;
 	}
-	public void addPosition(PositionEntry pe) {
-		this.position.add(pe);
+	public void addDimension(WallDimensionEntry de) {
+		this.dimension.add(de);
 	}
 	public void setChildren(ArrayList<WallTreeEntry> children) {
 		this.children = children;
@@ -134,12 +130,6 @@ public class WallTreeEntry extends AbstractEntry {
     	boolean isEqual=false;
     	if (anObject instanceof WallTreeEntry){
     		ArrayList<PositionEntry> compPos = new ArrayList<PositionEntry>();
-    		if (position!=null) {
-        		compPos = new ArrayList<PositionEntry>(position);    			
-    		}
-    		if (((WallTreeEntry)anObject).getPosition()!=null) {
-        		compPos.removeAll(((WallTreeEntry)anObject).getPosition());    			
-    		}
         	if (this.wallLocationID==((WallTreeEntry)anObject).getWallLocationID()) {
         		if (compPos.size()==0) {
         			isEqual=true;

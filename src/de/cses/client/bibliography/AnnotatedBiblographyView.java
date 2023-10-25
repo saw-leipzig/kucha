@@ -62,7 +62,7 @@ public class AnnotatedBiblographyView extends AbstractView {
 			protected void onDragStart(DndDragStartEvent event) {
 				super.onDragStart(event);
 				event.setData(annotatedBibliographyEntry);
-				event.getStatusProxy().update(dvTemplates.view(annotatedBibliographyEntry));
+				event.getStatusProxy().update(dvTemplates.view(annotatedBibliographyEntry, UserLogin.getInstance().getUsernameSessionIDParameterForUri(), annotatedBibliographyEntry.getArticle()));
 //				event.getStatusProxy().update(dvTemplates.view(annotatedBibliographyEntry.getTitleEN()));
 			}
 			
@@ -81,10 +81,15 @@ public class AnnotatedBiblographyView extends AbstractView {
 	}
 
 	public void processToView(AnnotatedBibliographyEntry annotatedBibliographyEntry) {
+		bib = "";
+		translit = "";
+		bold = "";
+		translat = "";
+		tail = "";
 		SafeHtmlBuilder shb = new SafeHtmlBuilder();
-		if (annotatedBibliographyEntry.getAnnotation()) {
-			String uri="resource?document=" + annotatedBibliographyEntry.getUniqueID() + "-annotation.pdf" + UserLogin.getInstance().getUsernameSessionIDParameterForUri();
-			shb.append(SafeHtmlUtils.fromTrustedString("<a href="+uri+" target=\"_blank\"><img width=\"24\" height=\"24\" src=\"icons/annotated pdf-button.ai.svg\" onmouseover=\"this.src='icons/annotated pdf-mouse over.ai.svg'\"\r\n"
+		if (!(annotatedBibliographyEntry.getAnnotationHTML() == null || annotatedBibliographyEntry.getAnnotationHTML().isEmpty() || annotatedBibliographyEntry.getAnnotationHTML().trim().isEmpty())) {
+			String uri="resource?annotation=" + Integer.toString(annotatedBibliographyEntry.getAnnotatedBibliographyID());
+			shb.append(SafeHtmlUtils.fromTrustedString("<a href="+uri+"><img width=\"24\" height=\"24\" src=\"icons/annotated pdf-button.ai.svg\" onmouseover=\"this.src='icons/annotated pdf-mouse over.ai.svg'\"\r\n"
 					+ "onmouseout=\"this.src='icons/annotated pdf-button.ai.svg'\" alt=\"has annotation\"></img></a> "));
 		}
 		if (annotatedBibliographyEntry.getArticle()) {
@@ -94,37 +99,37 @@ public class AnnotatedBiblographyView extends AbstractView {
 		}
 		pdf=shb.toSafeHtml();
 		if ((annotatedBibliographyEntry.getPublicationTypeID()==1) || (annotatedBibliographyEntry.getPublicationTypeID()==3)) {
-			if (annotatedBibliographyEntry.getEditors()=="") {
-				if (annotatedBibliographyEntry.getAuthors()!="") {
+			if (annotatedBibliographyEntry.getEditors().isEmpty()) {
+				if (!annotatedBibliographyEntry.getAuthors().isEmpty()) {
 					bib=bib+annotatedBibliographyEntry.getAuthors();
 				}
 			}
 			else {
 				bib=bib+annotatedBibliographyEntry.getEditors()+" (ed.)";
 			}
-			if (annotatedBibliographyEntry.getYearORG()!="") {
+			if (!annotatedBibliographyEntry.getYearORG().isEmpty()) {
 				bib=bib+", "+annotatedBibliographyEntry.getYearORG()+",";
 			}
-			if (annotatedBibliographyEntry.getTitleTRFull()!="") {
+			if (!annotatedBibliographyEntry.getTitleTRFull().isEmpty()) {
 				translit=" "+annotatedBibliographyEntry.getTitleTRFull();
 			}
-			if (annotatedBibliographyEntry.getTitleORGFull()!="") {
+			if (!annotatedBibliographyEntry.getTitleORGFull().isEmpty()) {
 				bold=" "+annotatedBibliographyEntry.getTitleORGFull();
 			}
-			if (annotatedBibliographyEntry.getTitleENFull()!="") {
+			if (!annotatedBibliographyEntry.getTitleENFull().isEmpty()) {
 				translat=" "+annotatedBibliographyEntry.getTitleENFull();
 			}
-			if (annotatedBibliographyEntry.getVolumeORG()!="") {
+			if (!annotatedBibliographyEntry.getVolumeORG().isEmpty()) {
 				tail=tail+", Vol."+annotatedBibliographyEntry.getVolumeORG();
 			}
-			if (annotatedBibliographyEntry.getEditionORG()!="") {
+			if (!annotatedBibliographyEntry.getEditionORG().isEmpty()) {
 				tail=tail+", Edition: "+annotatedBibliographyEntry.getEditionORG();
 			}
-			if (annotatedBibliographyEntry.getSeriesORG()!="") {
+			if (!annotatedBibliographyEntry.getSeriesORG().isEmpty()) {
 				tail=tail+", Series: "+annotatedBibliographyEntry.getSeriesORG();
 			}
 			tail=tail+". ";
-			if (annotatedBibliographyEntry.getPublisher()!="") {
+			if (!annotatedBibliographyEntry.getPublisher().isEmpty()) {
 				tail=tail+annotatedBibliographyEntry.getPublisher();
 					}
 //			if (annotatedBibliographyEntry.getEditors()!="") {
@@ -138,8 +143,8 @@ public class AnnotatedBiblographyView extends AbstractView {
 //					bib=bib+" ("+annotatedBibliographyEntry.getEditorType()+")";
 //					}
 //			}
-			if (annotatedBibliographyEntry.getThesisType()!="") {
-				if (annotatedBibliographyEntry.getPublisher()=="") {
+			if (!annotatedBibliographyEntry.getThesisType().isEmpty()) {
+				if (annotatedBibliographyEntry.getPublisher().isEmpty()) {
 					tail=tail+annotatedBibliographyEntry.getThesisType()+" thesis";
 					}
 				else {
@@ -156,51 +161,111 @@ public class AnnotatedBiblographyView extends AbstractView {
 			}
 			
 		}
+		else if ((annotatedBibliographyEntry.getPublicationTypeID()== 5)) {
+			bib=bib+annotatedBibliographyEntry.getAuthors().trim();
+			System.out.println("\""+bib+"\"");
+			if (!annotatedBibliographyEntry.getYearORG().isEmpty()) {
+				bib=bib.trim()+", "+annotatedBibliographyEntry.getYearORG().trim()+",";
+			}
+			if (!annotatedBibliographyEntry.getTitleTRFull().isEmpty()) {
+				bib=bib+" "+annotatedBibliographyEntry.getTitleTRFull().trim();
+			}
+			if (!annotatedBibliographyEntry.getTitleORGFull().isEmpty()) {
+				bib=bib+" "+annotatedBibliographyEntry.getTitleORGFull().trim();
+			}
+			if (!annotatedBibliographyEntry.getTitleENFull().isEmpty()) {
+				bib=bib+" "+annotatedBibliographyEntry.getTitleENFull().trim();
+			}
+			bib=bib+". In: ";
+			if (!annotatedBibliographyEntry.getEditors().isEmpty()) {
+				bib= bib+annotatedBibliographyEntry.getEditors().trim();
+				if (annotatedBibliographyEntry.getEditorType().isEmpty()) {
+					bib=bib+" ("+annotatedBibliographyEntry.getEditorType().trim()+")";
+					}
+			}
+			if (!annotatedBibliographyEntry.getParentTitleTR().isEmpty()) {
+				translit=translit+" "+annotatedBibliographyEntry.getTitleTRFull().trim();
+			}
+			if (!annotatedBibliographyEntry.getParentTitleORG().isEmpty()) {
+				bold=bold+" "+annotatedBibliographyEntry.getParentTitleORG().trim();
+			}
+			if (!annotatedBibliographyEntry.getParentTitleEN().isEmpty()) {
+				translat=translat+" ["+annotatedBibliographyEntry.getParentTitleEN().trim()+"]";
+			}
+			tail=tail+". ";
+			if (!annotatedBibliographyEntry.getPublisher().isEmpty()) {
+				tail=tail+annotatedBibliographyEntry.getPublisher().trim();
+					}
+			if (!annotatedBibliographyEntry.getPagesORG().isEmpty()) {
+				if (annotatedBibliographyEntry.getPublisher().isEmpty()) {
+					tail=tail+". "+annotatedBibliographyEntry.getPagesORG().trim();
+					}
+				else {
+					tail=tail+", "+annotatedBibliographyEntry.getPagesORG().trim();
+				}
+			}
+			if (!annotatedBibliographyEntry.getUrl().isEmpty()) {
+				tail=tail+", "+annotatedBibliographyEntry.getUrl().trim();
+				if (!annotatedBibliographyEntry.getAccessdateORG().isEmpty()) {
+					tail=tail+" ["+annotatedBibliographyEntry.getAccessdateORG().trim()+"]";
+				}
+			}
+			if (tail != ". ") {
+				tail=tail+". ";				
+			}
+			if (annotatedBibliographyEntry.getHasHan()) {
+
+				setHTML(dvTemplates.bibViewHasHan(bib, translit, bold, translat, tail,pdf));
+			}
+			else {
+				setHTML(dvTemplates.bibView(bib, translit, bold, translat, tail,pdf));
+			}
+		}
 		else if ((annotatedBibliographyEntry.getPublicationTypeID()==4)||(annotatedBibliographyEntry.getPublicationTypeID()==7)) {
 			bib=bib+annotatedBibliographyEntry.getAuthors();
-			if (annotatedBibliographyEntry.getYearORG()!="") {
+			if (!annotatedBibliographyEntry.getYearORG().isEmpty()) {
 				bib=bib+", "+annotatedBibliographyEntry.getYearORG()+",";
 			}
-			if (annotatedBibliographyEntry.getTitleTRFull()!="") {
+			if (!annotatedBibliographyEntry.getTitleTRFull().isEmpty()) {
 				bib=bib+" "+annotatedBibliographyEntry.getTitleTRFull();
 			}
-			if (annotatedBibliographyEntry.getTitleORGFull()!="") {
+			if (!annotatedBibliographyEntry.getTitleORGFull().isEmpty()) {
 				bib=bib+" "+annotatedBibliographyEntry.getTitleORGFull();
 			}
-			if (annotatedBibliographyEntry.getTitleENFull()!="") {
+			if (!annotatedBibliographyEntry.getTitleENFull().isEmpty()) {
 				bib=bib+" "+annotatedBibliographyEntry.getTitleENFull();
 			}
 			bib=bib+". In: ";
-			if (annotatedBibliographyEntry.getEditors()!="") {
+			if (!annotatedBibliographyEntry.getEditors().isEmpty()) {
 				bib= bib+annotatedBibliographyEntry.getEditors();
-				if (annotatedBibliographyEntry.getEditorType()=="") {
+				if (annotatedBibliographyEntry.getEditorType().isEmpty()) {
 					bib=bib+" ("+annotatedBibliographyEntry.getEditorType()+")";
 					}
 			}
-			if (annotatedBibliographyEntry.getParentTitleTR()!="") {
+			if (!annotatedBibliographyEntry.getParentTitleTR().isEmpty()) {
 				translit=translit+" "+annotatedBibliographyEntry.getTitleTRFull();
 			}
-			if (annotatedBibliographyEntry.getParentTitleORG()!="") {
+			if (!annotatedBibliographyEntry.getParentTitleORG().isEmpty()) {
 				bold=bold+" "+annotatedBibliographyEntry.getParentTitleORG();
 			}
-			if (annotatedBibliographyEntry.getParentTitleEN()!="") {
+			if (!annotatedBibliographyEntry.getParentTitleEN().isEmpty()) {
 				translat=translat+" ["+annotatedBibliographyEntry.getParentTitleEN()+"]";
 			}
 			tail=tail+". ";
-			if (annotatedBibliographyEntry.getPublisher()!="") {
+			if (!annotatedBibliographyEntry.getPublisher().isEmpty()) {
 				tail=tail+annotatedBibliographyEntry.getPublisher();
 					}
-			if (annotatedBibliographyEntry.getPagesORG()!="") {
-				if (annotatedBibliographyEntry.getPublisher()=="") {
+			if (!annotatedBibliographyEntry.getPagesORG().isEmpty()) {
+				if (annotatedBibliographyEntry.getPublisher().isEmpty()) {
 					tail=tail+". "+annotatedBibliographyEntry.getPagesORG();
 					}
 				else {
 					tail=tail+", "+annotatedBibliographyEntry.getPagesORG();
 				}
 			}
-			if (annotatedBibliographyEntry.getUrl()!="") {
+			if (!annotatedBibliographyEntry.getUrl().isEmpty()) {
 				tail=tail+", "+annotatedBibliographyEntry.getUrl();
-				if (annotatedBibliographyEntry.getAccessdateORG()!="") {
+				if (!annotatedBibliographyEntry.getAccessdateORG().isEmpty()) {
 					tail=tail+" ["+annotatedBibliographyEntry.getAccessdateORG()+"]";
 				}
 			}
@@ -217,29 +282,29 @@ public class AnnotatedBiblographyView extends AbstractView {
 		}
 		else if (annotatedBibliographyEntry.getPublicationTypeID()==8) {
 			bib=bib+annotatedBibliographyEntry.getAuthors();
-			if (annotatedBibliographyEntry.getYearORG()!="") {
+			if (!annotatedBibliographyEntry.getYearORG().isEmpty()) {
 				bib=bib+", "+annotatedBibliographyEntry.getYearORG()+",";
 			}
-			if (annotatedBibliographyEntry.getTitleTRFull()!="") {
+			if (!annotatedBibliographyEntry.getTitleTRFull().isEmpty()) {
 				bib=bib+" "+annotatedBibliographyEntry.getTitleTRFull();
 			}
-			if (annotatedBibliographyEntry.getTitleORGFull()!="") {
+			if (!annotatedBibliographyEntry.getTitleORGFull().isEmpty()) {
 				bib=bib+" "+annotatedBibliographyEntry.getTitleORGFull();
 			}
-			if (annotatedBibliographyEntry.getTitleENFull()!="") {
+			if (!annotatedBibliographyEntry.getTitleENFull().isEmpty()) {
 				bib=bib+" "+annotatedBibliographyEntry.getTitleENFull();
 			}
-			if (annotatedBibliographyEntry.getParentTitleORG()!="") {
+			if (!annotatedBibliographyEntry.getParentTitleORG().isEmpty()) {
 				bold=bold+", "+annotatedBibliographyEntry.getParentTitleORG();
 			}
-			if (annotatedBibliographyEntry.getVolumeORG()!="") {
+			if (!annotatedBibliographyEntry.getVolumeORG().isEmpty()) {
 				tail=tail+" "+annotatedBibliographyEntry.getVolumeORG();
 			}
-			if (annotatedBibliographyEntry.getIssueORG()!="") {
+			if (!annotatedBibliographyEntry.getIssueORG().isEmpty()) {
 				tail=tail+" "+annotatedBibliographyEntry.getIssueORG();
 			}
-			if (annotatedBibliographyEntry.getPagesORG()!="") {
-				if (annotatedBibliographyEntry.getPublisher()=="") {
+			if (!annotatedBibliographyEntry.getPagesORG().isEmpty()) {
+				if (annotatedBibliographyEntry.getPublisher().isEmpty()) {
 					tail=tail+". "+annotatedBibliographyEntry.getPagesORG();
 					}
 				else {
@@ -256,7 +321,8 @@ public class AnnotatedBiblographyView extends AbstractView {
 
 		}
 		else {
-			setHTML(dvTemplates.view(annotatedBibliographyEntry));
+			Util.doLogging(Boolean.toString(annotatedBibliographyEntry.getArticle()));
+			setHTML(dvTemplates.view(annotatedBibliographyEntry, UserLogin.getInstance().getUsernameSessionIDParameterForUri(), annotatedBibliographyEntry.getArticle()));
 		}
 	}
 	/* (non-Javadoc)

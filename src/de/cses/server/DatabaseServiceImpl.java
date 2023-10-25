@@ -13,6 +13,7 @@
  */
 package de.cses.server;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,7 @@ import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.ExportEntry;
+import de.cses.shared.ExternalRessourceTypeEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageSearchEntry;
@@ -72,8 +74,10 @@ import de.cses.shared.StructureOrganization;
 import de.cses.shared.StyleEntry;
 import de.cses.shared.UserEntry;
 import de.cses.shared.VendorEntry;
+import de.cses.shared.WallDimensionEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
+import de.cses.shared.WallSketchEntry;
 import de.cses.shared.WallTreeEntry;
 
 /**
@@ -81,9 +85,13 @@ import de.cses.shared.WallTreeEntry;
  */
 
 public class DatabaseServiceImpl extends RemoteServiceServlet implements DatabaseService {
-	public boolean serializeAllDepictionEntries(String sessionId) throws IllegalArgumentException {
+	public boolean serializeAllEntries(String sessionId) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.serializeAllDepictionEntries(sessionId);
+		return connector.serializeAllEntries(sessionId);
+	}
+	public Integer updateAllEntries(String sessionId) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateAllEntries(sessionId);
 	}
 	public boolean iconographyIDisUsed(int iconographyID, int OrnamentID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
@@ -100,6 +108,10 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public String getOSDContext() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getOSDContext();
+	}
+	public String getOSDContextWallSketches() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getOSDContextWallSketches();
 	}
 	public boolean resetPassword(UserEntry currentUser) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
@@ -121,14 +133,27 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		ArrayList<WallTreeEntry> districts = connector.getWallTreeEntriesByIconographyID(IconographyID, SessionID);
 		return districts;
 	}
-	public boolean saveWallDimension(ArrayList<WallTreeEntry> pe, Integer caveID) throws IllegalArgumentException {
+	public Map<Integer,ArrayList<WallDimensionEntry>>  getWallDimension(Integer caveID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		Boolean saved = connector.saveWallDimension(pe, caveID);
-		return saved;
+		Map<Integer,ArrayList<WallDimensionEntry>> res = connector.getWallDimension(caveID);
+		return res;
 	}
-	public Map<Integer,ArrayList<PositionEntry>>  getWallDimension(Integer caveID) throws IllegalArgumentException {
+		
+	public WallSketchEntry getWallSketchEntryByID(int wallSketchID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		Map<Integer,ArrayList<PositionEntry>> res = connector.getWallDimension(caveID);
+		WallSketchEntry res = connector.getWallSketchEntryByID(wallSketchID);
+		return res;
+	}
+		
+	public ArrayList<WallSketchEntry> getWallSketches() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		ArrayList<WallSketchEntry> res = connector.getWallSketches();
+		return res;
+	}
+		
+	public int insertWallSketchEntry(WallSketchEntry entry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		int res = connector.insertWallSketchEntry(entry);
 		return res;
 	}
 		
@@ -171,7 +196,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	
 	public AnnotatedBibliographyEntry getAnnotatedBiblographybyID(int id) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		AnnotatedBibliographyEntry biblographyEntry = connector.getAnnotatedBiblographybyID(id, null);
+		AnnotatedBibliographyEntry biblographyEntry = connector.getAnnotatedBibliographybyID(id, null);
 		return biblographyEntry;
 	}
 
@@ -1057,7 +1082,24 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getModifiedAnnoEntry(ID, isOrnament);
 	}
-	
+
+	public List<ExternalRessourceTypeEntry> getOrnamentRessourceTypeList() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		List<ExternalRessourceTypeEntry> res = connector.getOrnamentRessourceTypeList();
+		return res;
+	}
+
+	public boolean insertExternalRessourceType(ExternalRessourceTypeEntry ert) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		Boolean res = connector.insertExternalRessourceType(ert);
+		return res;
+	}
+
+	public boolean updateExternalRessourceType(ExternalRessourceTypeEntry ert) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		Boolean res = connector.updateExternalRessourceType(ert);
+		return res;
+	}
 
 	public Map<Integer,ArrayList<ImageEntry>> searchImages(ImageSearchEntry searchEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();

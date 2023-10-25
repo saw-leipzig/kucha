@@ -119,6 +119,7 @@ import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
+import de.cses.shared.WallDimensionEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
 import de.cses.shared.WallTreeEntry;
@@ -2610,30 +2611,33 @@ public class CaveEditor extends AbstractEditor {
 			@Override
 			protected void save(ArrayList<WallTreeEntry> results) {
 				Util.doLogging("test");
-				dbService.saveWallDimension(results, correspondingCaveEntry.getCaveID() , new AsyncCallback<Boolean>() {
-
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-						Util.doLogging(caught.getLocalizedMessage());
-					}
-
-					@Override
-					public void onSuccess(Boolean result) {
-						if (result) {
-							Info.display("Walls saved", "Success!");
-						} else {
-							Info.display("Walls saved", "Failed!");
-						}
-					}
-				});
+				for (WallTreeEntry wte: results) {
+					correspondingCaveEntry.getWallDimensions().put(wte.getWallLocationID(), wte.getDimensions());
+				}
+//				dbService.saveWallDimension(results, correspondingCaveEntry.getCaveID() , new AsyncCallback<Boolean>() {
+//
+//					@Override
+//					public void onFailure(Throwable caught) {
+//						// TODO Auto-generated method stub
+//						Util.doLogging(caught.getLocalizedMessage());
+//					}
+//
+//					@Override
+//					public void onSuccess(Boolean result) {
+//						if (result) {
+//							Info.display("Walls saved", "Success!");
+//						} else {
+//							Info.display("Walls saved", "Failed!");
+//						}
+//					}
+//				});
 			}
 		};
-		for (Entry<Integer, ArrayList<PositionEntry>> pair: correspondingCaveEntry.getWallPositions().entrySet()) {
+		for (Entry<Integer, ArrayList<WallDimensionEntry>> pair: correspondingCaveEntry.getWallDimensions().entrySet()) {
 			Integer key = pair.getKey();
-			ArrayList<PositionEntry> value = pair.getValue();
+			ArrayList<WallDimensionEntry> value = pair.getValue();
 			WallTreeEntry wte = pe.getWallByID(key);
-			wte.setPosition(value);
+			wte.setDimensions(value);
 			pe.setWall(wte);
 		}
 		pe.enablePoistionVisualization();

@@ -91,7 +91,7 @@ public class CaveWallsTree {
 			if (item.getParentID()==wte.getWallLocationID()) {
 				boolean notInTree=false;
 				if (wallTreeStore.findModel(item)!=null) {
-					if (wallTreeStore.findModel(item).getPosition()==null)
+					if (wallTreeStore.findModel(item).getDimensions()==null)
 						wallTreeStore.remove(item);
 						wallTreeStore.add(wte, item);
 				}

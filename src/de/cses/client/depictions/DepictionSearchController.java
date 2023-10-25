@@ -64,7 +64,7 @@ public class DepictionSearchController extends AbstractSearchController {
 
 				@Override
 				public void onFailure(Throwable caught) {
-					Util.doLogging("Oh-oh"+caught.getMessage());
+					Util.doLogging("Oh-oh "+caught.getLocalizedMessage());
 					caught.printStackTrace();
 					getResultView().setSearchEnabled(true);
 					Info.display("Search failed with Error: ", caught.getMessage());
