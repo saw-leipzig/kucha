@@ -30,6 +30,7 @@ public class WallTreeEntry extends AbstractEntry {
 	private String text;
 	private String search;
 	private ArrayList<WallTreeEntry> children = new ArrayList<WallTreeEntry>();
+	private ArrayList<WallDimensionEntry> dimension = new ArrayList<WallDimensionEntry>();
 	private ArrayList<PositionEntry> position = new ArrayList<PositionEntry>();
 	
 	public WallTreeEntry() { }
@@ -42,13 +43,16 @@ public class WallTreeEntry extends AbstractEntry {
 		this.search = search;
 		this.children = null;
 	}
-	public WallTreeEntry(int wallLocationID, int parentID, String text, String search, ArrayList<PositionEntry> position) {
+	public WallTreeEntry(int wallLocationID, int parentID, String text, String search, ArrayList<WallDimensionEntry> dimension,  ArrayList<PositionEntry> position) {
 		super();
 		this.wallLocationID = wallLocationID;
 		this.parentID = parentID;
 		this.text = text;
 		this.search = search;
 		this.children = null;
+		if (dimension!=null) {
+			this.dimension=dimension;			
+		}
 		if (position!=null) {
 			this.position=position;			
 		}
@@ -73,13 +77,20 @@ public class WallTreeEntry extends AbstractEntry {
 	}
 
 	public String getText() {
-		String name="";
-		String posNames ="";
-		if (position == null) {
+		String name=text;
+		String dimensions ="";
+		if (dimension.size() == 0 && position.size() == 0) {
 			return text;
-		}
-		else {
-			name=text;
+		} else {
+			for (WallDimensionEntry wde: dimension) {
+				String dimensionString = "Register(" + Integer.toString(wde.getRegisters()) + ", " + Integer.toString(wde.getColumns()) + ")";
+				if (dimensions.isEmpty()) {
+					dimensions = dimensionString;
+				} else {
+					dimensions += ", " + dimensionString;
+				}
+			}
+			String posNames ="";
 			for (PositionEntry pos : position) {
 				if (posNames=="") {
 					posNames = pos.getNameWithPosition();
@@ -88,11 +99,16 @@ public class WallTreeEntry extends AbstractEntry {
 					posNames = posNames+", "+pos.getNameWithPosition();
 				}
 			}
-			if (posNames!="") {
-				name=name+" - "+posNames;
+			if (!posNames.isEmpty()) {
+				name=name+" ("+posNames + ")";
+			}			
+			if (dimensions.isEmpty()) {
+				return name;
+			} else {
+				return name + " - " + dimensions;	
 			}
-			return name;
 		}
+
 	}
 
 	public void setText(String text) {
@@ -109,14 +125,49 @@ public class WallTreeEntry extends AbstractEntry {
 	public ArrayList<WallTreeEntry> getChildren() {
 		return children;
 	}
-	public void setPosition(ArrayList<PositionEntry> pe) {
+	public void setDimensions(ArrayList<WallDimensionEntry> de) {
+		this.dimension=de;
+	}
+	public ArrayList<WallDimensionEntry> getDimensions() {
+		return this.dimension;
+	}
+	public void addDimension(WallDimensionEntry de) {
+		ArrayList<WallDimensionEntry> updatedDimension = new ArrayList<WallDimensionEntry>();
+		boolean found = false;
+		for (WallDimensionEntry wde: dimension) {
+			if (wde.getWallDimensionID() == de.getWallDimensionID()) {
+				updatedDimension.add(de);
+				found = true;
+			} else {
+				updatedDimension.add(wde);
+			}
+		}
+		if (!found) {
+			updatedDimension.add(de);
+		}
+		this.dimension = updatedDimension;
+	}
+	public void setPositions(ArrayList<PositionEntry> pe) {
 		this.position=pe;
 	}
-	public ArrayList<PositionEntry> getPosition() {
+	public ArrayList<PositionEntry> getPositions() {
 		return this.position;
 	}
-	public void addPosition(PositionEntry pe) {
-		this.position.add(pe);
+	public void addPosition(PositionEntry updatedpe) {
+		ArrayList<PositionEntry> updatedPosition = new ArrayList<PositionEntry>();
+		boolean found = false;
+		for (PositionEntry pe: position) {
+			if (pe.getPositionID() == pe.getPositionID()) {
+				updatedPosition.add(updatedpe);
+				found = true;
+			} else {
+				updatedPosition.add(pe);
+			}
+		}
+		if (found) {
+			updatedPosition.add(updatedpe);
+		}
+		this.position = updatedPosition;
 	}
 	public void setChildren(ArrayList<WallTreeEntry> children) {
 		this.children = children;
@@ -133,17 +184,8 @@ public class WallTreeEntry extends AbstractEntry {
     public boolean equals(Object anObject) {
     	boolean isEqual=false;
     	if (anObject instanceof WallTreeEntry){
-    		ArrayList<PositionEntry> compPos = new ArrayList<PositionEntry>();
-    		if (position!=null) {
-        		compPos = new ArrayList<PositionEntry>(position);    			
-    		}
-    		if (((WallTreeEntry)anObject).getPosition()!=null) {
-        		compPos.removeAll(((WallTreeEntry)anObject).getPosition());    			
-    		}
         	if (this.wallLocationID==((WallTreeEntry)anObject).getWallLocationID()) {
-        		if (compPos.size()==0) {
         			isEqual=true;
-        		}
         	}
     	}
         return isEqual;

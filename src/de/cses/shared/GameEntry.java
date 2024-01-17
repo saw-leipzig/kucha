@@ -33,12 +33,16 @@ public class GameEntry implements IsSerializable {
 	private String description;
 	private String imageID;
 	private ArrayList<AnnotationEntry> annotations;
+	private Boolean is18;
+	private Integer difficulty;
 	
-	public GameEntry(int gameID, String name, String imageID, ArrayList<AnnotationEntry> annotations, String description){
+	public GameEntry(int gameID, String name, String imageID, ArrayList<AnnotationEntry> annotations, String description, Boolean is18, Integer difficulty){
 			this.gameID = gameID;
 			this.name = name;
 			this.imageID = imageID;
 			this.annotations = annotations;
 			this.description = description;
+			this.is18 = is18;
+			this.difficulty = difficulty;
 	}
 }

@@ -41,6 +41,7 @@ import de.cses.client.depictions.ImageXTemplate;
 import de.cses.client.depictions.DepictionDataDisplay.Images;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.IconographyEntry;
+import de.cses.shared.WallDimensionEntry;
 import de.cses.shared.WallTreeEntry;
 
 
@@ -77,7 +78,7 @@ public class WallTree {
 	    			}
 	    	}
 	    	if (found) {
-	    		sb.append(SafeHtmlUtils.fromTrustedString("<details><summary>"+ie + "</summary>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</details>"));
+	    		sb.append(SafeHtmlUtils.fromTrustedString(ie));
 	    	}else {
 	    		sb.append(SafeHtmlUtils.fromTrustedString("<p style=\"color:red;\">"+ie + " (" + context.getKey()+")</p>"));
 	    	}
@@ -128,7 +129,7 @@ public class WallTree {
 	private void processParentWallTreeEntry( WallTreeEntry item) {
 			if (cEntry==null) {
 				for (WallTreeEntry child : item.getChildren()) {
-//					child.setPosition(null);
+					child.setDimensions(new ArrayList<WallDimensionEntry>());
 					wallTreeStore.add(item, child);	
 					allEntries.add(child);
 					if (child.getChildren() != null) {
@@ -142,7 +143,7 @@ public class WallTree {
 				case 2: // square cave
 					//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
 					for (WallTreeEntry child : item.getChildren()) {
-//						child.setPosition(null);
+						child.setDimensions(new ArrayList<WallDimensionEntry>());
 						if (( WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
 							|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))||(child.getWallLocationID()<100)) {
 							//Util.doLogging(item.getText()+" - "+child.getText()+" /1");
@@ -158,7 +159,7 @@ public class WallTree {
 				case 3: // residential cave
 					//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
 					for (WallTreeEntry child : item.getChildren()) {
-//						child.setPosition(null);
+						child.setDimensions(new ArrayList<WallDimensionEntry>());
 						if ((WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
 								|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))
 								|| (WallTreeEntry.MAIN_CHAMBER_CORRIDOR_LABEL.contains(child.getWallLocationID()))
@@ -177,7 +178,7 @@ public class WallTree {
 				case 6: // monumental image cave
 					//Util.doLogging("cEntry.getCaveTypeID: "+Integer.toString(cEntry.getCaveTypeID()));
 					for (WallTreeEntry child : item.getChildren()) {
-//						child.setPosition(null);
+						child.setDimensions(new ArrayList<WallDimensionEntry>());
 						if ((WallTreeEntry.ANTECHAMBER_LABEL.contains(child.getWallLocationID()))
 								|| (WallTreeEntry.MAIN_CHAMBER_LABEL.contains(child.getWallLocationID()))
 								|| (WallTreeEntry.REAR_AREA_LABEL.contains(child.getWallLocationID()))
@@ -194,7 +195,7 @@ public class WallTree {
 					break;
 				default:
 					for (WallTreeEntry child : item.getChildren()) {
-//						child.setPosition(null);
+						child.setDimensions(new ArrayList<WallDimensionEntry>());
 						wallTreeStore.add(item, child);	
 						allEntries.add(child);
 						if (child.getChildren() != null) {
@@ -238,6 +239,7 @@ public class WallTree {
 				buildSelectedTree(wallKeys,wte);
 			}
 		}
+		wallTree.expandAll();
 	}
 	private void buildSelectedTree(List<WallTreeEntry> wallKeys, WallTreeEntry wte) {
 		if (wte.getChildren()!=null) {
@@ -246,6 +248,7 @@ public class WallTree {
 					for (WallTreeEntry selectedWall : wallKeys) {
 						if (child.getWallLocationID()==selectedWall.getWallLocationID()) {
 							wallTreeStore.add(wte, selectedWall);
+							Util.doLogging("adding selected wall with positon: " + Integer.toString(selectedWall.getPositions().size()));
 							if (child.getChildren()!=null){
 								if (child.getChildren().size()>0) {
 									buildSelectedTree(wallKeys,selectedWall);
@@ -265,7 +268,8 @@ public class WallTree {
 		    	wallTreeStore.add(child);
 		    }
 		    else {
-		    	wallTreeStore.findModel(child).setPosition(child.getPosition());
+		    	wallTreeStore.findModel(child).setDimensions(child.getDimensions());
+		    	wallTreeStore.findModel(child).setPositions(child.getPositions());
 		    }
 		}
 		else {
@@ -278,7 +282,7 @@ public class WallTree {
 				    	wallTreeStore.add(wall, child);
 				    }
 				    else {
-				    	wallTreeStore.findModel(child).setPosition(child.getPosition());
+				    	wallTreeStore.findModel(child).setDimensions(child.getDimensions());
 				    }
 				}
 				
@@ -314,22 +318,24 @@ public class WallTree {
 			
 		}
 	}
-	private void selectChildren(WallTreeEntry wte, List<WallTreeEntry> wallIDs) {
-		for (WallTreeEntry children : wte.getChildren()) {
-			Boolean found = false;
-			for (WallTreeEntry wall : wallIDs) {
-				if (wall.getWallLocationID()==wte.getWallLocationID()) {
-					found=true;
-					wallTree.getStore().findModel(wte).setPosition(wall.getPosition());
-					break;
-				}
-			}
-			if (!found) {
-				wallTree.getStore().findModel(wte).setPosition(null);
-			}
-		}
-
-	}
+//	private void selectChildren(WallTreeEntry wte, List<WallTreeEntry> wallIDs) {
+//		for (WallTreeEntry children : wte.getChildren()) {
+//			Boolean found = false;
+//			for (WallTreeEntry wall : wallIDs) {
+//				Util.doLogging("setting positions" + wall.getText() + " - " + Integer.toString(wall.getPositions().size()));
+//				if (wall.getWallLocationID()==wte.getWallLocationID()) {
+//					found=true;
+//					wallTree.getStore().findModel(wte).setDimensions(wall.getDimensions());
+//					wallTree.getStore().findModel(wte).setPositions(wall.getPositions());
+//					break;
+//				}
+//			}
+//			if (!found) {
+//				wallTree.getStore().findModel(wte).setDimensions(null);
+//			}
+//		}
+//
+//	}
 	public void selectitems(List<WallTreeEntry> wallIDs) {
 		wallTree.setCheckStyle(CheckCascade.PARENTS);
 		for (WallTreeEntry wte : allEntries) {
@@ -338,7 +344,8 @@ public class WallTree {
 				if (wall.getWallLocationID()==wte.getWallLocationID()) {
 					found=true;
 					WallTreeEntry foundWte = wallTree.getStore().findModel(wte);
-					foundWte.setPosition(wall.getPosition());
+					foundWte.setDimensions(wall.getDimensions());
+					foundWte.setPositions(wall.getPositions());
 					wallTree.setChecked(foundWte, CheckState.CHECKED);
 					break;
 				}

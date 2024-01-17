@@ -18,55 +18,10 @@ public class PositionEntry extends AbstractEntry {
 	
 	private int positionID;
 	private String name;
-	private int registers = -1;
-	private int columns = -1;
-	private int type;
-	private int direction;
-	private boolean exact;
 	
-	private ArrayList<CoordinatesEntry> coordinates;
 	public PositionEntry(int positionID, String name) {
 		this.positionID = positionID;
 		this.name = name;
-	}
-	public PositionEntry(int positionID, String name, Integer type, Integer direction, Integer registers, Integer columns, ArrayList<CoordinatesEntry> coordinates, boolean exact) {
-		this.positionID = positionID;
-		this.name = name;
-		this.type = type;
-		this.direction = direction;
-		this.registers = registers;
-		this.columns = columns;
-		this.coordinates = coordinates;
-	}
-	public int getDirection() {
-		return this.direction;
-	}
-	public void setdirection(int direction) {
-		this.direction = direction;
-	}
-	public int getType() {
-		return this.type;
-	}
-	public void setExact(boolean exact) {
-		this.exact = exact;
-	}
-	public boolean getExact() {
-		return this.exact;
-	}
-	public void setType(int type) {
-		this.type = type;
-	}
-	public int getRegisters() {
-		return this.registers;
-	}
-	public void setRegisters(int register) {
-		this.registers = register;
-	}
-	public int getColumns() {
-		return this.columns;
-	}
-	public void setColumns(int columns) {
-		this.columns = columns;
 	}
 	public PositionEntry() {
 		this(-1, "");
@@ -85,36 +40,12 @@ public class PositionEntry extends AbstractEntry {
 	}
 	
 	public String getNameWithPosition() {
-		String position = " (";
-		if (coordinates != null) {
-			Boolean first = true;
-			for (CoordinatesEntry ce: coordinates) {
-				if (first) {
-					position = position + "Reg. " + Integer.toString(ce.getRegister()) + ", No. " + Integer.toString(ce.getNumber());
-					first = false;
-				} else {
-					position = position + "; Reg. " + Integer.toString(ce.getRegister()) + ", No. " + Integer.toString(ce.getNumber());
-				}
-			}
-			position = position + ")";
-			return name+position;
-		} else {
-			return name;
-		}
-		
+			return name;		
 	}
 
 	public void setName(String name) {
 		this.name = name;
 	}
-	public ArrayList<CoordinatesEntry> getCoodinates() {
-		return coordinates;
-	}
-
-	public void setCoodinates(ArrayList<CoordinatesEntry> coordinates) {
-		this.coordinates = coordinates;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 

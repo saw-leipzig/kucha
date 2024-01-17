@@ -35,7 +35,7 @@ public interface DepictionViewTemplates extends XTemplates {
 			SafeUri realCaveSketchUri, double width, double height, String style, String modeOfRepresentation, String description, String generalRemarks, String otherSuggestedIdentifications, 
 			ArrayList<TextElement> iconography, ArrayList<TextElement> pictorialElements, ArrayList<TextElement> decorationOrnaments, ArrayList<AnnotatedBibliographyEntry> bib, String user, String timestamp);
 	@XTemplate(source = "DepictionDisplay_oben.html")
-	SafeHtml displayoben(String shortName, String inventoryNumber, String cave, String wall, String expedition, String vendor, String purchaseDate, String currentLocation, String stateOfPreservation, SafeUri imageUri, SafeUri fullImageUri,
+	SafeHtml displayoben(String shortName, String inventoryNumber, String cave, String wall, String expedition, String vendor, String purchaseDate, String currentLocation, String stateOfPreservation, String imageUri, SafeUri fullImageUri,
 			SafeUri realCaveSketchUri, double width, double height, String style, String modeOfRepresentation, String description, String generalRemarks, String otherSuggestedIdentifications); 
 	@XTemplate(source = "DepictionDisplay_unten.html")
 	SafeHtml displayunten( ArrayList<AnnotatedBibliographyEntry> bib, String user, String timestamp, String description, String generalRemarks, String otherSuggestedIdentifications);

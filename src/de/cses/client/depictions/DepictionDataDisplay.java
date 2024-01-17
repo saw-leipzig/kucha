@@ -13,6 +13,12 @@
  */
 package de.cses.client.depictions;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -20,32 +26,50 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.StyleInjector;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
+import com.google.gwt.thirdparty.debugging.sourcemap.Base64;
 import com.google.gwt.user.client.ui.HTML;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.container.MarginData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.event.BeforeExpandEvent;
+import com.sencha.gxt.widget.core.client.event.BeforeShowEvent;
+import com.sencha.gxt.widget.core.client.event.BeforeExpandEvent.BeforeExpandHandler;
+import com.sencha.gxt.widget.core.client.event.BeforeShowEvent.BeforeShowHandler;
+import com.sencha.gxt.widget.core.client.event.ExpandEvent;
+import com.sencha.gxt.widget.core.client.event.ExpandEvent.ExpandHandler;
+import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 import com.sencha.gxt.widget.core.client.tree.TreeStyle;
 
 import de.cses.client.DatabaseService;
-//import de.cses.client.depictions.GetInfo;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.StaticTables;
 import de.cses.client.Util;
+import de.cses.client.images.OSDLoaderImagePresenter;
 import de.cses.client.ui.AbstractDataDisplay;
+import de.cses.client.ui.OSDLoader;
 import de.cses.client.ui.TextElement;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.IconographyEntry;
+import de.cses.shared.ImageEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.WallLocationEntry;
 import de.cses.shared.comparator.BibEntryComparator;
@@ -64,6 +88,8 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 	private StaticTables stab = StaticTables.getInstance();
 	protected Map<String, IconographyEntry> selectedIconographyMap;
 	IconographyTree icoTree;
+	private OSDLoaderImagePresenter  osdLoader;
+	private String prefix = "";
 	protected IconographySelector iconographySelector;
 	private HashMap<Integer, IconographyEntry> allIconographyEntriesList = new HashMap<Integer, IconographyEntry>();
 	public interface Images extends ClientBundle {
@@ -85,7 +111,6 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		}
 	}
 	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
-		Util.doLogging("*** setSelectedIconography called - icoTree.iconographyTree no. of items = " + icoTree.iconographyTree.getStore().getAllItemsCount());
 		resetSelection();
 		for (IconographyEntry entry : iconographyRelationList) {
 			Util.doLogging("setSelectedIconography setting entry = " + entry.getIconographyID());
@@ -135,27 +160,19 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 
 	  }
 	}
-
-	/**
-	 * Visualization of the content of a DepictionEntry as a HTML page (right column of UI)
-	 */
-	public DepictionDataDisplay(DepictionEntry e) {
-		super();
-		entry = e;
-		
-		
+	private void loadDepictionDataDisplay(){
 		String cave = "";
 		String wall = "";
 		SafeUri realCaveSketchUri = null;
 		DepictionViewTemplates view = GWT.create(DepictionViewTemplates.class);
-		if (e.getCave() != null) {
-			if (e.getCave().getSiteID() > 0) {
-				cave += stab.getSiteEntries().get(e.getCave().getSiteID()).getShortName() + ": ";
+		if (entry.getCave() != null) {
+			if (entry.getCave().getSiteID() > 0) {
+				cave += stab.getSiteEntries().get(entry.getCave().getSiteID()).getShortName() + ": ";
 			}
-			cave += e.getCave().getOfficialNumber() + ((e.getCave().getHistoricName() != null && e.getCave().getHistoricName().length() > 0) ? " (" + e.getCave().getHistoricName() + ")" : ""); 
-			realCaveSketchUri = UriUtils.fromString("/resource?cavesketch=" + e.getCave().getOptionalCaveSketch() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-			if ( e.getWallID() > 0) {
-				WallLocationEntry dummy = stab.getWallLocationEntries().get(e.getCave().getWall(e.getWallID()).getWallLocationID());
+			cave += entry.getCave().getOfficialNumber() + ((entry.getCave().getHistoricName() != null && entry.getCave().getHistoricName().length() > 0) ? " (" + entry.getCave().getHistoricName() + ")" : ""); 
+			realCaveSketchUri = UriUtils.fromString("/resource?cavesketch=" + entry.getCave().getOptionalCaveSketch() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+			if ( entry.getWallID() > 0) {
+				WallLocationEntry dummy = stab.getWallLocationEntries().get(entry.getCave().getWall(entry.getWallID()).getWallLocationID());
 				if (dummy!=null) {
 					
 				wall =dummy.getLabel();
@@ -163,24 +180,34 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 						
 			}
 		}
-		String shortname = e.getShortName() != null ? e.getShortName() : "";
-		String expedition = e.getExpedition() != null ? e.getExpedition().getName() : "";
-		String vendor = e.getVendor() != null ? e.getVendor().getVendorName() : "";
-		String location = e.getLocation() != null ? e.getLocation().getName() : "";
-		String date = e.getPurchaseDate() != null ? e.getPurchaseDate().toString() : "";
+		String shortname = entry.getShortName() != null ? entry.getShortName() : "";
+		String expedition = entry.getExpedition() != null ? entry.getExpedition().getName() : "";
+		String vendor = entry.getVendor() != null ? entry.getVendor().getVendorName() : "";
+		String location = entry.getLocation() != null ? entry.getLocation().getName() : "";
+		String date = entry.getPurchaseDate() != null ? entry.getPurchaseDate().toString() : "";
 		String stateOfPreservation = "";
-		for (PreservationAttributeEntry pae : e.getPreservationAttributesList()) {
+		for (PreservationAttributeEntry pae : entry.getPreservationAttributesList()) {
 			stateOfPreservation += stateOfPreservation.length() > 0 ? ", " + pae.getName() : pae.getName();
 		}
-		SafeUri imageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + "&thumb=700" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-		SafeUri fullImageUri = UriUtils.fromString("resource?imageID=" + e.getMasterImageID() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
-		String style = e.getStyleID() > 0 ? stab.getStyleEntries().get(e.getStyleID()).getStyleName() : "";
-		String modesOfRepresentation = e.getModeOfRepresentationID() > 0 ? stab.getModesOfRepresentationEntries().get(e.getModeOfRepresentationID()).getName() : "";
-		ArrayList<AnnotatedBibliographyEntry> bibList = e.getRelatedBibliographyList();
+		GWT.debugger();
+		ImageEntry masterImage = null;
+		for (ImageEntry ie: entry.getRelatedImages()) {
+			if (ie.getImageID() == entry.getMasterImageID()) {
+				masterImage = ie;
+				break;
+			}
+		}
+		prefix = "dataDisplay-" + Integer.toString(entry.getDepictionID()) + "-";
+		String imageUri = prefix + masterImage.getFilename();
+
+		SafeUri fullImageUri = UriUtils.fromString("");
+		String style = entry.getStyleID() > 0 ? stab.getStyleEntries().get(entry.getStyleID()).getStyleName() : "";
+		String modesOfRepresentation = entry.getModeOfRepresentationID() > 0 ? stab.getModesOfRepresentationEntries().get(entry.getModeOfRepresentationID()).getName() : "";
+		ArrayList<AnnotatedBibliographyEntry> bibList = entry.getRelatedBibliographyList();
 		// TODO ugly and hard wired but it will do the trick for now
 
 		selectedIconographyMap = new HashMap<String, IconographyEntry>();
-		icoTree= new IconographyTree(StaticTables.getInstance().getIconographyEntries().values(),e.getRelatedIconographyList(), true);
+		icoTree= new IconographyTree(StaticTables.getInstance().getIconographyEntries().values(),entry.getRelatedIconographyList(), true);
 
 		TreeStyle treeStyle = new TreeStyle(); 
 		treeStyle.setNodeCloseIcon(Images.INSTANCE.foo());
@@ -190,7 +217,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		icoTree.iconographyTree.setStyle(treeStyle);
 
 		
-		setIconographyStore(StaticTables.getInstance().getIconographyEntries().values(),e.getRelatedIconographyList());
+		setIconographyStore(StaticTables.getInstance().getIconographyEntries().values(),entry.getRelatedIconographyList());
 		for (IconographyEntry ie : icoTree.iconographyTreeStore.getRootItems()) {
 			expandchildren(ie);
 			icoTree.iconographyTree.setExpanded(ie, false);
@@ -230,7 +257,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 //			));
 		HTML htmlWidget = new HTML(view.displayoben(
 				shortname, 
-				e.getInventoryNumber() != null ? e.getInventoryNumber() : "",  
+				entry.getInventoryNumber() != null ? entry.getInventoryNumber() : "",  
 				cave,
 				wall,
 				expedition, 
@@ -241,21 +268,21 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 				imageUri,
 				fullImageUri, 
 				realCaveSketchUri, 
-				e.getWidth(), e.getHeight(),
+				entry.getWidth(), entry.getHeight(),
 				style, 
 				modesOfRepresentation, 
-				e.getDescription() != null ? e.getDescription() : "",
-				e.getGeneralRemarks() != null ? e.getGeneralRemarks() : "",
-				e.getOtherSuggestedIdentifications() != null ? e.getOtherSuggestedIdentifications() : ""
+				entry.getDescription() != null ? entry.getDescription() : "",
+				entry.getGeneralRemarks() != null ? entry.getGeneralRemarks() : "",
+				entry.getOtherSuggestedIdentifications() != null ? entry.getOtherSuggestedIdentifications() : ""
 
 			));
 		HTML htmlWidget2 = new HTML(view.displayunten(
-		e.getRelatedBibliographyList(),
-		e.getLastChangedByUser() != null ? e.getLastChangedByUser() : "",
-		e.getModifiedOn() != null ? e.getModifiedOn() : "",
-		e.getDescription() != null ? e.getDescription() : "",
-		e.getGeneralRemarks() != null ? e.getGeneralRemarks() : "",
-		e.getOtherSuggestedIdentifications() != null ? e.getOtherSuggestedIdentifications() : ""
+		entry.getRelatedBibliographyList(),
+		entry.getLastChangedByUser() != null ? entry.getLastChangedByUser() : "",
+		entry.getModifiedOn() != null ? entry.getModifiedOn() : "",
+		entry.getDescription() != null ? entry.getDescription() : "",
+		entry.getGeneralRemarks() != null ? entry.getGeneralRemarks() : "",
+		entry.getOtherSuggestedIdentifications() != null ? entry.getOtherSuggestedIdentifications() : ""
 
 	));		
 		StyleInjector.inject(".myCustomStyle {font-family: verdana;background:#ffcc66; font-size: 16px; }");
@@ -278,7 +305,42 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 //		shortNameVLC.add(ornamentTree);
 		add(decriptionVLC, new MarginData(0, 0, 0, 0));
 		setHeading((shortname.length() > 0 ? shortname + " " : "") + (cave.length() > 0 ? " in " + cave : ""));
+		
 	}
+	/**
+	 * Visualization of the content of a DepictionEntry as a HTML page (right column of UI)
+	 */
+	public DepictionDataDisplay(DepictionEntry e) {
+		super();
+		super.addExpandHandler(new ExpandHandler() {
+
+			@Override
+			public void onExpand(ExpandEvent event) {
+				Info.display("expanding", "started");
+				osdLoader.setosd();
+			}
+			
+		});
+		entry = e;
+		loadDepictionDataDisplay();
+		ImageEntry masterImage = null;
+		for (ImageEntry ie: entry.getRelatedImages()) {
+			if (ie.getImageID() == entry.getMasterImageID()) {
+				masterImage = ie;
+				break;
+			}
+		}
+
+		osdLoader = new OSDLoaderImagePresenter(masterImage, prefix);
+		
+		
+	}
+	public void setosd() {
+		osdLoader.setosd();
+	}
+	private static native String b64decode(String a) /*-{
+	  return window.btoa(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)));;
+	}-*/;
 	//public buildIconographys
 	private void addToIconographiesList(IconographyEntry iconographyEntry) {
 		allIconographyEntriesList.put(iconographyEntry.getIconographyID(), iconographyEntry);

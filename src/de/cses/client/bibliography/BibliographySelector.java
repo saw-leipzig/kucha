@@ -181,7 +181,7 @@ public class BibliographySelector implements IsWidget {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				Util.doLogging("jier??");
+
 					selectedEntry.setQuotedPages(pageField.getValue());
 //					dbService.insertVendorEntry(vEntry, new AsyncCallback<Integer>() {
 //
@@ -285,7 +285,6 @@ public class BibliographySelector implements IsWidget {
     selectionModel.addSelectionChangedHandler(new SelectionChangedHandler<AnnotatedBibliographyEntry>() {
 				@Override
 				public void onSelectionChanged(SelectionChangedEvent<AnnotatedBibliographyEntry> event) {
-					Util.doLogging("");
 					if ((!itemSelected)&(showdialog)){
 						for (Map.Entry<Integer, AnnotatedBibliographyEntry> entry : selectedBibMap.entrySet()) {
 							//Util.doLogging(Integer.toString(entry.getKey()));
@@ -373,8 +372,6 @@ public class BibliographySelector implements IsWidget {
 		@Override
 		public void onCellClick(CellDoubleClickEvent event) {
 			setPage(grid.getStore().get(event.getRowIndex()));
-			Util.doLogging(Integer.toString(event.getRowIndex()));
-			Util.doLogging(grid.getStore().get(event.getRowIndex()).getTitleORGFull());
 		}
     };
     grid.addCellDoubleClickHandler(doubleClick);
@@ -468,25 +465,27 @@ public class BibliographySelector implements IsWidget {
 							
 						}
 					}
-					if (item.getAuthorList()!=null) {
-						if (!item.getAuthorList().isEmpty()) {
+					if (item.getEditorList()!=null) {
+						if (!item.getEditorList().isEmpty()) {
 			        	  for (AuthorEntry ae : item.getEditorList()) {
 							try {
-			        			  if (ae.getName()!=null) {
-					        		  if ((!ae.getName().isEmpty())&(!filter.isEmpty())) {
-						        		  if (StaticTables.getInstance().removeAccents(ae.getName().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
-						        			  return true;
-						        		  }		        			  
-					        		  }			        				  
-			        			  }
-			        			  if (ae.getAlias()!=null) {
-					        		  if ((!ae.getAlias().isEmpty())&(!filter.isEmpty())) {
-					        			  if (StaticTables.getInstance().removeAccents(ae.getAlias().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
-					        				  return true;
-					        			  }
-					        		  }
-			        				  
-			        			  }
+								if (ae != null) {
+				        			  if (ae.getName()!=null) {
+						        		  if ((!ae.getName().isEmpty())&(!filter.isEmpty())) {
+							        		  if (StaticTables.getInstance().removeAccents(ae.getName().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
+							        			  return true;
+							        		  }		        			  
+						        		  }			        				  
+				        			  }
+				        			  if (ae.getAlias()!=null) {
+						        		  if ((!ae.getAlias().isEmpty())&(!filter.isEmpty())) {
+						        			  if (StaticTables.getInstance().removeAccents(ae.getAlias().toLowerCase()).contains(StaticTables.getInstance().removeAccents(filter.toLowerCase()))) {
+						        				  return true;
+						        			  }
+						        		  }
+				        				  
+				        			  }
+								}
 			        	  }		        	  
 							catch(Exception e) {
 			        		  Util.doLogging(e.getMessage());
@@ -646,9 +645,6 @@ public class BibliographySelector implements IsWidget {
 		}
 	}
 	public ArrayList<AnnotatedBibliographyEntry> getSelectedEntries() {
-		//for (AnnotatedBibliographyEntry ab : selectionModel.getSelection()) {
-		//	Util.doLogging(ab.getTitleORG());
-		//}
 		ArrayList<AnnotatedBibliographyEntry> results = new ArrayList<AnnotatedBibliographyEntry>();
 		for (AnnotatedBibliographyEntry abe : selectionModel.getSelectedItems()) {
 			results.add(abe.clone());

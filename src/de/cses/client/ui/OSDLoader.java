@@ -41,9 +41,10 @@ import de.cses.shared.AnnotationEntry;
 import de.cses.shared.ExpeditionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
-import de.cses.shared.PositionEntry;
+import de.cses.shared.CoordinateEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.VendorEntry;
+import de.cses.shared.WallDimensionEntry;
 import de.cses.shared.ExportEntry;
 
 
@@ -99,19 +100,19 @@ public class OSDLoader {
 		this.icoTree=null;
 		//this.osdLoader=this;
 	}
-	public OSDLoader(ArrayList<PositionEntry> pes) {
+	public OSDLoader(ArrayList<WallDimensionEntry> wdes) {
 		// Constructor for PositionEntry
 		// We need to initiate a Javascript Object in Javascript Code
 		this.osdDic = createDic();
 		this.isWall=true;
 		this.annos = null;
 		ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
-		for (PositionEntry pe : pes) {
+		for (WallDimensionEntry wde : wdes) {
 			ImageEntry image = new ImageEntry();
-			image.setFilename(pe.getName());
+			image.setFilename(wde.getWallSketch().getFilename());
 			images.add(image);
-			boolean isRect = (pe.getType() == 0? false: true );
-			annos = ConcatList(annos, createMap(pe.getRegisters(),pe.getColumns(), 1000 , 1000, isRect, pe.getName()));
+			boolean isRect = (wde.getType() == 0? false: true );
+			annos = ConcatList(annos, createMap(wde.getRegisters(),wde.getColumns(), 1000 , 1000, isRect, wde.getName()));
 		}
 		this.images=images;
 		this.annoation =true;
@@ -142,7 +143,6 @@ public class OSDLoader {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				Util.doLogging("Linking " + annotoriousID + " to Entry " + exportSelectionCB.getValue().getName());
 				dbService.linkAnnoToEntry(annotoriousID, exportSelectionCB.getValue(), new AsyncCallback<Boolean>() {
 					@Override
 					public void onFailure(Throwable caught) {
@@ -154,7 +154,7 @@ public class OSDLoader {
 
 					@Override
 					public void onSuccess(Boolean result) {
-						Util.doLogging("Annotation linked: "+Boolean.toString(result));
+						modifiedPopUp.hide();
 					}
 				});			
 
@@ -173,7 +173,17 @@ public class OSDLoader {
 
 			@Override
 			public void onSuccess(ArrayList<ExportEntry> result) {
+				ArrayList<Integer> icos = new ArrayList<Integer>();
+				for (AnnotationEntry ae: osdListener.getAnnotations()){
+					if (ae.getAnnotoriousID().equals(annotoriousID)) {
+						for (IconographyEntry ico: ae.getTags()) {
+							icos.add(ico.getIconographyID());
+						}
+						break;
+					}
+				}
 				for (ExportEntry entry : result) {
+					entry.setIconography(icos);
 					exportEntryLS.add(entry);
 				}
 			}
@@ -278,7 +288,6 @@ public class OSDLoader {
 
 	public void startLoadingTiles(String context) {
 		Collection<IconographyEntry> icos = StaticTables.getInstance().getIconographyEntries().values();
-		Util.doLogging("load tiles");
 		if (icos.size()>0) {
 			loadTiles(images, context, annoation, icos);
 		}
@@ -331,7 +340,6 @@ public class OSDLoader {
 		jso= createZoomeImage(tiles,ifn,imgDic, osdDic, UserLogin.getInstance().getSessionID(), annotation, icos, this,null, isWall);
 	}
 	public void loadTiles(ArrayList<ImageEntry> images, String context, boolean annotation, Collection<IconographyEntry> icoTree) {
-		Util.doLogging("load tiles javascript");
 		ArrayList<JavaScriptObject> results = loadTiles(null, null,null, images, context, annotation, isWall);
 		JavaScriptObject tiles = results.remove(0);
 		JavaScriptObject imgDic=results.remove(0);
@@ -342,10 +350,9 @@ public class OSDLoader {
 		}
 		jso= createZoomeImage(tiles,ifn,imgDic, osdDic,UserLogin.getInstance().getSessionID(), annotation, icos, this, annos, isWall);	
 	}
-	public void loadTilesForWallPositions(ArrayList<PositionEntry> pes, String context) {
-		Util.doLogging("load tiles javascript");
+	public void loadTilesForWallPositions(ArrayList<CoordinateEntry> pes, String context) {
 		ArrayList<ImageEntry> images = new ArrayList<ImageEntry>();
-		for (PositionEntry pe : pes) {
+		for (CoordinateEntry pe : pes) {
 			ImageEntry image = new ImageEntry();
 			image.setFilename(pe.getName());
 		}
@@ -537,14 +544,8 @@ public class OSDLoader {
 	    $wnd.console.log("polygon", polygon);		
 		try {
 	        var union =null;
-	        // $wnd.console.log("toWKT triggered");
-	        //polygon = "M319.91400146484375,1052.1756591796875 L297.0713806152344,1021.1749877929688 L285.65008544921875,967.3316650390625 L288.9132995605469,939.5941772460938 L300.3346252441406,874.3295288085938 L310.12432861328125,835.1707763671875 L324.8088684082031,779.69580078125 L342.7566223144531,742.1686401367188 L368.86248779296875,686.6937255859375 L406.3896484375,654.0614013671875 L427.60064697265625,641.0084838867188 L453.7065124511719,624.6923217773438 L470.02264404296875,621.4290771484375 L489.60205078125,621.4290771484375 L536.9188842773438,587.1651611328125 L530.3924560546875,572.4806518554688 L522.234375,557.7960815429688 L518.9711303710938,548.0064086914062 L520.6027221679688,531.6902465820312 L523.865966796875,523.5321655273438 L533.6557006835938,510.4792175292969 L548.3402099609375,495.794677734375 L572.814453125,494.1630554199219 L589.130615234375,486.0050048828125 L598.9202880859375,477.846923828125 L608.7100219726562,474.58367919921875 L626.6577758789062,474.58367919921875 L665.8165283203125,489.2682189941406 L677.2378540039062,494.1630554199219 L687.0275268554688,507.21600341796875 L693.5540161132812,539.8483276367188 L693.5540161132812,549.6380004882812 L693.5540161132812,556.1644897460938 L687.0275268554688,561.059326171875 L683.7643432617188,580.6387329101562 L678.8694458007812,598.5864868164062 L701.7120971679688,595.3232421875 L711.5017700195312,596.954833984375 L726.1863403320312,605.1129150390625 L739.2392578125,610.0078125 L750.6605834960938,621.4290771484375 L758.8186645507812,637.7452392578125 L760.4502563476562,658.9562377929688 L760.4502563476562,681.7988891601562 L750.6605834960938,725.8524780273438 L734.3444213867188,769.9061279296875 L734.3444213867188,781.3274536132812 L734.3444213867188,787.8538818359375 L704.975341796875,825.3810424804688 L677.2378540039062,848.2236938476562 L669.0797729492188,848.2236938476562 L667.4481811523438,840.0656127929688 L660.9216918945312,849.8552856445312 L659.2901000976562,858.0133666992188 L641.34228515625,869.4346923828125 L634.8158569335938,869.4346923828125 L628.2893676757812,866.1714477539062 L613.6048583984375,880.8560180664062 L589.130615234375,890.6456909179688 L567.9196166992188,902.0670166015625 L530.3924560546875,908.5934448242188 L504.2865905761719,905.3302612304688 L491.2336730957031,897.1721801757812 L486.33880615234375,890.6456909179688 L474.9175109863281,911.856689453125 L463.4961853027344,933.0676879882812 L455.3381042480469,964.0684204101562 L450.4432678222656,980.3845825195312 L422.705810546875,1003.2271728515625 L414.5477294921875,1016.2800903320312 L411.28448486328125,1039.1226806640625 L408.0212707519531,1061.96533203125 L414.5477294921875,1094.59765625 L414.5477294921875,1104.3873291015625 L419.44256591796875,1143.546142578125 L427.60064697265625,1159.8623046875 L430.8638916015625,1164.7572021484375 L409.6528625488281,1168.0203857421875 L394.96832275390625,1151.7042236328125 L390.073486328125,1179.441650390625 L375.3889465332031,1192.49462890625 L350.9147033691406,1207.17919921875 L342.7566223144531,1197.389404296875 L347.6514892578125,1171.2835693359375 L355.8095703125,1140.282958984375 L360.70440673828125,1133.7564697265625 L357.441162109375,1123.966796875 L346.0198669433594,1141.91455078125 L341.125,1159.8623046875 L331.3353271484375,1185.9681396484375 L310.12432861328125,1203.9158935546875 L300.3346252441406,1205.5474853515625 L293.80816650390625,1200.6527099609375 L290.544921875,1189.2313232421875 L295.43975830078125,1176.178466796875 L298.7030029296875,1166.3887939453125 L301.96624755859375,1151.7042236328125 L303.59783935546875,1133.7564697265625 L301.96624755859375,1120.7034912109375 L297.0713806152344,1065.2286376953125 L298.7030029296875,1061.96533203125 L300.3346252441406,1055.4388427734375 L301.96624755859375,1053.8072509765625 L311.75592041015625,1060.333740234375 L323.17724609375,1057.070556640625 L326.4404602050781,1058.7021484375 L319.91400146484375,1052.1756591796875 ZM553.2350463867188,670.3775634765625 L554.86669921875,743.80029296875 L548.3402099609375,771.5377197265625 L549.9718017578125,786.2222900390625 L551.6034545898438,807.4332885742188 L543.4453735351562,838.4340209960938 L563.0247802734375,828.644287109375 L571.182861328125,825.3810424804688 L600.5519409179688,823.7494506835938 L615.2364501953125,828.644287109375 L620.1312866210938,825.3810424804688 L616.8681030273438,804.1700439453125 L620.1312866210938,784.5906982421875 L625.0261840820312,774.8009643554688 L628.2893676757812,760.116455078125 L636.4474487304688,748.6951293945312 L641.34228515625,735.6422119140625 L654.395263671875,727.484130859375 L664.1849365234375,720.9576416015625 L677.2378540039062,719.3260498046875 L685.3959350585938,719.3260498046875 L696.8172607421875,680.167236328125 L672.343017578125,673.6408081054688 L664.1849365234375,670.3775634765625 L652.7636108398438,660.587890625 L646.2371826171875,662.219482421875 L642.9739379882812,676.904052734375 L636.4474487304688,686.6937255859375 L620.1312866210938,703.0098876953125 L603.8151245117188,704.6414794921875 L595.6570434570312,704.6414794921875 L585.8673706054688,698.1150512695312 L569.5512084960938,686.6937255859375 L553.2350463867188,672.0092163085938 L553.2350463867188,670.3775634765625 Z"
-	        // $wnd.console.log("polygon: ",polygon);
 	        var results =polygon.split('M');
-	        // $wnd.console.log("results: ");
-	        // $wnd.console.log("results: ",results);
 	        results.forEach(function (result, index) {
-	          // $wnd.console.log("result: ",result);
 	          if (result.length>0){
 	            result=result.replace(/ Z/g,"Z")
 	            result=result.replace(/Z /g,"Z")
@@ -558,8 +559,6 @@ public class OSDLoader {
 	            var firstCoord = ""
 	            var lastCoord=""
 	            coords.forEach(function(coord, index){
-	          	  // $wnd.console.log("loop");
-	          	  // $wnd.console.log("coord", parseFloat(coord.split(",")[0]).toFixed(2).toString(), " ",parseFloat(coord.split(",")[1]).toFixed(2).toString());
 	          	  var newCoord = parseFloat(coord.split(",")[0]).toFixed(2).toString() + " " + parseFloat(coord.split(",")[1]).toFixed(2).toString();
 	              if (!first){
 	                poly+=", ";

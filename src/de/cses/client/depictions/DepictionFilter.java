@@ -75,7 +75,7 @@ import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.user.UserLogin;
-import de.cses.client.walls.PositionEditor;
+import de.cses.client.walls.WallFilter;
 import de.cses.client.walls.WallTree;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AbstractSearchEntry;
@@ -151,8 +151,6 @@ public class DepictionFilter extends AbstractFilter {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml positionLabel(String name);
 	}
-
-
 	
 	interface IconographyViewTemplates extends XTemplates {
 		@XTemplate("<div style=\"border: 1px solid grey;\"><tpl for='name'> {element}<wbr> </tpl></div>")
@@ -188,7 +186,7 @@ public class DepictionFilter extends AbstractFilter {
 	private PopupPanel extendedFilterDialog = null;
 	private ArrayList<Integer> imgIDs = new ArrayList<Integer>();
 	private ArrayList<Integer> bibIDs = new ArrayList<Integer>();
-	private PositionEditor pe;
+	private WallFilter pe;
 	private SimpleComboBox<String> publishedFilter;
 	private ListStore<PositionEntry> positionEntryList;
 	private PositionProperties positionProps;
@@ -776,7 +774,7 @@ public class DepictionFilter extends AbstractFilter {
 //			extendedWallFilterDialog.setSize("750", "500");
 //			extendedWallFilterDialog.setModal(true);
 //		}
-		pe = new PositionEditor(null, selectedWallsLS.getAll(), true) {
+		pe = new WallFilter(selectedWallsLS.getAll()) {
 			@Override
 			protected void save(ArrayList<WallTreeEntry> results ) {
 				selectedWallsLS.clear();

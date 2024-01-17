@@ -98,6 +98,7 @@ import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AnnotationEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.ExternalRessourceEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.InnerSecondaryPatternsEntry;
@@ -823,6 +824,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 
 			@Override
 			public void onClick(ClickEvent event) {
+				Util.doLogging("Saving started by save button!");
 				saveButton.disable();
 				save(false,0);
 
@@ -840,6 +842,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	
 						@Override
 						public void onSelect(SelectEvent event) {
+							Util.doLogging("saving started by exit-saving.");
 							save(false,0);
 							bibSelector.clearPages();
 							closeEditor(ornamentEntry);
@@ -859,6 +862,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 						@Override
 						public void onKeyDown(KeyDownEvent e) {
 							if (e.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+							Util.doLogging("saving started by hotkey-Enter exit.");
 							save(false,0);
 							closeEditor(ornamentEntry);
 						}}
@@ -1568,7 +1572,35 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		}
 		
 		tabpanel.add(bibSelector, "Related Bibliography");
+		ExternalRessourceSelectorListener ersl = new ExternalRessourceSelectorListener() {
 
+			@Override
+			public void addExternalRessource(ExternalRessourceEntry ere) {
+				ornamentEntry.getrelatedExternalRessourcesList().add(ere);
+			}
+
+			@Override
+			public List<ExternalRessourceEntry> getExternalRessourceList() {
+				return ornamentEntry.getrelatedExternalRessourcesList();
+			}
+
+			@Override
+			public void changeExternalRessource(ExternalRessourceEntry changedEre) {
+				List<ExternalRessourceEntry> newExtResList = new ArrayList<ExternalRessourceEntry>();
+				for (ExternalRessourceEntry ere: ornamentEntry.getrelatedExternalRessourcesList()) {
+					if (changedEre.getExternalRessourceID() == ere.getExternalRessourceID()) {
+						newExtResList.add(changedEre);
+					} else {
+						newExtResList.add(ere);
+					}
+				}
+				ornamentEntry.setRelatedExternalRessources(newExtResList);
+				
+			}
+			
+		};
+		ExternalRessourceSelector resSelector = new ExternalRessourceSelector(ornamentEntry.getrelatedExternalRessourcesList(), ersl);
+		tabpanel.add(resSelector, "Related External Ressources");
 		backgroundPanel = new FramedPanel();
 		
 		backgroundPanel.setSize( Integer.toString(Window.getClientWidth()/100*95),Integer.toString(Window.getClientHeight()/100*95));

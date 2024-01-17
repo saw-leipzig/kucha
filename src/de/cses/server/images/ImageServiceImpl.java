@@ -93,8 +93,11 @@ public class ImageServiceImpl extends HttpServlet {
 		}
 		try {
 			try {
+				System.err.println(request);
 				List<?> items = upload.parseRequest(request);
+				System.err.println("items" + items);
 				Iterator<?> it = items.iterator();
+				System.out.println("Iterator " + Boolean.toString(it.hasNext()));
 				while (it.hasNext()) {
 					FileItem item = (FileItem) it.next();
 					uploadFileName = item.getName();

@@ -28,6 +28,7 @@
 
 	<!-- GXT Stylesheet -->
   <stylesheet src="reset.css" />
+	<stylesheet src="/kis/KuchaApplication.css" />
 	<stylesheet src="/KuchaApplication.css" />
 
 	<set-configuration-property name="CssResource.enableGss" value="true" />

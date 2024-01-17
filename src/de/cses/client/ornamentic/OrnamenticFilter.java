@@ -76,7 +76,7 @@ import de.cses.client.ornamentic.OrnamenticEditor.OrnamentClassViewTemplates;
 import de.cses.client.ornamentic.WallOrnamentCaveRelationEditor.OrnamentPositionViewTemplates;
 import de.cses.client.ui.AbstractFilter;
 import de.cses.client.user.UserLogin;
-import de.cses.client.walls.PositionEditor;
+import de.cses.client.walls.WallFilter;
 import de.cses.client.walls.WallTree;
 import de.cses.shared.AbstractSearchEntry;
 import de.cses.shared.CaveEntry;
@@ -175,7 +175,7 @@ public class OrnamenticFilter extends AbstractFilter {
 	private ListStore<WallTreeEntry> selectedWallsLS;
 	private ListView<WallTreeEntry, WallTreeEntry> wallSelectionLV;
 	private IntegerSpinnerField wallSpinnerField;
-	private PositionEditor pe;
+	private WallFilter pe;
 
 	interface OrnamentClassProperties extends PropertyAccess<OrnamentClassEntry> {
 		ModelKeyProvider<OrnamentClassEntry> ornamentClassID();
@@ -1437,7 +1437,7 @@ public class OrnamenticFilter extends AbstractFilter {
 		icoSelector.setSelectedIconography(list);
 	}
 	private void showWallSelection() {
-		pe = new PositionEditor(null, selectedWallsLS.getAll(), true) {
+		pe = new WallFilter(selectedWallsLS.getAll()) {
 			@Override
 			protected void save(ArrayList<WallTreeEntry> results ) {
 				selectedWallsLS.clear();

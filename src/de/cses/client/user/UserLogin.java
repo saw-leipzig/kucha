@@ -79,6 +79,8 @@ public class UserLogin extends PopupPanel {
 	private UserEntry currentUser = null;
 	private UserInformationTemplate uiTemplate;
 	private ToolButton exportDBTB = null;
+	private ToolButton updateDBTB = null;
+	
 	/**
 	 * 
 	 */
@@ -343,13 +345,14 @@ public class UserLogin extends PopupPanel {
 			userManagerFrontendTB.setToolTip(Util.createToolTip("Edit Users of Frontend"));
 		}
 		if (currentUser.getUserID() == 14) {
-			exportDBTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
+			exportDBTB = new ToolButton(new IconConfig("resetButton", ""));
+			exportDBTB.setToolTip(Util.createToolTip("Reset Elastic-Index"));
 			exportDBTB.addSelectHandler(new SelectHandler() {
 				
 				@Override
 				public void onSelect(SelectEvent event) {
 					exportDBTB.disable();
-					dbService.serializeAllDepictionEntries(currentUser.getSessionID(), new AsyncCallback<Boolean>() {
+					dbService.serializeAllEntries(currentUser.getSessionID(), new AsyncCallback<Boolean>() {
 
 						@Override
 						public void onFailure(Throwable caught) {
@@ -362,6 +365,31 @@ public class UserLogin extends PopupPanel {
 						public void onSuccess(Boolean result) {
 							Info.display("Finished database export", "See logs for details.");
 							exportDBTB.enable();
+						}
+					});
+				}
+			});
+		}
+		if (currentUser.getUserID() == 14) {
+			updateDBTB = new ToolButton(new IconConfig("saveButton", "resetButtonOver"));
+			updateDBTB.setToolTip(Util.createToolTip("Update Elastic-Index"));
+			updateDBTB.addSelectHandler(new SelectHandler() {
+				
+				@Override
+				public void onSelect(SelectEvent event) {
+					updateDBTB.disable();
+					dbService.updateAllEntries(currentUser.getSessionID(), new AsyncCallback<Integer>() {
+
+						@Override
+						public void onFailure(Throwable caught) {
+							Util.showWarning("Failure", "A problem occurred!");
+							updateDBTB.enable();
+						}
+
+						@Override
+						public void onSuccess(Integer result) {
+							Info.display("Finished database export", "Updated " + Integer.toString(result) + " entries. see log for Details.");
+							updateDBTB.enable();
 						}
 					});
 				}
@@ -396,6 +424,9 @@ public class UserLogin extends PopupPanel {
 //		}
 		if (exportDBTB != null) {
 			userFP.addTool(exportDBTB);
+		}
+		if (updateDBTB != null) {
+			userFP.addTool(updateDBTB);
 		}
 		if (adminTB != null) {
 			userFP.addTool(adminTB);

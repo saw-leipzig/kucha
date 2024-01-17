@@ -31,6 +31,7 @@ public class OrnamentEntry extends AbstractEntry {
 	private Integer masterImageID = 0;
 	private ArrayList<IconographyEntry> relatedIconographyList = new ArrayList<IconographyEntry>();
 	private ArrayList<AnnotationEntry> relatedAnnotationList = new ArrayList<AnnotationEntry>();
+	private List<ExternalRessourceEntry> relatedExternalRessourcesList = new ArrayList<ExternalRessourceEntry>();
 
 	public OrnamentEntry() {
 		typicalID = 0;
@@ -53,7 +54,8 @@ public class OrnamentEntry extends AbstractEntry {
 			String interpretation,
 			String references, int ornamentClassID, ArrayList<ImageEntry> images,
 			ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList, String modifiedOn, int iconographyID, int masterImageID,
-			ArrayList<IconographyEntry> relatedIconographyList, ArrayList<AnnotationEntry> relatedAnnotationList, int accessLevel, double tourOrder, boolean isVirtualTour) {
+			ArrayList<IconographyEntry> relatedIconographyList, ArrayList<AnnotationEntry> relatedAnnotationList, int accessLevel, 
+			double tourOrder, boolean isVirtualTour, List<ExternalRessourceEntry> relatedExternalRessourcesList) {
 		this.typicalID = typicalID;
 		this.code = code;
 		this.description = description;
@@ -69,11 +71,12 @@ public class OrnamentEntry extends AbstractEntry {
 		this.accessLevel=accessLevel;
 		this.virtualTourOrder=tourOrder;
 		this.isVirtualTour = isVirtualTour;
+		this.relatedExternalRessourcesList = relatedExternalRessourcesList;
 	}
 
 	public OrnamentEntry(int typicalID, String code, String description, String remarks, 
 			//String annotations, String modifiedOn, ArrayList<IconographyEntry> relatedIconographyList,
-			ArrayList<AnnotationEntry> relatedAnnotationList, int accessLevel) {
+			ArrayList<AnnotationEntry> relatedAnnotationList, int accessLevel, List<ExternalRessourceEntry> relatedExternalRessourcesList) {
 		this.typicalID = typicalID;
 		this.code = code;
 		this.description = description;
@@ -83,6 +86,7 @@ public class OrnamentEntry extends AbstractEntry {
 		this.relatedIconographyList=relatedIconographyList;
 		this.relatedAnnotationList=relatedAnnotationList;
 		this.accessLevel=accessLevel;
+		this.relatedExternalRessourcesList = relatedExternalRessourcesList;
 	}
 	public ArrayList<AnnotationEntry> getRelatedAnnotationList() {
 		return relatedAnnotationList;
@@ -93,6 +97,27 @@ public class OrnamentEntry extends AbstractEntry {
 
 	public void setRelatedAnnotationList(ArrayList<AnnotationEntry> relatedAnnotationList) {
 		this.relatedAnnotationList = relatedAnnotationList;
+	}
+
+	public List<ExternalRessourceEntry> getrelatedExternalRessourcesList() {
+		return relatedExternalRessourcesList;
+	}
+	public void adRelatedExternalRessourcesList(ExternalRessourceEntry ere) {
+		this.relatedExternalRessourcesList.add(ere);
+	}
+
+	public void setRelatedExternalRessources(List<ExternalRessourceEntry> relatedExternalRessourcesList) {
+		this.relatedExternalRessourcesList = relatedExternalRessourcesList;
+	}
+	
+	public void deleteRelatedExternalRessourceEntry(ExternalRessourceEntry ere) {
+		List<ExternalRessourceEntry> newRelatedExternalRessourcesList = new ArrayList<ExternalRessourceEntry>();
+		for (ExternalRessourceEntry extres : this.relatedExternalRessourcesList) {
+			if (extres.compareTo(ere) != 0) {
+				newRelatedExternalRessourcesList.add(extres);
+			}
+		}
+		this.relatedExternalRessourcesList = newRelatedExternalRessourcesList;
 	}
 
 	public int getTypicalID() {

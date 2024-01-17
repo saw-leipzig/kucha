@@ -474,7 +474,6 @@ public class IconographySelector extends FramedPanel {
 				}
 				
 				where=wherefirst+where+")";
-				// Util.doLogging("where for getOrnamentsWhere: "+where);
 				dbService.getOrnamentsWHERE(where, new AsyncCallback<ArrayList<OrnamentEntry>>() {
 		
 					@Override
@@ -494,7 +493,7 @@ public class IconographySelector extends FramedPanel {
 								}
 		
 							}
-							dbService.getPicsByImageID(where, 400, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<Integer,String>>() {
+							dbService.getPicsByImageID(where, 200, UserLogin.getInstance().getSessionID(), new AsyncCallback<Map<Integer,String>>() {
 								
 								@Override
 								public void onFailure(Throwable caught) {				
@@ -503,10 +502,10 @@ public class IconographySelector extends FramedPanel {
 								
 								@Override
 								public void onSuccess(Map<Integer,String> imgdic) {
+									Util.doLogging("got pics!");
 									for (OrnamentEntry oe : ornamentEntries) {
 										if (oe.getMasterImageID()>0) {
 											if (imgdic.containsKey(oe.getMasterImageID())) {
-												//Util.doLogging(imgdic.get(oe.getMasterImageID()));
 												imgdDic.put(oe.getIconographyID(), imgdic.get(oe.getMasterImageID()));
 												StaticTables.getInstance().setOrnamentMasterPics(imgdDic);
 												}	
@@ -594,7 +593,6 @@ public class IconographySelector extends FramedPanel {
 //		}
 	}
 	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
-		Util.doLogging("*** setSelectedIconography called - iconographyTree no. of items = " + iconographyTree.getStore().getAllItemsCount());
 		this.iconographyRelationList=iconographyRelationList;
 		iconographyTree.expandAll();
 		resetSelection();
@@ -972,7 +970,6 @@ public class IconographySelector extends FramedPanel {
 				int i =0;
 				for (IconographyEntry entry : selectedIconographyMap.values()) {
 					result.add(entry);
-					Util.doLogging("Added "+Integer.toString(i++)+" items to iconographyresult");
 				}
 			}
 			return result;	

@@ -1,10 +1,13 @@
 package de.cses.shared;
 
+import java.util.ArrayList;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class ExportEntry extends AbstractEntry {
     private int id;
     private String description;
+    private ArrayList<Integer> iconography;
 
     public ExportEntry()
     {
@@ -14,6 +17,7 @@ public class ExportEntry extends AbstractEntry {
     {
         this.id = id;
         this.description = description;
+        this.iconography = iconography;
     }
 
     public int getId()
@@ -24,6 +28,15 @@ public class ExportEntry extends AbstractEntry {
     public String getDescription()
     {
         return description;
+    }
+    public ArrayList<Integer> getIconography()
+    {
+        return iconography;
+    }
+
+    public void setIconography(ArrayList<Integer> iconography)
+    {
+        this.iconography = iconography;
     }
 
     public String getName()

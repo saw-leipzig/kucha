@@ -401,7 +401,6 @@ public class DepictionEntry extends AbstractEntry {
 	}
 
 	public ArrayList<ImageEntry> getRelatedImages() {
-		//Util.doLogging("Size of related Images: "+relatedImages.size());
 		return relatedImages;
 	}
 	public List<WallTreeEntry> getWalls() {

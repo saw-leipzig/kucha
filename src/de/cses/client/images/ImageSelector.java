@@ -176,7 +176,7 @@ public class ImageSelector implements IsWidget {
 
 			@Override
 			public void onBeforeSelection(BeforeSelectionEvent<ImageEntry> event) {
-				Info.display("selected","image");
+				// Info.display("selected","image");
 				
 			}
 			
@@ -207,9 +207,9 @@ public class ImageSelector implements IsWidget {
 		filterField.setEmptyText("enter a search term");
 		filterField.bind(imageEntryList);
 
-		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
+//		ListField<ImageEntry, ImageEntry> lf = new ListField<ImageEntry, ImageEntry>(imageListView);
 		
-		lf.setSize("1.0", "1.0");
+//		lf.setSize("1.0", "1.0");
 
 		
 //		zoomImage = Image.wrap( Document.get().createImageElement() );
@@ -330,7 +330,7 @@ public class ImageSelector implements IsWidget {
 		imageListViewFP.setHeading("Images");
 		VerticalLayoutContainer filtercontainer = new VerticalLayoutContainer();
 		filtercontainer.add(filterField, new VerticalLayoutData(1.0, .05));
-		filtercontainer.add(lf, new VerticalLayoutData(1.0, .95));
+		filtercontainer.add(imageListView, new VerticalLayoutData(1.0, .95));
 
 		imageListViewFP.add(filtercontainer);
 //		imageListViewFP.addTool(zoomTB);

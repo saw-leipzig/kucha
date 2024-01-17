@@ -50,7 +50,6 @@ public abstract class AbstractFilter implements IsWidget{
 		this.shortkey = new KeyPressHandler() {
 			public void onKeyPress(KeyPressEvent event) {
 				if (lastKeyCode != event.getCharCode()) {
-					Util.doLogging("Key Down registered");
 		        	  if (event.getCharCode() == KeyCodes.KEY_ENTER) {
 		        		  invokeSearch();
 		        	  }					

@@ -976,7 +976,7 @@ public class SingleImageEditor extends AbstractEditor {
 			@Override
 			public void onSelect(SelectEvent event) {
 				if (imgEntry != null) {
-					Window.open("/resource?imageFile=" + imgEntry.getFilename() + UserLogin.getInstance().getUsernameSessionIDParameterForUri(), "_self", "status=0,toolbar=0,menubar=0,location=0");
+					Window.open("https://kucha.saw-leipzig.de/kis/resource?imageFile=" + imgEntry.getFilename() + UserLogin.getInstance().getUsernameSessionIDParameterForUri(), "_self", "status=0,toolbar=0,menubar=0,location=0");
 				}
 			}
 		});
