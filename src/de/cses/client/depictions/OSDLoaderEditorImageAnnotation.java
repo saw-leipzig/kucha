@@ -97,7 +97,7 @@ public class OSDLoaderEditorImageAnnotation extends AbstractOSDLoader {
 		if (osdListener!=null) {
 			annos= generateW3CAnnotations(osdListener.getAnnotations());
 		}
-		viewers= createZoomImage(tiles,ifn,imgDic, osdDic,UserLogin.getInstance().getSessionID(), annotation, editor, this, annos, readOnly, annotationType, disableEditor, highlighter);	
+		viewers= createZoomImage(tiles,ifn,imgDic, osdDic,UserLogin.getInstance().getSessionID(), annotation, editor, this, annos, readOnly, annotationType, disableEditor, highlighter, "");	
 	}
 
 	private static native JavaScriptObject getHighlighter() 

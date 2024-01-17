@@ -3,6 +3,10 @@ package de.cses.shared;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.google.gwt.core.client.GWT;
 
 public class WallDimensionEntry extends AbstractEntry {
 
@@ -25,13 +29,15 @@ public class WallDimensionEntry extends AbstractEntry {
 	private float x,y,w,h = 0;
 	private WallSketchEntry wse;
 	private String wallPosition;
-	private ArrayList<PositionEntry> positions = new ArrayList<PositionEntry>();
+	private ArrayList<CoordinateEntry> coordinates = new ArrayList<CoordinateEntry>();
+	private ArrayList<EmptySpotEntry> emptySpots = new ArrayList<EmptySpotEntry>();
+	public String log = "";
 	
 	public WallDimensionEntry(int wallDimensionID, String name) {
 		this.wallDimensionID = wallDimensionID;
 		this.name = name;
 	}
-	public WallDimensionEntry(int wallDimensionID, String name, WallSketchEntry wse, String wallPosition, Integer type, Integer direction, Integer registers, Integer columns, Integer x, Integer y, Integer w, Integer h, ArrayList<PositionEntry> positions) {
+	public WallDimensionEntry(int wallDimensionID, String name, WallSketchEntry wse, String wallPosition, Integer type, Integer direction, Integer registers, Integer columns, Integer x, Integer y, Integer w, Integer h, ArrayList<CoordinateEntry> coordinates, ArrayList<EmptySpotEntry> emptySpots) {
 		this.wallDimensionID = wallDimensionID;
 		this.name = name;
 		this.type = type;
@@ -44,7 +50,8 @@ public class WallDimensionEntry extends AbstractEntry {
 		this.y = y;
 		this.w = w;
 		this.h = h;
-		this.positions = positions;
+		this.coordinates = coordinates;
+		this.emptySpots = emptySpots;
 	}
 	public int getDirection() {
 		return this.direction;
@@ -85,25 +92,34 @@ public class WallDimensionEntry extends AbstractEntry {
 	}
 
 
-	public ArrayList<PositionEntry> getPositions() {
-		return this.positions;
+	public ArrayList<CoordinateEntry> getCoordinates() {
+		return this.coordinates;
 	}
-	public void setPositions(ArrayList<PositionEntry> positions) {
-		this.positions = positions;
+	public void setCoordinates(ArrayList<CoordinateEntry> coordinates) {
+		this.coordinates = coordinates;
 	}
-	public void addPosition(PositionEntry newPosition) {
-		this.positions.add(newPosition);
+	public ArrayList<EmptySpotEntry> getEmptySpots() {
+		return this.emptySpots;
 	}
-	public void removePostion(PositionEntry removedPosition) {
-		ArrayList<PositionEntry> updatedPositions = new ArrayList<PositionEntry>();
-		for (PositionEntry pe: this.positions) {
-			if ((removedPosition.getExact() == pe.getExact()) && (removedPosition.getNumber() == pe.getNumber()) && (removedPosition.getRegister() == pe.getRegister()) && (removedPosition.getPositionID() == pe.getPositionID())) {
+	public void setEmptySports(ArrayList<EmptySpotEntry> emptySpots) {
+		this.emptySpots = emptySpots;
+	}
+	public void addPosition(CoordinateEntry newCoordinate) {
+		this.coordinates.add(newCoordinate);
+	}
+	public void addEmptySpot(EmptySpotEntry emptySpot) {
+		this.emptySpots.add(emptySpot);
+	}
+	public void removePostion(CoordinateEntry removedCoordinate) {
+		ArrayList<CoordinateEntry> updatedCoordinates = new ArrayList<CoordinateEntry>();
+		for (CoordinateEntry pe: this.coordinates) {
+			if ((removedCoordinate.getExact() == pe.getExact()) && (removedCoordinate.getNumber() == pe.getNumber()) && (removedCoordinate.getRegister() == pe.getRegister()) && (removedCoordinate.getPositionID() == pe.getPositionID())) {
 				;
 			} else {
-				updatedPositions.add(pe);
+				updatedCoordinates.add(pe);
 			}
 		}
-		this.positions = updatedPositions;
+		this.coordinates = updatedCoordinates;
 	}
 	public int getType() {
 		return this.type;
@@ -120,9 +136,45 @@ public class WallDimensionEntry extends AbstractEntry {
 	public int getColumns() {
 		return this.columns;
 	}
-	public boolean hasCorrespondingPositionEntry(int reg, int number) {
+	public boolean hasCorrespondingCoordinateLostEntry(int reg, int number) {
 		Boolean res = false;
-		for (PositionEntry pe: this.positions) {
+		for (CoordinateEntry pe: this.coordinates) {
+			if ((pe.getRegister() == reg) && (pe.getNumber() == number) && (pe.getDepictionID() == -1)) {
+				res = true;
+				break;
+			}
+		}
+		return res;
+	}
+	
+	public boolean hasHinderingCoordinateEntryForEmptySpot(int reg, int number) {
+	    this.log = "";
+		Boolean res = false;
+		int emptySpots = 0;
+		for (EmptySpotEntry ese: this.emptySpots) {
+			if (ese.getY() == reg && !ese.isdeleted()) {
+				emptySpots += 1;
+			}
+		}
+		GWT.debugger();
+		int minusOneForEvenRowRombus = 0;
+		if (type == 0 && (reg % 2) == 0) { 
+			minusOneForEvenRowRombus = 1;
+		}
+		for (CoordinateEntry pe: this.coordinates) {
+			log = log + "\n" + "hindering: pe.reg = " + Integer.toString(pe.getRegister()) + " - reg: " + Integer.toString(reg) + " / pe.getNumber " + Integer.toString(pe.getNumber()) + " >= " + Integer.toString(registers) + " - " + Integer.toString(emptySpots) + " - " + Integer.toString(minusOneForEvenRowRombus) + " / " + Boolean.toString(!pe.isdeleted());
+			if ((pe.getRegister() == reg) && (pe.getNumber() >= this.columns-emptySpots-minusOneForEvenRowRombus) && (!pe.isdeleted())) {
+				res = true;
+				break;
+			}
+		}
+		return res;
+	}
+	
+	
+	public boolean hasCorrespondingCoordinateEntry(int reg, int number) {
+		Boolean res = false;
+		for (CoordinateEntry pe: this.coordinates) {
 			if ((pe.getRegister() == reg) && (pe.getNumber() == number) && (pe.getDepictionID() > 0)) {
 				res = true;
 				break;

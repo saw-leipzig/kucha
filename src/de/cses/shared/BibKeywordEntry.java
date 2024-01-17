@@ -57,6 +57,10 @@ public class BibKeywordEntry extends AbstractEntry {
 		return bibKeyword;
 	}
 
+	public String getBibKeywordLower() {
+		return bibKeyword.toLowerCase();
+	}
+
 	public void setBibKeyword(String bibKeyword) {
 		this.bibKeyword = bibKeyword;
 	}

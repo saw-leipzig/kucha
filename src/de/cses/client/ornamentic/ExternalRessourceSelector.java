@@ -99,7 +99,7 @@ interface ExternalRessourceTypeProperties extends PropertyAccess<ExternalRessour
 }
 
 interface ExternalRessourceProperties extends PropertyAccess<ExternalRessourceEntry> {
-	ModelKeyProvider<ExternalRessourceEntry> imageID();
+	ModelKeyProvider<ExternalRessourceEntry> externalRessourceID();
 
 	LabelProvider<ExternalRessourceEntry> entity();
 }
@@ -232,7 +232,7 @@ public class ExternalRessourceSelector implements IsWidget {
 		mainPanel = new FramedPanel();
 		mainPanel.setHeading("External Entities");
 		ExternalRessourceProperties extResProperties = GWT.create(ExternalRessourceProperties.class);
-		extResEntryLS = new ListStore<ExternalRessourceEntry>(extResProperties.imageID());
+		extResEntryLS = new ListStore<ExternalRessourceEntry>(extResProperties.externalRessourceID());
 
 		extResListView = new ListView<ExternalRessourceEntry, ExternalRessourceEntry>(extResEntryLS, new IdentityValueProvider<ExternalRessourceEntry>() {
 			@Override

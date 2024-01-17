@@ -115,7 +115,6 @@ import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.DistrictEntry;
 import de.cses.shared.ModifiedEntry;
 import de.cses.shared.OrientationEntry;
-import de.cses.shared.PositionEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.RegionEntry;
 import de.cses.shared.SiteEntry;
@@ -2607,7 +2606,7 @@ public class CaveEditor extends AbstractEditor {
 		caveSketchFLC = new FlowLayoutContainer();
 		caveSketchFLC.setScrollMode(ScrollMode.AUTOY);
 		PositionEditor pe = new PositionEditor(correspondingCaveEntry,
-				new ArrayList<WallTreeEntry>(), false, "Add Wall Layout", false, true) {
+				new ArrayList<WallTreeEntry>(), "Add Wall Layout", false, true) {
 			@Override
 			protected void save(ArrayList<WallTreeEntry> results) {
 				Util.doLogging("test");
@@ -3391,6 +3390,8 @@ public class CaveEditor extends AbstractEditor {
 					@Override
 					public void onSuccess(Boolean result) {
 						saveToolButton.enable();
+						// We have to update the CaveEntries in StaticTables, so that other possible downloaded Entries are displayed with the updated cave version.
+						StaticTables.getInstance().loadCaves();
 //						updateEntry(correspondingCaveEntry);
 						if (close) {
 							closeEditor(correspondingCaveEntry);
@@ -3412,6 +3413,8 @@ public class CaveEditor extends AbstractEditor {
 
 					@Override
 					public void onSuccess(Integer result) {
+						// We have to update the CaveEntries in StaticTables, so that other possible downloaded Entries are displayed with the updated cave version.
+						StaticTables.getInstance().loadCaves();
 						saveToolButton.enable();
 						correspondingCaveEntry.setCaveID(result.intValue());
 //						updateEntry(correspondingCaveEntry);

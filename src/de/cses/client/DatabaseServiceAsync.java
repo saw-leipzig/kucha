@@ -60,6 +60,7 @@ import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PositionEntry;
+import de.cses.shared.CoordinateEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
@@ -376,6 +377,10 @@ public interface DatabaseServiceAsync {
 
 	void updateBibKeyword(BibKeywordEntry bkEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
+	void bibKeywordIsUsed(BibKeywordEntry bkEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+	
+	void deleteBibKeyword(int bkID, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+	
 	void deleteAuthorEntry(AuthorEntry selectedEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;

@@ -181,7 +181,7 @@ public class BibliographySelector implements IsWidget {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				Util.doLogging("jier??");
+
 					selectedEntry.setQuotedPages(pageField.getValue());
 //					dbService.insertVendorEntry(vEntry, new AsyncCallback<Integer>() {
 //
@@ -285,7 +285,6 @@ public class BibliographySelector implements IsWidget {
     selectionModel.addSelectionChangedHandler(new SelectionChangedHandler<AnnotatedBibliographyEntry>() {
 				@Override
 				public void onSelectionChanged(SelectionChangedEvent<AnnotatedBibliographyEntry> event) {
-					Util.doLogging("");
 					if ((!itemSelected)&(showdialog)){
 						for (Map.Entry<Integer, AnnotatedBibliographyEntry> entry : selectedBibMap.entrySet()) {
 							//Util.doLogging(Integer.toString(entry.getKey()));
@@ -373,8 +372,6 @@ public class BibliographySelector implements IsWidget {
 		@Override
 		public void onCellClick(CellDoubleClickEvent event) {
 			setPage(grid.getStore().get(event.getRowIndex()));
-			Util.doLogging(Integer.toString(event.getRowIndex()));
-			Util.doLogging(grid.getStore().get(event.getRowIndex()).getTitleORGFull());
 		}
     };
     grid.addCellDoubleClickHandler(doubleClick);
@@ -648,9 +645,6 @@ public class BibliographySelector implements IsWidget {
 		}
 	}
 	public ArrayList<AnnotatedBibliographyEntry> getSelectedEntries() {
-		//for (AnnotatedBibliographyEntry ab : selectionModel.getSelection()) {
-		//	Util.doLogging(ab.getTitleORG());
-		//}
 		ArrayList<AnnotatedBibliographyEntry> results = new ArrayList<AnnotatedBibliographyEntry>();
 		for (AnnotatedBibliographyEntry abe : selectionModel.getSelectedItems()) {
 			results.add(abe.clone());

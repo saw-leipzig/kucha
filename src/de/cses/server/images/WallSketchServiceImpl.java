@@ -67,7 +67,7 @@ public class WallSketchServiceImpl extends HttpServlet {
 		wallSketchTitle = request.getParameter("title");
 
 		response.setContentType("text/plain");
-		File imgHomeDir = new File(serverProperties.getProperty("home.wallketches"));
+		File imgHomeDir = new File(serverProperties.getProperty("home.wallsketches"));
 		if (!imgHomeDir.exists()) {
 			imgHomeDir.mkdirs();
 		}

@@ -17,6 +17,7 @@ public class DepictionSearchEntry extends AbstractSearchEntry {
 	private ArrayList<Integer> positionIdList = new ArrayList<Integer>();
 	private int correlationFactor = 0;
 	private int correlationFactorWT = 0;
+	private boolean includeCave = true;
 
 	public DepictionSearchEntry(boolean orSearch, String sessionID) {
 		super(orSearch, sessionID);
@@ -93,6 +94,13 @@ public class DepictionSearchEntry extends AbstractSearchEntry {
 	}
 	public int getCorrelationFactorWT() {
 		return correlationFactorWT;
+	}
+
+	public void setIncludeCave(boolean includeCave) {
+		this.includeCave = includeCave;
+	}
+	public boolean getIncludeCave() {
+		return includeCave;
 	}
 
 	public void setCorrelationFactorWT(int correlationFactorWT) {

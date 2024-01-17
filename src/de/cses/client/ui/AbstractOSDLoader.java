@@ -77,6 +77,7 @@ public abstract class AbstractOSDLoader {
 	
 	public void destroyAllViewers() {
 		destroyAllViewersJava(viewers);
+		viewers = createDic();
 	}
 	public void makeEditableAllViewers() {
 		makeEditableAllViewersJava(viewers);
@@ -229,10 +230,12 @@ public abstract class AbstractOSDLoader {
 				};
 			}
 		}
+		viewers = null
 
 	}-*/;
 	public static native JavaScriptObject makeEditableAllViewersJava(JavaScriptObject viewers)
 	/*-{
+		$wnd.console.log("setting editable", viewers)
 		if (viewers!=null){
 			if (viewers["annotorious"]!=null){				
 				for (var k in viewers["annotorious"]) {
@@ -255,7 +258,7 @@ public abstract class AbstractOSDLoader {
 		}
 
 	}-*/;
-	public static native JavaScriptObject createZoomImage(JavaScriptObject tiles,JavaScriptObject wheres, JavaScriptObject source, JavaScriptObject dic, String sessionID, boolean anno, JavaScriptObject editor, AbstractOSDLoader osdLoader, JavaScriptObject annos, boolean readOnly, String annotationType, boolean disableEditor, JavaScriptObject highlighter)
+	public static native JavaScriptObject createZoomImage(JavaScriptObject tiles,JavaScriptObject wheres, JavaScriptObject source, JavaScriptObject dic, String sessionID, boolean anno, JavaScriptObject editor, AbstractOSDLoader osdLoader, JavaScriptObject annos, boolean readOnly, String annotationType, boolean disableEditor, JavaScriptObject highlighter, String prefix)
 	/*-{
 	 	annotorious={};
 	 	$doc.cookie = "sessionID="+sessionID+";SameSite=Lax;"; 
@@ -275,9 +278,10 @@ public abstract class AbstractOSDLoader {
 	    $wnd.OpenSeadragon.setString('Tool.close', 'Close');
 		if (wheres){
 		 	for (var i = 0, length = wheres.length; i < length; i++){
-			 	if (!(wheres[i] in dic)){  			
+			 	if (!(wheres[i] in dic)){
+			 		$wnd.console.log("creating zoom image for: " + prefix + wheres[i])
 				 	dic[wheres[i]] =  $wnd.OpenSeadragon({
-				        id: wheres[i],
+				        id: prefix + wheres[i],
 				        showRotationControl: true,
 				        showFlipControl: true,
 				        maxZoomLevel: 100,
@@ -379,6 +383,26 @@ public abstract class AbstractOSDLoader {
 		}
 		return processTiles(list, ifn,imgDic, imagesclone, context, annotation, readOnly);
 	}
+	public void setViewerConstrained() {
+		setViewerConstrainedJS(viewers);
+	}
+	public static native void setViewerConstrainedJS(JavaScriptObject viewers)
+	/*-{
+		$wnd.console.log("setting viewer constrained", viewers);
+		if (viewers!=null){
+			if (viewers["dic"]!=null){					
+				for (var k in viewers["dic"]) {
+					$wnd.console.log("setting viewer constrained");
+		    		viewers["dic"][k].panHorizontal = false;
+		    		viewers["dic"][k].defaultZoomLevel = 1;
+					viewers["dic"][k].minZoomLevel = 1;
+					viewers["dic"][k].maxZoomLevel = 1;
+					viewers["dic"][k].visibilityRatio = 1;
+				};
+			}
+		}
+
+	}-*/;
 	public static native JavaScriptObject addToList(JavaScriptObject list, JavaScriptObject ie)
 	/*-{
 		if (list==null){
@@ -413,7 +437,6 @@ public abstract class AbstractOSDLoader {
 		tiles={};
 	}
 	tiles[fileName]=source;
-	
 	return tiles
 }-*/;	
 	public static native JavaScriptObject addImageFileNames(JavaScriptObject ifn,  String source)
@@ -445,7 +468,6 @@ public abstract class AbstractOSDLoader {
 	public ArrayList<JavaScriptObject> processTiles(JavaScriptObject list,JavaScriptObject ifn, JavaScriptObject imgDic, ArrayList<ImageEntry> images, String context, boolean annotation, boolean readOnly) {		
 		if (!images.isEmpty()){
 			ImageEntry ie=images.remove(0);
-			Util.doLogging(context + ie.getFilename() + "/info.json");
 			list = addZoomImage(list , context + ie.getFilename() + "/info.json",ie.getFilename());
 			ifn=addImageFileNames(ifn,ie.getFilename());
 			String dummy = ie.getFilename();

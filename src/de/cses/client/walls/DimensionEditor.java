@@ -29,7 +29,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.Editor.Path;
+import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -72,6 +74,8 @@ import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.event.BeforeShowEvent;
 import com.sencha.gxt.widget.core.client.event.BeforeShowEvent.BeforeShowHandler;
+import com.sencha.gxt.widget.core.client.event.BlurEvent;
+import com.sencha.gxt.widget.core.client.event.BlurEvent.BlurHandler;
 import com.sencha.gxt.widget.core.client.event.CancelEditEvent;
 import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
@@ -80,6 +84,8 @@ import com.sencha.gxt.widget.core.client.event.CompleteEditEvent.CompleteEditHan
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.event.StartEditEvent;
 import com.sencha.gxt.widget.core.client.event.StartEditEvent.StartEditHandler;
+import com.sencha.gxt.widget.core.client.event.ValidEvent;
+import com.sencha.gxt.widget.core.client.event.ValidEvent.ValidHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.NumberField;
@@ -87,6 +93,8 @@ import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextArea;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.form.Validator;
+import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 import com.sencha.gxt.widget.core.client.form.validator.MaxLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.MinLengthValidator;
 import com.sencha.gxt.widget.core.client.form.validator.RegExValidator;
@@ -107,14 +115,17 @@ import de.cses.client.Util;
 import de.cses.client.depictions.ImageXTemplate;
 import de.cses.client.ui.OSDListener;
 import de.cses.client.walls.WallSketchUploader.WallSketchUploadListener;
+import de.cses.client.walls.OSDLoaderWallDimension;
 import de.cses.shared.AnnotationEntry;
+import de.cses.shared.AuthorEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
+import de.cses.shared.CoordinateEntry;
 import de.cses.shared.CoordinatesEntry;
+import de.cses.shared.DepictionEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
-import de.cses.shared.PositionEntry;
 import de.cses.shared.UserEntry;
 import de.cses.shared.WallDimensionEntry;
 import de.cses.shared.WallEntry;
@@ -143,8 +154,16 @@ public class DimensionEditor implements IsWidget {
 	private ImageProperties imageProps = GWT.create(ImageProperties.class);
 	private ListStore<WallSketchEntry> wallSketchEntryList = new ListStore<WallSketchEntry>(imageProps.wallSketchID());
 	private VerticalLayoutContainer mainView;
+	private DepictionEntry correspondingDepictionEntry = null;
+	private SimpleComboBox<Integer> directionNF;
+	private TextField name;
+	private NumberField<Integer> register;
+	private NumberField<Integer> number;
+	private SimpleComboBox<Integer> typeNF;
+	private PopupPanel wallSketchUploadPanel;
 
-	public DimensionEditor(WallDimensionEntry wde, DimensionEditorListener del) {
+	public DimensionEditor(WallDimensionEntry wde, DimensionEditorListener del, DepictionEntry de) {
+		this.correspondingDepictionEntry =  de;
 		this.wde = wde;
 		this.del = del;
 	}
@@ -202,15 +221,76 @@ public class DimensionEditor implements IsWidget {
 		VerticalLayoutContainer vlcWallViewEditor = new VerticalLayoutContainer();
 		HorizontalLayoutContainer hlcWallUpperView = new HorizontalLayoutContainer();
 		FramedPanel editNameFP = new FramedPanel();
-		TextField name = new TextField();
+		name = new TextField();
+		name.addValueChangeHandler(new ValueChangeHandler<String>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<String> arg0) {
+				update();
+			}
+			
+		});
+
 		editNameFP.add(name);
 		editNameFP.setHeading("Set Label");
 		FramedPanel editRegisterFP = new FramedPanel();
 		editRegisterFP.setHeading("Set Register");
-		NumberField<Integer> register = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
-		editRegisterFP.add(register);		
+		register = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
+		register.addValidator(new Validator<Integer>() {
+
+			@Override
+			public List<EditorError> validate(Editor<Integer> editor, Integer value) {
+
+				List<EditorError> l = new ArrayList<EditorError>();
+				for (CoordinateEntry ce: wde.getCoordinates()) {
+					if (ce.getRegister() > value) {
+						l.add(new DefaultEditorError(editor, "Register to small", value));
+					}
+
+
+				}
+				return l;
+			}
+			
+		});
+		register.addValueChangeHandler(new ValueChangeHandler<Integer>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<Integer> arg0) {
+				Util.doLogging("onchange triggered");
+				update();
+			}
+			
+		});
+
+		editRegisterFP.add(register);	
 		FramedPanel editNumberFP = new FramedPanel();
-		NumberField<Integer> number = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
+		number = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
+		number.addValidator(new Validator<Integer>() {
+
+			@Override
+			public List<EditorError> validate(Editor<Integer> editor, Integer value) {
+
+				List<EditorError> l = new ArrayList<EditorError>();
+				for (CoordinateEntry ce: wde.getCoordinates()) {
+					if (ce.getNumber() > value) {
+						l.add(new DefaultEditorError(editor, "Number to small", value));
+					}
+
+
+				}
+				return l;
+			}
+			
+		});
+		number.addChangeHandler(new ChangeHandler() {
+
+			@Override
+			public void onChange(ChangeEvent arg0) {
+				update();
+			}
+			
+		});
 		editNumberFP.add(number);
 		editNumberFP.setHeading("Set Number");
 		hlcWallUpperView.add(editNameFP, new HorizontalLayoutData(.4, 1));
@@ -220,14 +300,24 @@ public class DimensionEditor implements IsWidget {
 		FramedPanel editDirtectionFP = new FramedPanel();
 		editDirtectionFP.setHeading("Choose Direction");
 
-		SimpleComboBox<Integer> directionNF = new SimpleComboBox<Integer>(new LabelProvider<Integer>() {
+		directionNF = new SimpleComboBox<Integer>(new LabelProvider<Integer>() {
 
 			@Override
 			public String getLabel(Integer item) {
 				return WallDimensionEntry.DIRECTION_LABEL.get(item);
 			}
 		});
+		directionNF.add(0);
+		directionNF.add(1);
 		directionNF.setEmptyText("Select Direction");
+		directionNF.addChangeHandler(new ChangeHandler() {
+
+			@Override
+			public void onChange(ChangeEvent arg0) {
+				update();
+			}
+			
+		});
 		editDirtectionFP.add(directionNF);
 		FramedPanel editSketchFP = new FramedPanel();
 		editSketchFP.setHeading("Choose Sketch");
@@ -237,7 +327,7 @@ public class DimensionEditor implements IsWidget {
 
 			@Override
 			public void onSelect(SelectEvent event) {
-				PopupPanel wallSketchUploadPanel = new PopupPanel();
+				wallSketchUploadPanel = new PopupPanel();
 				WallSketchUploader uploader = new WallSketchUploader(new WallSketchUploadListener() {
 
 					@Override
@@ -285,17 +375,34 @@ public class DimensionEditor implements IsWidget {
 					}
 				});
 		sketchSelection.setEmptyText("Select Sketch");
+		sketchSelection.addChangeHandler(new ChangeHandler() {
 
+			@Override
+			public void onChange(ChangeEvent arg0) {
+				update();
+			}
+			
+		});
 		editSketchFP.add(sketchSelection);
 		
 		FramedPanel editTypeFP = new FramedPanel();
 		editTypeFP.setHeading("Select Type");
-		SimpleComboBox<Integer> typeNF = new SimpleComboBox<Integer>(new LabelProvider<Integer>() {
+		typeNF = new SimpleComboBox<Integer>(new LabelProvider<Integer>() {
 
 			@Override
 			public String getLabel(Integer item) {
 				return WallDimensionEntry.TYPE_LABEL.get(item);
 			}
+		});
+		typeNF.add(0);
+		typeNF.add(1);
+		typeNF.addChangeHandler(new ChangeHandler() {
+
+			@Override
+			public void onChange(ChangeEvent arg0) {
+				update();
+			}
+			
 		});
 		editTypeFP.add(typeNF);		
 		hlcWallLowerView.add(editTypeFP, new HorizontalLayoutData(.4, 1));
@@ -324,24 +431,63 @@ public class DimensionEditor implements IsWidget {
 		mainView.add(positionTabPanel, new VerticalLayoutData(1.0, .65));
 		if (wde.getWallSketch() == null) {
 			WallSketchEntry wse = wallSketchEntryList.findModelWithKey("0");
+			Util.doLogging("setting wallsketch to default" + wse.getFilename());
 			wde.setWallSketch(wse);
 			sketchSelection.setValue(wse, true);			
 		} else {
 			WallSketchEntry wse = wallSketchEntryList.findModelWithKey(Integer.toString(wde.getWallSketch().getWallSketchID()));
 			sketchSelection.setValue(wse, true);				
 		}
-		osdLoader = new OSDLoaderWallDimension(wde, true, osdListener);
-		HTMLPanel zoomPanel = new HTMLPanel(SafeHtmlUtils.fromTrustedString("<figure class='paintRepImgPreview' style='height: 98%;width: 98%;text-align: center;'><div id= '"+wde.getWallSketch().getFilename()+"' style='width: 100%; height: 100%;text-align: center;'></div></fugure>"));
+		if (correspondingDepictionEntry != null) {
+			osdLoader = new OSDLoaderWallDimension(wde, correspondingDepictionEntry, true, osdListener, "editor");			
+		} else {
+			osdLoader = new OSDLoaderWallDimension(wde, true, osdListener, "editor");			
+			
+		}
+		HTMLPanel zoomPanel = new HTMLPanel(SafeHtmlUtils.fromTrustedString("<figure class='paintRepImgPreview' style='height: 98%;width: 98%;text-align: center;'><div id= 'wallDimensionentry"+Integer.toString(wde.getWallDimensionID())+"editor' style='width: 100%; height: 100%;text-align: center;'></div></fugure>"));
 		positionTabPanel.setHeading("Layout");
 		positionTabPanel.add(zoomPanel);
 		name.setValue(wde.getName());
 		register.setValue(wde.getRegisters());
 		number.setValue(wde.getColumns());
-		typeNF.setValue(wde.getDirection());
+		typeNF.setValue(wde.getType());
 		directionNF.setValue(wde.getDirection());
 		osdLoader.setosd();
 	}
-
+	public void update() {
+		if (register.isValid() && number.isValid()) {
+			wde.setName(name.getCurrentValue());
+			boolean isOutOfRangeRegister = false;
+			boolean isOutOfRangeNumber = false;
+			for (CoordinateEntry ce: wde.getCoordinates()) {
+				if (ce.getRegister() > register.getCurrentValue()) {
+					isOutOfRangeRegister = true;
+				}
+				if (ce.getNumber() > number.getCurrentValue()) {
+					isOutOfRangeNumber = true;
+				}
+			}
+			if (isOutOfRangeRegister) {
+				Info.display("Register out of range", "unset given connections first!");
+				register.setValue(0,true);
+				register.setValue(wde.getRegisters(),true);
+			} else {
+				wde.setRegisters(register.getCurrentValue());			
+			}
+			if (isOutOfRangeNumber) {
+				Info.display("Number out of range", "unset given connections first!");
+				number.setValue(0, true);
+				number.setValue(wde.getColumns(), true);
+			} else {
+				wde.setColumns(number.getCurrentValue());		
+			}
+			wde.setDirection(directionNF.getCurrentValue());
+			wde.setType(typeNF.getCurrentValue());
+			wde.setWallSketch(sketchSelection.getCurrentValue());
+			osdLoader.setosd();
+			del.saveDimension(wde);			
+		}
+	}
 	@Override
 	public Widget asWidget() {
 		if (mainView == null) {

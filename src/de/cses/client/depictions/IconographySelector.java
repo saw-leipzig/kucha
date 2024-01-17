@@ -460,7 +460,6 @@ public class IconographySelector extends FramedPanel {
 		return ies;
 	}
 	public void loadOrnamentMasterPics(List<IconographyEntry> iconographies) {
-		Util.doLogging("blubb");
 		if (UserLogin.getInstance().getSessionID()!="") {
 			if (iconographies.size()>0) {
 				String wherefirst = "IconographyID in (";
@@ -594,7 +593,6 @@ public class IconographySelector extends FramedPanel {
 //		}
 	}
 	public void setSelectedIconography(ArrayList<IconographyEntry> iconographyRelationList) {
-		Util.doLogging("*** setSelectedIconography called - iconographyTree no. of items = " + iconographyTree.getStore().getAllItemsCount());
 		this.iconographyRelationList=iconographyRelationList;
 		iconographyTree.expandAll();
 		resetSelection();
@@ -972,7 +970,6 @@ public class IconographySelector extends FramedPanel {
 				int i =0;
 				for (IconographyEntry entry : selectedIconographyMap.values()) {
 					result.add(entry);
-					Util.doLogging("Added "+Integer.toString(i++)+" items to iconographyresult");
 				}
 			}
 			return result;	

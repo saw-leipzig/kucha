@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.safehtml.shared.UriUtils;
@@ -15,6 +17,9 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.cell.core.client.SimpleSafeHtmlCell;
+import com.sencha.gxt.core.client.IdentityValueProvider;
+import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.data.shared.LabelProvider;
@@ -22,6 +27,7 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.PlainTabPanel;
 import com.sencha.gxt.widget.core.client.TabItemConfig;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
@@ -40,6 +46,7 @@ import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import de.cses.client.DatabaseService;
+import de.cses.client.StaticTables;
 import de.cses.client.DatabaseServiceAsync;
 import de.cses.client.Util;
 import de.cses.client.bibliography.BibDocumentUploader;
@@ -54,6 +61,7 @@ import de.cses.client.walls.WallSketchUploader.WallSketchUploadListener;
 import de.cses.shared.AnnotationEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveSketchEntry;
+import de.cses.shared.DepictionEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.PositionEntry;
@@ -67,6 +75,17 @@ interface ImageViewTemplates extends XTemplates {
 	@XTemplate("<div>{filename}</div>")
 	SafeHtml imageLabel(String filename);
 }
+interface PositionProperties extends PropertyAccess<PositionEntry> {
+	ModelKeyProvider<PositionEntry> positionID();
+									
+
+	LabelProvider<PositionEntry> name();
+}
+
+interface PositionViewTemplates extends XTemplates {
+	@XTemplate("<div>{name}</div>")
+	SafeHtml positionView(String name);
+}
 
 public class WallView implements IsWidget{
 	
@@ -75,8 +94,14 @@ public class WallView implements IsWidget{
 	private FramedPanel mainFP;
 	private PlainTabPanel tabPanel;	
 	private WallViewListener wvl;
-
-	public WallView(WallViewListener wvl) {
+	private DepictionEntry correspondingDepictionEntry = null;
+	private PositionProperties positionProps;
+	private ListStore<PositionEntry> positionEntryLS;
+	private ListView<PositionEntry, PositionEntry> PositionSelectionLV;
+	private SimpleComboBox<String> positionEntriesCB;
+	
+	public WallView(WallViewListener wvl, DepictionEntry de) {
+		this.correspondingDepictionEntry = de;
 		this.wvl = wvl;
 		initPanel();
 	}
@@ -92,26 +117,47 @@ public class WallView implements IsWidget{
 	public void show() {
 		mainPanel.show();
 	}
+	private void addDimensionToWall(WallDimensionEntry wde){
+		wte.addDimension(wde);
+	}
 	public void setWall(WallTreeEntry wte) {
+		Util.doLogging("setting wall");
 		this.wte = wte;
-		for (int i = 0; i < tabPanel.getWidgetCount(); i++) {
-			tabPanel.remove(i);
+		Integer count = tabPanel.getWidgetCount();
+		while (tabPanel.iterator().hasNext()) {
+			tabPanel.remove(tabPanel.iterator().next());
+		}
+		if (correspondingDepictionEntry != null) {
+			if (wte.getPositions()==null) {
+				PositionSelectionLV.getSelectionModel().deselectAll();
 			}
-		mainFP.setHeading("Layouts of Wall: "+ wte.getWallName());
+			else {
+				PositionSelectionLV.getSelectionModel().deselectAll();
+//				PositionSelectionLV.getSelectionModel().setSelection(wallTree.wallTree.getSelectionModel().getSelectedItem().getPosition());
+				for (PositionEntry pe : wte.getPositions()) {
+					Util.doLogging("set position");
+					PositionSelectionLV.getSelectionModel().select(true, pe);
+				}	
+			}			
+		}
+
+		mainFP.setHeading("Information on Wall: "+ wte.getWallName());
 		mainFP.setSize("100%", "100%");
-		tabPanel.clear();
+		Util.doLogging("dimension length" + Integer.toString(wte.getDimensions().size()));
 		if (wte.getDimensions() != null) {
 			for (WallDimensionEntry wde: this.wte.getDimensions()) {
+				Util.doLogging("found wall register");
 				DimensionEditorListener del = new DimensionEditorListener() {
 
 					@Override
 					public void saveDimension(WallDimensionEntry wde) {
-						wte.addDimension(wde);
+						Util.doLogging("saveWallDimension" + wde.getName());
+						addDimensionToWall(wde);
 						
 					}
 					
 				};
-				DimensionEditor de = new DimensionEditor(wde,del);
+				DimensionEditor de = new DimensionEditor(wde,del, correspondingDepictionEntry);
 				tabPanel.add(de, new TabItemConfig(wde.getName(), false));
 			}
 			mainPanel.center();			
@@ -141,7 +187,7 @@ public class WallView implements IsWidget{
 				wvl.saveWall(wte);
 			}
 		});
-		mainFP.addTool(saveButton);
+		// mainFP.addTool(saveButton);
 		ToolButton closeButton = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 		closeButton.setToolTip(Util.createToolTip("Close View"));
 		closeButton.addSelectHandler(new SelectHandler() {
@@ -149,13 +195,56 @@ public class WallView implements IsWidget{
 			@Override
 			public void onSelect(SelectEvent event) {
 				mainPanel.hide();
+				wvl.saveWall(wte);
 			}
 		});
 		tabPanel = new PlainTabPanel();
-		tabPanel.setSize("550px", "550px");
+		tabPanel.setSize("550px", "500px");
 		mainFP.add(tabPanel);
 		mainFP.addTool(closeButton);
-		mainPanel.add(mainFP);
+		if (correspondingDepictionEntry != null){
+			FramedPanel positionFP = new FramedPanel();
+			positionFP.setHeading("Choose areal Position");
+			positionProps = GWT.create(PositionProperties.class);
+			positionEntryLS = new ListStore<PositionEntry>(positionProps.positionID());
+
+			for (PositionEntry ope : StaticTables.getInstance().getPositionEntries().values()) {
+				positionEntryLS.add(ope);
+			}
+			final PositionViewTemplates pvTemplates = GWT.create(PositionViewTemplates.class);
+			PositionSelectionLV = new ListView<PositionEntry, PositionEntry>(positionEntryLS,
+					new IdentityValueProvider<PositionEntry>(),
+					new SimpleSafeHtmlCell<PositionEntry>(new AbstractSafeHtmlRenderer<PositionEntry>() {
+
+						@Override
+						public SafeHtml render(PositionEntry entry) {
+							return pvTemplates.positionView(entry.getName());
+						}
+
+					}));
+			PositionSelectionLV.getSelectionModel().addSelectionHandler(new SelectionHandler<PositionEntry>() {
+
+				@Override
+				public void onSelection(SelectionEvent<PositionEntry> arg0) {
+					ArrayList<PositionEntry> positions = new ArrayList<PositionEntry>();
+					for (PositionEntry pe : PositionSelectionLV.getSelectionModel().getSelectedItems()) {
+						Util.doLogging("setting new Position");
+						positions.add(pe);
+					};
+					wte.setPositions(positions);
+				}
+				
+			});
+			PositionSelectionLV.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+			positionFP.add(PositionSelectionLV);
+			VerticalLayoutContainer vlcDepictionPosition = new VerticalLayoutContainer();
+			vlcDepictionPosition.add(mainFP, new VerticalLayoutData(1,0.8));
+			vlcDepictionPosition.add(positionFP, new VerticalLayoutData(1,0.2));
+			mainPanel.add(vlcDepictionPosition);
+		} else {
+			mainPanel.add(mainFP);
+		}
+		
 	}
 
 }

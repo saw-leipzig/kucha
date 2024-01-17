@@ -4,6 +4,10 @@
 	<!-- <property name="GWT_HOME" value="/Users/alingnau/.p2/pool/plugins/com.gwtplugins.gwt.eclipse.sdkbundle.gwt28_2.8.0.201803211650/gwt-2.8.2" /> -->
 	<!-- property name="GWT_HOME" value="/home/erik/.p2/pool/plugins/com.gwtplugins.gwt.eclipse.sdkbundle.gwt28_2.8.0.201710131939/gwt-2.8.1" /> -->
 	<property name="GWT_HOME" value="/home/erik/gwt-2.9.0" />
+    <property name="gwt.logging.logLevel" value="INFO"/>          
+    <property name="gwt.logging.enabled" value="TRUE"/>
+    <property name="gwt.logging.consoleHandler" value="DISABLED"/> 
+	
 	
 	<!-- enable the following property for devmode debugging in an IDE; for Eclipse create an "Remote Java Application" launcher conneting to port 8000 -->
 	<property name="enable.debug.port" value="false" />
@@ -45,7 +49,6 @@
 			<zipfileset dir="war" />
 			<zipfileset dir="${GWT_HOME}" includes="gwt-servlet.jar" prefix="WEB-INF/lib/" />
 			<zipfileset dir="lib" includes="javax.mail.jar" prefix="WEB-INF/lib/" />
-			<zipfileset dir="lib" includes="activation-1.1.jar" prefix="WEB-INF/lib/" />
 		</zip>
 	</target>
 	<target name="deploy" depends="war">

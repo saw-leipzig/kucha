@@ -37,7 +37,6 @@ import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.OrnamentComponentsEntry;
 import de.cses.shared.OrnamenticSearchEntry;
-import de.cses.shared.PositionEntry;
 
 /**
  * @author alingnau

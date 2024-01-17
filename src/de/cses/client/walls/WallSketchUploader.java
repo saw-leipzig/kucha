@@ -43,6 +43,7 @@ import com.sencha.gxt.widget.core.client.form.FormPanel;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Encoding;
 import com.sencha.gxt.widget.core.client.form.FormPanel.Method;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -124,6 +125,7 @@ public class WallSketchUploader implements IsWidget {
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler() {
 			public void onSubmitComplete(SubmitCompleteEvent event) {
 				uploadInfoWindow.hide();
+				Info.display("upload compleated!", "Close window");
 				Document doc = XMLParser.parse(event.getResults());
 				NodeList nodelist = doc.getElementsByTagName("pre");
 				Node node = nodelist.item(0);
@@ -132,6 +134,7 @@ public class WallSketchUploader implements IsWidget {
 					int newCaveSketchID = Integer.parseInt(node.getFirstChild().toString());
 					listener.uploadCompleted();
 				}
+				
 			}
 		});
 		form.add(file);

@@ -176,18 +176,24 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 				comments, notes, url, uri, unpublished, firstEditionBibID, accessLevel, 
 				abstractText, thesisType, editorType, officialTitleTranslation, bibtexKey, this.modifiedOn, this.hasHan, this.quotedPages, this.hasOtherAuthors, this.hasOtherEditors, this.annotationHTML);
 		ArrayList<AuthorEntry> clonedAuthorList = new ArrayList<AuthorEntry>();
-		for (AuthorEntry ae : this.authorList) {
-			clonedAuthorList.add(ae);
+		if (this.authorList != null) {
+			for (AuthorEntry ae : this.authorList) {
+				clonedAuthorList.add(ae);
+			}			
 		}
 		clonedEntry.setAuthorList(clonedAuthorList);
 		ArrayList<AuthorEntry> clonedEditorList = new ArrayList<AuthorEntry>();
-		for (AuthorEntry ae : this.getEditorList()) {
-			clonedEditorList.add(ae);
+		if (this.getEditorList() != null) {
+			for (AuthorEntry ae : this.getEditorList()) {
+				clonedEditorList.add(ae);
+			}
 		}
 		clonedEntry.setEditorList(clonedEditorList);
 		ArrayList<BibKeywordEntry> clonedKeywordList = new ArrayList<BibKeywordEntry>();
-		for (BibKeywordEntry bke : this.getKeywordList()) {
-			clonedKeywordList.add(bke);
+		if (this.getKeywordList() !=  null) {
+			for (BibKeywordEntry bke : this.getKeywordList()) {
+				clonedKeywordList.add(bke);
+			}			
 		}
 		clonedEntry.setKeywordList(clonedKeywordList);
 		clonedEntry.setArticle(this.getArticle());
@@ -922,20 +928,19 @@ public class AnnotatedBibliographyEntry extends AbstractEntry implements Compara
 			  public int compare(AuthorEntry ae1, AuthorEntry ae2)
 			  {	
 				  try {
-					  if (ae1.getLastname() == null) {
-						  if (ae2.getLastname() == null) {
+					  if (ae1 == null || ae1.getLastname() == null || ae1.getLastname().isEmpty()) {
+						  if (ae2 == null || ae2.getLastname() == null || ae2.getLastname().isEmpty()) {
 							  return 0;
 						  } else {
 							  return "".compareTo(ae2.getLastname());							  
 						  }
-					  } else if (ae2.getLastname() == null) {
+					  } else if (ae2.getLastname().isEmpty()) {
 						  return ae1.getLastname().compareTo("");
 					  } else {
 						  return ae1.getLastname().compareTo(ae1.getLastname());					  
 					  }
 				  }
 				  catch (NullPointerException ioe) {
-					    System.out.println("IO-Problem");
 					    return 0;
 				  }
 			  }

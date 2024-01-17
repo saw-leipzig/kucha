@@ -225,8 +225,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 	    	response.getOutputStream().write(game);
 	    	response.setStatus(200);
 	    	response.getOutputStream().flush();		
-		}
-		if (request.getParameter("imageID") != null) {
+		} else if (request.getParameter("imageID") != null) {
 			String imageID = request.getParameter("imageID");
 			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));
 			String filename;
@@ -262,7 +261,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 				// guests should be informed that there is an image
 				filename = "accessNotPermitted.png";
 			} else {
-				response.setStatus(403);
+				response.setStatus(404);
 				return;
 			}
 			ServletOutputStream out = response.getOutputStream();
@@ -289,6 +288,38 @@ public class ResourceDownloadServlet extends HttpServlet {
 			}
 			in.close();
 			out.close();
+		}else if (request.getParameter("imageIDValid") != null) {
+			String imageID = request.getParameter("imageIDValid");
+			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));
+			String filename;
+			File inputFile;
+			int userAccessLevel = AbstractEntry.ACCESS_LEVEL_PUBLIC;
+			ArrayList<Integer> authorizedAccessLevel = new ArrayList<Integer>();
+			authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PUBLIC);
+			switch (connector.getAccessLevelForSessionID(sessionID)) {
+				case UserEntry.GUEST:
+					break;
+				case UserEntry.ASSOCIATED:
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
+					//System.err.println("acess Level PUBLIC and COPYRIGHT");
+					break; 
+				case UserEntry.FULL:
+				case UserEntry.ADMIN:
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
+					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PRIVATE);
+					System.err.println("acess Level PUBLIC, COPYRIGHT and PRIVATE");
+					break;
+				default:
+					break;
+			}
+			if (imgEntry!=null && authorizedAccessLevel.contains(imgEntry.getAccessLevel())) {
+				response.setStatus(200);
+				return;
+//				inputFile = new File(serverProperties.getProperty("home.images"), filename);
+			} else {
+				response.setStatus(403);
+				return;
+			}
 		} else if (request.getParameter("background") != null) {
 			String filename = request.getParameter("background");
 			if (filename.startsWith(".")) {

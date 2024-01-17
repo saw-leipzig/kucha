@@ -93,7 +93,6 @@ import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree.CheckCascade;
-import com.sencha.gxt.widget.core.client.tree.Tree.CheckState;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.DatabaseServiceAsync;
@@ -102,7 +101,6 @@ import de.cses.client.Util;
 import de.cses.client.depictions.ImageXTemplate;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CavePart;
-import de.cses.shared.CoordinateEntry;
 import de.cses.shared.CoordinatesEntry;
 import de.cses.shared.DepictionEntry;
 import de.cses.shared.IconographyEntry;
@@ -118,148 +116,27 @@ import de.cses.shared.WallTreeEntry;
  * @author Erik
  *
  */
-public class PositionEditor {
+public class WallFilter {
 
 	private WallTree wallTree;
-	private CaveEntry entry;
-	private DepictionEntry correspondingDepictionEntry = null;
 	private WallViewListener wvl;
 	private WallView wv;;
 	private List<WallTreeEntry> walls;
-	int init= 0;
-	final PositionViewTemplates pvTemplates = GWT.create(PositionViewTemplates.class);
 	private FramedPanel selectWallFP = null;
 	public PopupPanel popup = new PopupPanel();
+	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 	private String heading = "";
-	private boolean isWallDimension = false;
-	private boolean isCheckable = true;
-	PositionEntry peEdit = null;
-	NumberField<Integer> register = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
-	NumberField<Integer> number = new NumberField<Integer>(new NumberPropertyEditor.IntegerPropertyEditor());
-	SimpleComboBox<Integer> directionNF = new SimpleComboBox<Integer>(new LabelProvider<Integer>() {
 
-		@Override
-		public String getLabel(Integer item) {
-			return WallDimensionEntry.DIRECTION_LABEL.get(item);
-		}
-	});
-	SimpleComboBox<Integer> typeNF = new SimpleComboBox<Integer>(new LabelProvider<Integer>() {
-
-		@Override
-		public String getLabel(Integer item) {
-			return WallDimensionEntry.TYPE_LABEL.get(item);
-		}
-	});
-	
-	interface WallDimensionProperties extends PropertyAccess<WallDimensionEntry> {
-		ModelKeyProvider<WallDimensionEntry> wallDimensionID();
-										
-
-		LabelProvider<PositionEntry> name();
-	}
-	interface CoordinatesProperties extends PropertyAccess<CoordinatesEntry> {
-		ModelKeyProvider<CoordinatesEntry> coordinatesID();
-										
-
-		LabelProvider<CoordinatesEntry> name();
+	public WallFilter(List<WallTreeEntry> walls) {
+		this.walls=walls;
+		wallTree = new WallTree(StaticTables.getInstance().getWallTreeEntries().values(), walls, false, true, null);
 	}
 
-	interface PositionViewTemplates extends XTemplates {
-		@XTemplate("<div>{name}</div>")
-		SafeHtml positionView(String name);
-	}
-	public PositionEditor(DepictionEntry de) {
-		this(de.getCave(), de.getWalls(), "Add Position in Cave", true, false);
-		this.correspondingDepictionEntry = de;
-	}
-
-	public PositionEditor(CaveEntry entry, List<WallTreeEntry> entries, String heading, boolean isCheckable, boolean isWallDimension) {
-		this.heading = heading;
-		this.entry=entry;
-		this.walls=entries;
-		this.isWallDimension = isWallDimension;
-		this.isCheckable = isCheckable;
-		Collection<WallTreeEntry>  wtes = StaticTables.getInstance().getWallTreeEntries().values();
-		for (WallTreeEntry wte: wtes) {
-			if (entry != null) {
-				if (entry.getWallDimensions().get(wte.getWallLocationID()) != null) {
-					wte.setDimensions(entry.getWallDimensions().get(wte.getWallLocationID()));
-				} else {
-					wte.setDimensions(new ArrayList<WallDimensionEntry>());
-				}				
-			}
-		}
-		if (isCheckable) {
-			wallTree = new WallTree(wtes, walls, false, true, entry);			
-		} else {
-			wallTree = new WallTree(wtes, walls, false, false, entry);						
-		}
-
-	}
 	public ArrayList<WallTreeEntry> getSelectedWalls() {
-		if (this.isCheckable) {
-			return new ArrayList<WallTreeEntry>(wallTree.wallTree.getCheckedSelection());	
-		} else {
-			ArrayList<WallTreeEntry> res = new ArrayList<WallTreeEntry>(wallTree.wallTree.getStore().getAll()); 
-			return res;
-		}
-		
+		return new ArrayList<WallTreeEntry>(wallTree.wallTree.getCheckedSelection());			
 	}
 	public ArrayList<WallTreeEntry> getAllWalls() {
 		return new ArrayList<WallTreeEntry>(wallTree.wallTree.getStore().getAll());	
-	}
-	public void enablePoistionVisualization() {
-		class CustomImageCell extends AbstractCell<String> {
-		    private ImageXTemplate imageTemplate = GWT.create(ImageXTemplate.class);
-		    private WallTree wallTree;
-		    public CustomImageCell(String... consumedEvents) {
-		        super(consumedEvents);
-		      }
-		    public CustomImageCell(Set<String> consumedEvents, WallTree wallTree) {
-		        super(consumedEvents);
-		        this.wallTree = wallTree;
-		      }
-
-		    @Override
-		    public void render(Context context, String ie, SafeHtmlBuilder sb) {
-
-		    	sb.append(SafeHtmlUtils.fromTrustedString(ie));
-		    	
-				
-		    }
-		    @Override
-		    public void onBrowserEvent(Context context, Element parent, String value,
-		    	      NativeEvent event, ValueUpdater<String> valueUpdater) {
-		    	    String eventType = event.getType();
-		    	    if (BrowserEvents.MOUSEOVER.equals(eventType) ) {
-		    	    	
-		    	    }
-
-		    	    
-		    	    if (BrowserEvents.MOUSEOUT.equals(eventType)) {
-
-			    	}
-		    	    if (BrowserEvents.DBLCLICK.equals(eventType)) {
-		    	    	wv.setWall(this.wallTree.wallTree.getStore().findModelWithKey(context.getKey().toString()));
-			    	 }
-
-		    	    if (BrowserEvents.KEYDOWN.equals(eventType) && event.getKeyCode() == KeyCodes.KEY_ENTER) {
-			    	}
-		    }
-		    private void showPOPUP(Context context,int x,int y) {
-
-		    }
-		    private void hidePOPUP() {
-		    }
-
-
-		}
-		Set<String> events = new HashSet<String>();
-	    events.add(BrowserEvents.MOUSEOVER);
-	    events.add(BrowserEvents.MOUSEOUT);
-	    events.add(BrowserEvents.DBLCLICK);
-		Cell<String> cCell = new CustomImageCell(events, this.wallTree);
-		wallTree.wallTree.setCell(cCell);
 	}
 	public WallTree getWallTree() {
 		return this.wallTree;
@@ -268,8 +145,6 @@ public class PositionEditor {
 		WallTreeEntry oldWte = wallTree.wallTree.getStore().findModelWithKey(Integer.toString(newWte.getWallLocationID()));
 		ArrayList<WallTreeEntry> children = oldWte.getChildren();
 		WallTreeEntry parent = wallTree.wallTree.getStore().getParent(oldWte); 
-		//wallTree.wallTree.getStore().remove(oldWte);
-		//wallTree.wallTree.getStore().add(parent, newWte);
 		wallTree.wallTree.getStore().update(newWte);
 	}
 	
@@ -288,33 +163,6 @@ public class PositionEditor {
 		
 
 
-		wvl = new WallViewListener() {
-
-			@Override
-			public void saveWall(WallTreeEntry wte) {
-				if (correspondingDepictionEntry != null) {
-					Boolean found = false;
-					if (wte.getDimensions() != null) {
-						for (WallDimensionEntry wde: wte.getDimensions()) {
-							if (wde.getCoordinates() != null) {
-								for (CoordinateEntry ce: wde.getCoordinates()) {
-									if (ce.getDepictionID() == correspondingDepictionEntry.getDepictionID()) {
-										wallTree.wallTree.getStore().findModelWithKey(Integer.toString(wte.getWallLocationID())).setDimensions(wte.getDimensions());
-										wallTree.wallTree.getStore().findModelWithKey(Integer.toString(wte.getWallLocationID())).setPositions(wte.getPositions());		
-										wallTree.wallTree.setChecked(wallTree.wallTree.getStore().findModelWithKey(Integer.toString(wte.getWallLocationID())), CheckState.CHECKED);
-									}
-								}
-							}
-						}
-					}
-				}
-				
-				save(getSelectedWalls());
-				
-			}
-			
-		};
-		wv = new WallView(wvl, correspondingDepictionEntry);
 		selectWallFP = new FramedPanel();
 
 				//Info.display("Ausgewählt: ",wallTree.wallTree.getSelectionModel().getSelectedItem().getText());
@@ -343,8 +191,8 @@ public class PositionEditor {
 
 		selectWallFP.setSize("600px", "450px");
 		ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
-		cancelTB.setToolTip(Util.createToolTip("close"));			
-		selectWallFP.setHeading(heading);
+		cancelTB.setToolTip(Util.createToolTip("Close selection.", "Currently selected items will be used in the filter."));			
+		selectWallFP.setHeading("Select walls for search.");
 		cancelTB.addSelectHandler(new SelectHandler() {
 
 			@Override
@@ -354,26 +202,6 @@ public class PositionEditor {
 			}
 		});
 		
-		ToolButton editTB = new ToolButton(new IconConfig("editButton", "editButtonOver"));
-		if (this.isWallDimension) {
-			this.wallTree.wallTree.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-			editTB.setToolTip(Util.createToolTip("Add Wall Register"));
-			editTB.addSelectHandler(new SelectHandler() {
-
-				@Override
-				public void onSelect(SelectEvent event) {
-					wv.setWall(wallTree.wallTree.getSelectionModel().getSelectedItem());
-				}
-			});					
-		} else {
-			editTB.setToolTip(Util.createToolTip("Add a position to a Wall"));
-			editTB.addSelectHandler(new SelectHandler() {
-				@Override
-				public void onSelect(SelectEvent event) {
-					wv.setWall(wallTree.wallTree.getSelectionModel().getSelectedItem());
-				}
-			});			
-		}
 		ToolButton saveTB = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
 		saveTB.setToolTip(Util.createToolTip("save"));
 		saveTB.addSelectHandler(new SelectHandler() {
@@ -383,22 +211,13 @@ public class PositionEditor {
 				popup.hide();
 			}
 		});
-		selectWallFP.addTool(editTB);
 		selectWallFP.addTool(cancelTB);
 		return selectWallFP;
 	}
 	protected void save(ArrayList<WallTreeEntry> results ) {
-		for (WallTreeEntry wte: results) {
-			this.wallTree.wallTree.getStore().findModelWithKey(Integer.toString(wte.getWallLocationID())).setDimensions(wte.getDimensions());
-			this.wallTree.wallTree.getStore().findModelWithKey(Integer.toString(wte.getWallLocationID())).setPositions(wte.getPositions());
-		}
+		Util.doLogging(this.getClass().getName() + " cavewallornamentrelation wurde erstellt");
 	}
-	public CaveEntry getCave() {
-		return entry;
-	}
-	public void setCave(CaveEntry cave) {
-		this.entry = cave;
-	}
+
 	interface CavePartProperties extends PropertyAccess<CavePart> {
 		ModelKeyProvider<CavePart> cavePartID();
 
@@ -442,16 +261,19 @@ public class PositionEditor {
 		@XTemplate("<div>{wallID}</div>")
 		SafeHtml walls(int wallID);
 	}
-
+	//Komplexe Filterung damit beim Eintragen schon keine Fehler gemacht werden koennen sondern 
+	// nur Felder ausgewaaehlt werden koennen, die an einer bestimmten Position ueberhaupt moeglich sind
+	// Unterscheidung erst zwischen Wall, Ceiling und Reveal
+	
+	// Die eigentliche Filterung uebernimmt die Datenbank mit den Tabellen OrnamentPosition, OrnamentFunction und den 
+	// dazugehoerigen Relationen Tabellen
 	
 	public void show() {
 		//Aufruf mit leeren Feldern f�r die Eingabe
 		popup = new PopupPanel();
 		//this.caveEntry = OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue();
-		if (selectWallFP == null) {
-			createForm();
-		}
-		popup.setWidget(selectWallFP);
+
+		popup.setWidget(createForm());
 		popup.center();
 
 	}
@@ -467,16 +289,5 @@ public class PositionEditor {
 			wallTree.wallTree.setCheckStyle(CheckCascade.NONE);
 		}
 	}
-	public void show(CaveEntry entry) {
-		//Afruf mit Entry zum Bearbeiten
-		init = 1;
-//		this.caveEntry = OrnamenticEditor.ornamentCaveRelationEditor.getCaveEntryComboBox().getValue();
 
-		this.entry = entry;
-		popup = new PopupPanel();
-		
-		popup.setWidget(createForm());
-			popup.center();
-		
-	}
 }

@@ -61,6 +61,7 @@ import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PositionEntry;
+import de.cses.shared.CoordinateEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
@@ -343,6 +344,10 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<AnnotatedBibliographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) throws IllegalArgumentException;
 
 	ArrayList<BibKeywordEntry> getBibKeywords() throws IllegalArgumentException;
+	
+	boolean bibKeywordIsUsed(BibKeywordEntry bkEntry) throws IllegalArgumentException;
+
+	boolean deleteBibKeyword(int bkEntry) throws IllegalArgumentException;
 
 	int insertBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException;
 

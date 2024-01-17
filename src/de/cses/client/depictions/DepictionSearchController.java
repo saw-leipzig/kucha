@@ -59,6 +59,7 @@ public class DepictionSearchController extends AbstractSearchController {
 	public void invokeSearch() {
 		Util.doLogging("search invoked.");
 		DepictionSearchEntry searchEntry = (DepictionSearchEntry) getFilter().getSearchEntry();
+		searchEntry.setIncludeCave(false);
 		if (searchEntry != null) {
 			dbService.searchDepictions(searchEntry, new AsyncCallback<ArrayList<DepictionEntry>>() {
 

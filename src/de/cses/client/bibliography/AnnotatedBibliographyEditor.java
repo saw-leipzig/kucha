@@ -186,6 +186,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 	
 	interface BibKeywordProperties extends PropertyAccess<BibKeywordEntry> {
 		ModelKeyProvider<BibKeywordEntry> bibKeywordID();
+		ValueProvider<BibKeywordEntry, String> bibKeywordLower();
 		ValueProvider<BibKeywordEntry, String> bibKeyword();
 	}
 
@@ -220,8 +221,6 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		bibEntry.setAnnotationHTML(this.annotationHE.getValue());
 		HTML HTMLText = new HTML(bibEntry.getAnnotationHTML());		
 		String txt = HTMLText.getText();
-		Util.doLogging(bibEntry.getAnnotationHTML());
-		Util.doLogging(txt);
 		if ((txt == null || txt.isEmpty() || txt.trim().isEmpty())) {
 			bibEntry.setAnnotationHTML(""); // We do not want to save empty HTML-Tags.
 		}
@@ -345,16 +344,16 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		
 		bibKeywordProps = GWT.create(BibKeywordProperties.class);
 		selectedBibKeywordsStore = new ListStore<BibKeywordEntry>(bibKeywordProps.bibKeywordID());
-		selectedBibKeywordsStore.addSortInfo(new StoreSortInfo<>(bibKeywordProps.bibKeyword(), SortDir.ASC));
+		selectedBibKeywordsStore.addSortInfo(new StoreSortInfo<>(bibKeywordProps.bibKeywordLower(), SortDir.ASC));
 		for (BibKeywordEntry bkw : bibEntry.getKeywordList()) {
 			selectedBibKeywordsStore.add(bkw);
 		}
 		
 		bibKeywordsStore = new ListStore<BibKeywordEntry>(bibKeywordProps.bibKeywordID());
-		bibKeywordsStore.addSortInfo(new StoreSortInfo<>(bibKeywordProps.bibKeyword(), SortDir.ASC));
+		bibKeywordsStore.addSortInfo(new StoreSortInfo<>(bibKeywordProps.bibKeywordLower(), SortDir.ASC));
 
 		bibKeywordsEditStore = new ListStore<BibKeywordEntry>(bibKeywordProps.bibKeywordID());
-		bibKeywordsEditStore.addSortInfo(new StoreSortInfo<>(bibKeywordProps.bibKeyword(), SortDir.ASC));
+		bibKeywordsEditStore.addSortInfo(new StoreSortInfo<>(bibKeywordProps.bibKeywordLower(), SortDir.ASC));
 
 		annotatedBibliographyEntryProps = GWT.create(AnnotatedBibliographyEntryProperties.class);
 		firstEditionBibliographyEntryLS = new ListStore<AnnotatedBibliographyEntry>(annotatedBibliographyEntryProps.annotatedBibliographyID());
@@ -1380,7 +1379,96 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 				addKeywordDialog.center();
 			}
 		});
-		
+		ToolButton deleteKeywordToolButton = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
+		deleteKeywordToolButton.setToolTip(Util.createToolTip("delete keyword"));
+		deleteKeywordToolButton.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel deleteKeywordDialog = new PopupPanel();
+				FramedPanel deleteKeywordFP = new FramedPanel();
+				deleteKeywordFP.setHeading("Delete Keywords");
+				bibKeywordPropsCB = GWT.create(BibKeywordPropertiesCB.class);
+				ComboBox<BibKeywordEntry> keywordsComboBox = new ComboBox<BibKeywordEntry>(bibKeywordsEditStore,
+						bibKeywordPropsCB.bibKeyword(), new AbstractSafeHtmlRenderer<BibKeywordEntry>() {
+
+							@Override
+							public SafeHtml render(BibKeywordEntry item) {
+								final AnnotatedBibliographyEntryViewTemplates pvTemplates = GWT.create(AnnotatedBibliographyEntryViewTemplates.class);
+								return pvTemplates.label(item.getBibKeyword());
+							}
+						});
+				
+				keywordsComboBox.addSelectionHandler(new SelectionHandler<BibKeywordEntry>() {
+
+					@Override
+					public void onSelection(SelectionEvent<BibKeywordEntry> event) {
+						
+					}
+					
+				});
+				TextButton deleteButton = new TextButton("delete");
+				deleteButton.addSelectHandler(new SelectHandler() {
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (keywordsComboBox.getCurrentValue() != null) {
+							dbService.bibKeywordIsUsed(keywordsComboBox.getCurrentValue(), new AsyncCallback<Boolean>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+									Util.showWarning("Error", "The keyword could not be deleted!");
+									Info.display("Keyword", "still in use.");
+								}
+								
+								@Override
+								public void onSuccess(Boolean result) {
+									if (!result) {
+										dbService.deleteBibKeyword(keywordsComboBox.getCurrentValue().getBibKeywordID(), new AsyncCallback<Boolean>() {
+
+											@Override
+											public void onFailure(Throwable caught) {
+												caught.printStackTrace();
+												Util.showWarning("Error", "The new keyword could not be saved!");
+											}
+
+											@Override
+											public void onSuccess(Boolean result) {
+												if (result) {
+													init();
+													Info.display("Keyword", "deleted");
+													bibKeywordsStore.remove(bibKeywordsStore.findModelWithKey(Integer.toString(keywordsComboBox.getCurrentValue().getBibKeywordID())));
+													bibKeywordsEditStore.remove(bibKeywordsEditStore.findModelWithKey(Integer.toString(keywordsComboBox.getCurrentValue().getBibKeywordID())));
+													selectedBibKeywordsStore.remove(selectedBibKeywordsStore.findModelWithKey(Integer.toString(keywordsComboBox.getCurrentValue().getBibKeywordID())));
+												}
+											}
+										});
+									} else {
+										Info.display("Error", "Keyword still used!");										
+									}
+								}
+							});							
+						}
+						deleteKeywordDialog.hide();
+					}
+				});
+				deleteKeywordFP.add(keywordsComboBox);
+				deleteKeywordFP.addButton(deleteButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						deleteKeywordDialog.hide();
+					}
+				});
+				deleteKeywordFP.addButton(cancelButton);
+				deleteKeywordDialog.add(deleteKeywordFP);
+				deleteKeywordDialog.setModal(true);
+				deleteKeywordDialog.center();
+			}
+
+		});
 		ToolButton editKeywordToolButton = new ToolButton(new IconConfig("editButton", "editButtonOver"));
 		editKeywordToolButton.setToolTip(Util.createToolTip("edit keywords"));
 		editKeywordToolButton.addSelectHandler(new SelectHandler() {
@@ -1469,6 +1557,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 		bibKeywordFP.add(bibKeywordVLC);
 		bibKeywordFP.addTool(addKeywordToolButton);
 		bibKeywordFP.addTool(editKeywordToolButton);
+		bibKeywordFP.addTool(deleteKeywordToolButton);
 
 		/**
 		 * series

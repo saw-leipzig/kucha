@@ -1007,6 +1007,18 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#getBibKeywords()
 	 */
 
+	public boolean bibKeywordIsUsed(BibKeywordEntry keyWord) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.bibKeywordIsUsed(keyWord);
+	}
+	public boolean deleteBibKeyword(int bibID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.deleteBibKeyword(bibID);
+	}
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#getBibKeywords()
+	 */
+
 	public ArrayList<BibKeywordEntry> getBibKeywords() throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.getBibKeywords();

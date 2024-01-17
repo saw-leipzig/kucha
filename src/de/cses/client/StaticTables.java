@@ -255,6 +255,7 @@ public class StaticTables {
 
 			@Override
 			public void onFailure(Throwable caught) {
+				System.err.println("Problem loading wallsketches");
 				listLoaded();
 				caught.printStackTrace();
 			}
@@ -677,7 +678,7 @@ public class StaticTables {
 		});
 	}
 	
-	private void loadCaves() {
+	public void loadCaves() {
 		caveEntryMap = new HashMap<Integer, CaveEntry>();
 		dbService.getCaves(new AsyncCallback<ArrayList<CaveEntry>>() {
 

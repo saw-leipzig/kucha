@@ -33,9 +33,22 @@
 	transition: fill 1s, stroke-width 0.7s;
 }
 
-.a9s-annotation .set .a9s-inner:hover {
+.a9s-annotation .occupied .a9s-inner:hover {
 	stroke: rgb(200, 200, 200);
 	fill: rgba(0, 128, 0,0.55);
+	stroke-width:3px;
+	transition: fill 1s, stroke-width 0.7s
+}
+.a9s-annotation .occupied .a9s-inner {
+	stroke: rgb(255, 255, 255);
+	fill: rgba(0, 0, 128,0.55);
+	stroke-width:3px;
+	transition: fill 1s, stroke-width 0.7s;
+}
+
+.a9s-annotation .set .a9s-inner:hover {
+	stroke: rgb(200, 200, 200);
+	fill: rgba(0, 0, 128,0.55);
 	stroke-width:3px;
 	transition: fill 1s, stroke-width 0.7s
 }
@@ -347,6 +360,16 @@ div.panel {
 div.mainFP {
 	resize: both;
 	overflow: auto;
+}
+div.com-sencha-gxt-theme-base-client-tree-TreeBaseAppearance-TreeBaseStyle-element {
+	white-space: nowrap;
+	height: 21px;
+	display: table;
+}
+
+div.com-sencha-gxt-theme-base-client-tree-TreeBaseAppearance-TreeBaseStyle-selected {
+	    background-color: lightblue!important;
+	    display:table;
 }
 
 body.panel {

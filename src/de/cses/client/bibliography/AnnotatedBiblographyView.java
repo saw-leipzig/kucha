@@ -321,7 +321,6 @@ public class AnnotatedBiblographyView extends AbstractView {
 
 		}
 		else {
-			Util.doLogging(Boolean.toString(annotatedBibliographyEntry.getArticle()));
 			setHTML(dvTemplates.view(annotatedBibliographyEntry, UserLogin.getInstance().getUsernameSessionIDParameterForUri(), annotatedBibliographyEntry.getArticle()));
 		}
 	}
