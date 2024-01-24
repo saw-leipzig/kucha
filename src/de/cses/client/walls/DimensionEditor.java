@@ -176,40 +176,6 @@ public class DimensionEditor implements IsWidget {
 	private void initPanel(){
 		loadWallSketches();
 		FramedPanel positionTabPanel = new FramedPanel();
-		osdListener = new OSDListener() {
-
-			@Override
-			public int getDepictionID() {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-
-			@Override
-			public boolean isOrnament() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public void setAnnotationsInParent(ArrayList<AnnotationEntry> entryList) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public ArrayList<AnnotationEntry> getAnnotations() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public void addAnnotation(AnnotationEntry ae) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		};
-
 		mainView = new VerticalLayoutContainer();
 		mainView.addBeforeShowHandler(new BeforeShowHandler() {
 
@@ -371,7 +337,11 @@ public class DimensionEditor implements IsWidget {
 					@Override
 					public SafeHtml render(WallSketchEntry item) {
 						final ImageViewTemplates ivTemplates = GWT.create(ImageViewTemplates.class);
-						return ivTemplates.imageLabel(item.getFilename());
+						if (item != null) {
+							return ivTemplates.imageLabel(item.getFilename());							
+						} else {
+							return ivTemplates.imageLabel("null");
+						}
 					}
 				});
 		sketchSelection.setEmptyText("Select Sketch");
@@ -429,14 +399,17 @@ public class DimensionEditor implements IsWidget {
 		editDimensionFP.add(vlcWallViewEditor);
 		mainView.add(editDimensionFP, new VerticalLayoutData(1.0, .35));
 		mainView.add(positionTabPanel, new VerticalLayoutData(1.0, .65));
-		if (wde.getWallSketch() == null) {
-			WallSketchEntry wse = wallSketchEntryList.findModelWithKey("0");
-			Util.doLogging("setting wallsketch to default" + wse.getFilename());
-			wde.setWallSketch(wse);
-			sketchSelection.setValue(wse, true);			
-		} else {
-			WallSketchEntry wse = wallSketchEntryList.findModelWithKey(Integer.toString(wde.getWallSketch().getWallSketchID()));
-			sketchSelection.setValue(wse, true);				
+		GWT.debugger();
+		if (wallSketchEntryList.size() > 0) {
+			if (wde.getWallSketch() == null) {
+				WallSketchEntry wse = wallSketchEntryList.findModelWithKey("1");
+				Util.doLogging("setting wallsketch to default" + wse.getFilename());
+				wde.setWallSketch(wse);
+				sketchSelection.setValue(wse, true);			
+			} else {
+				WallSketchEntry wse = wallSketchEntryList.findModelWithKey(Integer.toString(wde.getWallSketch().getWallSketchID()));
+				sketchSelection.setValue(wse, true);				
+			}			
 		}
 		if (correspondingDepictionEntry != null) {
 			osdLoader = new OSDLoaderWallDimension(wde, correspondingDepictionEntry, true, osdListener, "editor");			
@@ -452,7 +425,44 @@ public class DimensionEditor implements IsWidget {
 		number.setValue(wde.getColumns());
 		typeNF.setValue(wde.getType());
 		directionNF.setValue(wde.getDirection());
-		osdLoader.setosd();
+		if (wallSketchEntryList.size() > 0 && wde.getWallSketch() != null) {
+			osdListener = new OSDListener() {
+
+				@Override
+				public int getDepictionID() {
+					// TODO Auto-generated method stub
+					return 0;
+				}
+
+				@Override
+				public boolean isOrnament() {
+					// TODO Auto-generated method stub
+					return false;
+				}
+
+				@Override
+				public void setAnnotationsInParent(ArrayList<AnnotationEntry> entryList) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public ArrayList<AnnotationEntry> getAnnotations() {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public void addAnnotation(AnnotationEntry ae) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+			};			
+			osdLoader.setosd();
+		}
+
+
 	}
 	public void update() {
 		if (register.isValid() && number.isValid()) {
@@ -484,7 +494,9 @@ public class DimensionEditor implements IsWidget {
 			wde.setDirection(directionNF.getCurrentValue());
 			wde.setType(typeNF.getCurrentValue());
 			wde.setWallSketch(sketchSelection.getCurrentValue());
-			osdLoader.setosd();
+			if (wde.getWallSketch() != null && wallSketchEntryList.size() > 0) {
+				osdLoader.setosd();				
+			}
 			del.saveDimension(wde);			
 		}
 	}

@@ -757,7 +757,7 @@ public class OSDLoader {
 			        tileRequestHeaders:{"SessionID": sessionID},
 			        ajaxHeaders: {"SessionID": sessionID},
 			        loadTilesWithAjax:true,
-					prefixUrl: "scripts/openseadragon-bin-2.4.2/images/",
+					prefixUrl: "scripts/imageviewer/images/",
 	//				tileSources: tiles[wheres[i]]
 					
 				}); 
@@ -911,8 +911,6 @@ public class OSDLoader {
 			    							});
 				dic[wheres[i]].addHandler("pre-full-page", function (data) {
 						data.preventDefaultAction=true;
-						// $wnd.console.log($wnd.screenfull);
-						// $wnd.screenfull.request(data.eventSource.element);
 	  					if (data.eventSource.element.requestFullscreen) {
 	    					data.eventSource.element.requestFullscreen();
 	  					} else if (data.eventSource.element.mozRequestFullScreen) { 

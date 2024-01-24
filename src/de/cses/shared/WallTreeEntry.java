@@ -83,7 +83,7 @@ public class WallTreeEntry extends AbstractEntry {
 			return text;
 		} else {
 			for (WallDimensionEntry wde: dimension) {
-				String dimensionString = "Register(" + Integer.toString(wde.getRegisters()) + ", " + Integer.toString(wde.getColumns()) + ")";
+				String dimensionString = wde.getName().isEmpty()? "Register" :"Register " + wde.getName() + " (" + Integer.toString(wde.getRegisters()) + ", " + Integer.toString(wde.getColumns()) + ")";
 				if (dimensions.isEmpty()) {
 					dimensions = dimensionString;
 				} else {

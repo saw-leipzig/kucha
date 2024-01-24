@@ -981,17 +981,6 @@ public class SingleImageEditor extends AbstractEditor {
 			}
 		});
 		zoomTB.setToolTip(Util.createToolTip("Download  original image.", "This will automatically download the original uploaded image."));
-
-//	    Document doc = Document.get();
-//	    ScriptElement script = doc.createScriptElement();
-//	    script.setSrc("scripts/openseadragon-bin-2.4.2/openseadragon.min.js");
-//	    script.setType("text/javascript");
-//	    doc.getBody().appendChild(script);
-
-		
-
-		//imgFP.setId("openseadragon1");
-		//imgHP = createZoomeImage(imageUri.asString());
 		imgFP = new FramedPanel();
 		try {
 			imgFP.setHeading("Image format: " + imgEntry.getFilename().substring(imgEntry.getFilename().lastIndexOf(".")+1).toUpperCase());			

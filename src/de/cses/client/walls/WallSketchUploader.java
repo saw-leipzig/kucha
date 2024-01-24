@@ -124,6 +124,7 @@ public class WallSketchUploader implements IsWidget {
 		form.setMethod(Method.POST);
 		form.addSubmitCompleteHandler(new SubmitCompleteHandler() {
 			public void onSubmitComplete(SubmitCompleteEvent event) {
+				mainPanel.hide();
 				uploadInfoWindow.hide();
 				Info.display("upload compleated!", "Close window");
 				Document doc = XMLParser.parse(event.getResults());
@@ -164,7 +165,7 @@ public class WallSketchUploader implements IsWidget {
 					uploadInfoWindow.setMaximizable(false);
 					uploadInfoWindow.setClosable(false);
 					Status s = new Status();
-					s.setBusy("uploading cave sketch ...");
+					s.setBusy("uploading wall sketch ...");
 					uploadInfoWindow.setWidget(s);
 					uploadInfoWindow.show();
 				}
