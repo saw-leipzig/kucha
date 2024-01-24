@@ -199,7 +199,7 @@ public class WallView implements IsWidget{
 			}
 		});
 		tabPanel = new PlainTabPanel();
-		tabPanel.setSize("550px", "500px");
+		tabPanel.setSize("750px", "500px");
 		mainFP.add(tabPanel);
 		mainFP.addTool(closeButton);
 		if (correspondingDepictionEntry != null){

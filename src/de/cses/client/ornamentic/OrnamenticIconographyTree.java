@@ -320,7 +320,6 @@ public class OrnamenticIconographyTree {
 	public void setTreeStore() {
 		for (IconographyEntry ie: iconographyTreeStore.getAll()) {
 			if (ie.getIconographyID()==ornamentEntry.getIconographyID()) {
-				Util.doLogging("Set entry "+ie.getText()+" checked.");
 				iconographyTree.setChecked(ie, CheckState.CHECKED);
 				addparent(ie);
 				selectedie=ie;

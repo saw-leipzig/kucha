@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="war" name="KUCHA" xmlns:if="ant:if">
 	<!-- Configure path to GWT SDK -->
-	<!-- <property name="GWT_HOME" value="/Users/alingnau/.p2/pool/plugins/com.gwtplugins.gwt.eclipse.sdkbundle.gwt28_2.8.0.201803211650/gwt-2.8.2" /> -->
 	<!-- property name="GWT_HOME" value="/home/erik/.p2/pool/plugins/com.gwtplugins.gwt.eclipse.sdkbundle.gwt28_2.8.0.201710131939/gwt-2.8.1" /> -->
 	<property name="GWT_HOME" value="/home/erik/gwt-2.9.0" />
     <property name="gwt.logging.logLevel" value="INFO"/>          

@@ -883,8 +883,6 @@ public class MysqlConnector implements IsSerializable {
 				//System.err.println("acess Level PUBLIC");
 				break;
 		}
-		System.out.println(accessLevelOfSession+" - "+authorizedAccessLevel);
-		
 		String filename = "";
 		Map<Integer,String> result = new HashMap<Integer,String>();
 		for (ImageEntry imgEntry : imgSources) {
@@ -900,9 +898,11 @@ public class MysqlConnector implements IsSerializable {
 					// guests should be informed that there is an image
 					filename = "accessNotPermitted.png";
 				}
-			URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/" + tnSize + ",/0/default.jpg");
-			
-			InputStream in = imageURL.openStream();
+			URL imageURL = new URL("https://iiif.saw-leipzig.de/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/" + tnSize + ",/0/default.jpg");
+			HttpURLConnection myURLConnection = (HttpURLConnection)imageURL.openConnection();
+			myURLConnection.setRequestProperty ("SessionID", sessionID);
+			myURLConnection.setRequestMethod("GET");
+			InputStream in = myURLConnection.getInputStream();
 			ByteArrayOutputStream bab = new ByteArrayOutputStream();
 			//ByteArrayBuffer bab = new ByteArrayBuffer(0);
 		    int eof = 0;
@@ -2263,7 +2263,7 @@ public class MysqlConnector implements IsSerializable {
 			JSONArray userIDs;
 			JSONObject newsObject = new JSONObject(news);
 			title = newsObject.getString("title");
-			sendMail("kuchaadmin@saw-leipzig.de","kuchaadmin@saw-leipzig.de","Kucha-Admin", "The News \"" + title + "\" has been updated.","Dear Erik,\n The news\"" + title + "\" has been updated.\n the User was:\n" +user + "\n The news:\n" + news + "\nuuid:\n" + uuid + "\n The new message taxt is:\n" + messageText);
+			sendMail("kuchaadmin@saw-leipzig.de","kuchaadmin@saw-leipzig.de","Kucha-Admin", "The News \"" + title + "\" has been updated.","Dear Erik,\n The news\"" + title + "\" has been updated.\n the User was:\n" +user + "\n The news:\n" + news + "\nuuid:\n" + uuid + "\n The new message text is:\n" + messageText);
 			
         }catch(JSONException ex){
             System.out.println("Error parsing json " + ex.getMessage());
@@ -2389,9 +2389,6 @@ public class MysqlConnector implements IsSerializable {
 					//System.err.println("acess Level PUBLIC");
 					break;
 			}
-			//System.out.println(accessLevelOfSession+" - "+authorizedAccessLevel);
-			
-			
 			String filename = "";
 			for (ImageEntry imgEntry : imgSources) {
 				try {
@@ -2406,8 +2403,11 @@ public class MysqlConnector implements IsSerializable {
 						// all others shouldn't see anything
 						filename = "accessNotPermitted.png";
 					}
-				URL imageURL = new URL("http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/" + tnSize + ",/0/default.jpg");;
-				InputStream in = imageURL.openStream();
+				URL imageURL = new URL("https://iiif.saw-leipzig.de/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/" + tnSize + ",/0/default.jpg");;
+				HttpURLConnection myURLConnection = (HttpURLConnection)imageURL.openConnection();
+				myURLConnection.setRequestProperty ("SessionID", sessionID);
+				myURLConnection.setRequestMethod("GET");
+				InputStream in = myURLConnection.getInputStream();
 				ByteArrayOutputStream bab = new ByteArrayOutputStream();
 				//ByteArrayBuffer bab = new ByteArrayBuffer(0);
 			    int eof = 0;
@@ -2421,6 +2421,7 @@ public class MysqlConnector implements IsSerializable {
 				result.put(imgEntry.getImageID(), "data:image/jpg;base64,"+base64);
 				}
 				catch (Exception e) {
+					System.err.println(e.getLocalizedMessage());
 					result.put(imgEntry.getImageID(), "icons/close_icon.png");
 				}
 			}
@@ -2868,7 +2869,6 @@ public class MysqlConnector implements IsSerializable {
 						}
 					}
 					if (!found){ 
-						System.out.println("add WallTreeEntry: "+result.getWallLocationID()+" - "+result.getParentID());
 						results.add(result);
 					}
 					ArrayList<WallTreeEntry> resultsWallsByDe = getwallsByDepictionID(de.getDepictionID(), de.getCave().getCaveID());
@@ -2912,14 +2912,8 @@ public class MysqlConnector implements IsSerializable {
 						}
 					
 						if (!found2){ 
-							System.out.println("add WallTreeEntry: "+resWallByDe.getWallLocationID()+" - "+resWallByDe.getParentID());
 							results.add(resWallByDe);
 						}
-						else {
-							System.out.println("did not add WallTreeEntry: "+resWallByDe.getWallLocationID()+" - "+resWallByDe.getParentID());
-						}
-							
-						
 					}
 				}
 
@@ -6837,7 +6831,6 @@ public boolean isHan(String s) {
 		 * when the UI is build on the client side!
 		 */
 		String inStatement  = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
-		System.err.println("Accesslevel ist: "+getAccessLevelForSessionID(searchEntry.getSessionID()));
 		if (getAccessLevelForSessionID(searchEntry.getSessionID()) <= UserEntry.GUEST) {
 			where += where.isEmpty() ? "Ornaments.AccessLevel IN (" + inStatement + ")" : " AND Ornaments.AccessLevel IN (" + inStatement + ")";
 		} else if (searchEntry.getAccessLevel() == 2) {
@@ -7703,7 +7696,6 @@ public boolean isHan(String s) {
 		int accessRights = 0;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
-		//System.err.println("getAccessLevelForSessionID(" + sessionID + ")");
 		try {
 			pstmt = dbc.prepareStatement("SELECT AccessLevel FROM Users WHERE SessionID=?");
 			pstmt.setString(1, sessionID);
@@ -7747,7 +7739,7 @@ public boolean isHan(String s) {
 			}
 			pstmt.setString(1, sessionID);
 			pstmt.setString(2, username);
-//			pstmt.executeUpdate();
+			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException e) {
 			System.err.println(e.getLocalizedMessage());
@@ -7776,7 +7768,7 @@ public boolean isHan(String s) {
 			pstmt = dbc.prepareStatement("UPDATE Webusers SET SessionID=? WHERE Email=?");
 			pstmt.setString(1, sessionID);
 			pstmt.setString(2, username);
-//			pstmt.executeUpdate();
+			pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException e) {
 			System.err.println(e.getLocalizedMessage());
@@ -11939,13 +11931,11 @@ public boolean isHan(String s) {
 			}
 			
 			
-			System.out.println("execute query");
 			ResultSet rs = pstmt.executeQuery();
 			int accessLevel = -1;
 			System.out.println("include caves?" + Boolean.toString(searchEntry.getIncludeCave()));
 			accessLevel = getAccessLevelForSessionID(searchEntry.getSessionID());
 			while (rs.next()) {
-				System.out.println("Loading depiction");
 				DepictionEntry de = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 						rs.getString("SeparateAksaras"), rs.getString("Dating"), stripAccents(rs.getString("Description")), rs.getString("BackgroundColour"),
 						rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
@@ -11953,15 +11943,10 @@ public boolean isHan(String s) {
 						getVendor(rs.getInt("VendorID")), rs.getInt("StoryID"), getCave(rs.getInt("CaveID")), getwallsByDepictionID(rs.getInt("DepictionID"), rs.getInt("CaveID")), rs.getInt("AbsoluteLeft"),
 						rs.getInt("AbsoluteTop"), rs.getInt("ModeOfRepresentationID"), stripAccents(rs.getString("ShortName")), rs.getString("PositionNotes"),
 						rs.getInt("MasterImageID"), rs.getInt("AccessLevel"), rs.getString("LastChangedByUser"), rs.getString("LastChangedOnDate"),getAnnotations(rs.getInt("DepictionID")), getImageSortInfo(rs.getInt("DepictionID")));
-				System.out.println("depiction loaded");
 				de.setRelatedImages(getRelatedImages(de.getDepictionID(), searchEntry.getSessionID(),accessLevel));
-				System.out.println("images loaded");
 				de.setRelatedBibliographyList(getRelatedBibliographyFromDepiction(de.getDepictionID()));
-				System.out.println("Bibliography loaded");
 				de.setRelatedIconographyList(getRelatedIconography(de.getDepictionID()));
-				System.out.println("Iconography loaded");
 				results.add(de);
-				System.out.println("added depiction");
 			}
 			rs.close();
 			pstmt.close();

@@ -295,7 +295,6 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		ornamentTrees= new 	OrnamenticIconographyTree(ornamentEntry);
 		ornamentTrees.setDialogboxnotcalled(false);
 		// Aufbau der Listen welche geladen werden m�ssen aus der Datenbank
-		Util.doLogging("Create form von ornamenticeditor gestartet");
 		ornamentCaveRelationEditor = new OrnamentCaveRelationEditor();
 		wallOrnamentCaveRelationEditor = new WallOrnamentCaveRelationEditor();
 		ornamenticEditor = this;

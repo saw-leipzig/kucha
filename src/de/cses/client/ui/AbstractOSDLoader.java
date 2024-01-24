@@ -291,7 +291,7 @@ public abstract class AbstractOSDLoader {
 				        tileRequestHeaders:{"SessionID": sessionID},
 				        ajaxHeaders: {"SessionID": sessionID},
 				        loadTilesWithAjax:true,
-						prefixUrl: "scripts/openseadragon-bin-2.4.2/images/",
+						prefixUrl: "scripts/imageviewer/images/",
 					}); 
 					$wnd.console.log(tiles[wheres[i]], sessionID);
 			        dic[wheres[i]].open({

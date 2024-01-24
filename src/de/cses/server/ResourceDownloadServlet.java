@@ -307,7 +307,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 				case UserEntry.ADMIN:
 					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_COPYRIGHT);
 					authorizedAccessLevel.add(AbstractEntry.ACCESS_LEVEL_PRIVATE);
-					System.err.println("acess Level PUBLIC, COPYRIGHT and PRIVATE");
+					// System.err.println("acess Level PUBLIC, COPYRIGHT and PRIVATE");
 					break;
 				default:
 					break;

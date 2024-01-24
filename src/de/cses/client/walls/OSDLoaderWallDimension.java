@@ -599,7 +599,7 @@ public class OSDLoaderWallDimension extends AbstractOSDLoader {
 		  buttoncontainer.className = 'export-widget';
 		  var labelReg = document.createElement('label');
 //		  $wnd.console.log("position getLabel", position)
-		  labelReg.innerHTML = position.Reg === "-1"? "Empty spot" + position.x + " -"  + position.y : args.annotation.underlying.id + " / " + position.x + " -"  + position.y;    
+		  labelReg.innerHTML = position.Reg === "-1"? "Empty spot" : "Reg. " + position.Reg + ", No. " + position.No;    
 		  labelcontainer.appendChild(labelReg);
 		  var labelcontainerDepiction = document.createElement('div');
 		  labelcontainerDepiction.className = 'export-widget';

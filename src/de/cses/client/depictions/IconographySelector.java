@@ -502,7 +502,6 @@ public class IconographySelector extends FramedPanel {
 								
 								@Override
 								public void onSuccess(Map<Integer,String> imgdic) {
-									Util.doLogging("got pics!");
 									for (OrnamentEntry oe : ornamentEntries) {
 										if (oe.getMasterImageID()>0) {
 											if (imgdic.containsKey(oe.getMasterImageID())) {

@@ -100,9 +100,9 @@ public class WallSketchServiceImpl extends HttpServlet {
 				}
 			}
 		} catch (ServletException e) {
-			System.err.println("ServletException");
+			System.err.println("ServletException" + e.getLocalizedMessage());
 		} catch (Exception e) {
-			System.err.println("IllegalStateException");
+			System.err.println("IllegalStateException" + e.getLocalizedMessage());
 			throw new IllegalStateException(e);
 		} finally {
 		if (target != null && target.exists()) {
