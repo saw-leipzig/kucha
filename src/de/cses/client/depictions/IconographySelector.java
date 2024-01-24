@@ -34,6 +34,8 @@ import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -57,6 +59,8 @@ import com.sencha.gxt.data.shared.Store.StoreFilter;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.data.shared.event.StoreFilterEvent;
+import com.sencha.gxt.fx.client.Draggable;
+import com.sencha.gxt.fx.client.Draggable.DraggableAppearance;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
@@ -162,6 +166,7 @@ public class IconographySelector extends FramedPanel {
 	private ToolButton addEntryTB;
 	private ToolButton renameEntryTB;
 	private StoreFilter<IconographyEntry> filterFieldDropUnselected;
+	private Context draggedItem;
 	
 
 	ArrayList<IconographyEntry> iconographyRelationList;
@@ -257,6 +262,7 @@ public class IconographySelector extends FramedPanel {
 			}
 		
 		};
+		
 		MasterImg masterImg = GWT.create(MasterImg.class);
 		class CustomImageCell extends AbstractCell<String> {
 		    private ImageXTemplate imageTemplate = GWT.create(ImageXTemplate.class);
@@ -279,9 +285,9 @@ public class IconographySelector extends FramedPanel {
 		    			}
 		    	}
 		    	if (found) {
-		    		sb.append(SafeHtmlUtils.fromTrustedString("<p style=\"color:green;\">"+ie + " (" + context.getKey()+")</p>"));
+		    		sb.append(SafeHtmlUtils.fromTrustedString("<p draggable=\"true\" style=\"color:green;\">"+ie + " (" + context.getKey()+")</p>"));
 		    	}else {
-		    		sb.append(SafeHtmlUtils.fromTrustedString("<p style=\"color:red;\">"+ie + " (" + context.getKey()+")</p>"));
+		    		sb.append(SafeHtmlUtils.fromTrustedString("<p draggable=\"true\" style=\"color:red;\">"+ie + " (" + context.getKey()+")</p>"));
 		    	}
 		    }
 		    @Override
@@ -292,8 +298,41 @@ public class IconographySelector extends FramedPanel {
 		    	    	beforeSelection=iconographyTree.getSelectionModel().getSelectedItems();
 		    	    	currentContext=context;
 			    	    showPOPUP(context, event.getClientX()+10,event.getClientY()+10);
-			    	    }
-		    	    
+			    	}
+		    	    if (BrowserEvents.DRAG.equals(eventType) ) {
+		    	    	GWT.debugger();
+		    	    	draggedItem = context;
+			    	}
+		    	    if (BrowserEvents.DROP.equals(eventType) ) {
+		    	    	IconographyEntry draggedIco = iconographyTree.getStore().findModelWithKey(draggedItem.getKey().toString());
+		    	    	IconographyEntry droppedToIco = iconographyTree.getStore().findModelWithKey(context.getKey().toString());
+		    	    	if (context.getKey().toString() != draggedItem.getKey().toString() && Integer.toString(draggedIco.getParentID()) != context.getKey().toString()) {
+		    	    		Util.showYesNo("Warning!", "You are about to set \"" + droppedToIco.getText() + "\" as Parent of \"" + draggedIco.getText() + "\". Are you sure?", new SelectHandler() {
+
+		    					@Override
+		    					public void onSelect(SelectEvent event) {
+				    	    		Info.display("connection " + draggedItem.getKey().toString() + " to", context.getKey().toString());
+		    					}
+		    				}, new SelectHandler() {
+
+		    					@Override
+		    					public void onSelect(SelectEvent event) {
+		    					}
+		    				}, new KeyDownHandler() {
+		    					@Override
+		    					public void onKeyDown(KeyDownEvent e) {
+		    						
+		    					}
+		    				}
+		    				);
+		    	    	} else {
+		    	    		Info.display("Connection " + draggedItem.getKey().toString() + " to" + context.getKey().toString(),  "not allowed!");
+		    	    		
+		    	    	}
+			    	}
+		    	    if (BrowserEvents.DRAGOVER.equals(eventType) ) {
+		    	    	event.preventDefault();		    	    		
+			    	}
 		    	    if (BrowserEvents.MOUSEOUT.equals(eventType)) {
 				    	if (currentContext==context) {
 				    	    hidePOPUP();				    		
@@ -311,10 +350,9 @@ public class IconographySelector extends FramedPanel {
 		    	    			return;
 		    	    		}
 		    	    	}
-			    	 }
-
+			    	}
 		    	    if (BrowserEvents.KEYDOWN.equals(eventType) && event.getKeyCode() == KeyCodes.KEY_ENTER) {
-			    	      onEnterKeyDown(context, parent, value, event, valueUpdater);
+		    	    	onEnterKeyDown(context, parent, value, event, valueUpdater);
 			    	}
 		    }
 		    private void showPOPUP(Context context,int x,int y) {
@@ -353,6 +391,9 @@ public class IconographySelector extends FramedPanel {
 	    events.add(BrowserEvents.MOUSEOVER);
 	    events.add(BrowserEvents.MOUSEOUT);
 	    events.add(BrowserEvents.MOUSEUP);
+	    events.add(BrowserEvents.DROP);
+	    events.add(BrowserEvents.DRAG);
+	    events.add(BrowserEvents.DRAGOVER);
 		Cell<String> cCell = new CustomImageCell(events);
 	    iconographyTree.setCell(cCell);
 	    
