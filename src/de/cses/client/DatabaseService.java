@@ -381,6 +381,8 @@ public interface DatabaseService extends RemoteService {
 
 	boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit, String user) throws IllegalArgumentException;
 
+	boolean deleteIconographyEntry(IconographyEntry iconographyEntryToEdit, String sessionID) throws IllegalArgumentException;
+
 	boolean updateWallTreeEntry(WallTreeEntry wte) throws IllegalArgumentException;
 
 	ArrayList<UserEntry> getUsers() throws IllegalArgumentException;

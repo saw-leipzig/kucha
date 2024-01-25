@@ -847,7 +847,6 @@ public class IconographySelector extends FramedPanel {
 										if (result > 0) { // otherwise there has been a problem adding the entry
 											iconographyEntry.setIconographyID(result);
 											StaticTables.getInstance().reloadIconography(); // we need to reload the whole tree otherwise this won't work
-											imgdDic = StaticTables.getInstance().getOrnamentMasterPics();
 											addChildIconographyEntry(iconographyEntry);
 											//icoSelectorListener.reloadIconography(iconographyEntry);
 											icoSelectorListener.reloadOSD();
@@ -929,7 +928,6 @@ public class IconographySelector extends FramedPanel {
 								@Override
 								public void onSuccess(Boolean result) {
 									StaticTables.getInstance().reloadIconography(); // we need to reload the whole tree otherwise this won't work
-									imgdDic = StaticTables.getInstance().getOrnamentMasterPics();
 								}
 							});
 							addIconographyEntryDialog.hide();
@@ -937,6 +935,34 @@ public class IconographySelector extends FramedPanel {
 					}
 				});
 				newIconographyEntryFP.addTool(saveTB);
+				ToolButton deleteTB = new ToolButton(new IconConfig("removeButton", "removeButtonOver"));
+				
+				deleteTB.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						dbService.deleteIconographyEntry(iconographyEntryToEdit, UserLogin.getInstance().getSessionID(), new AsyncCallback<Boolean>() {
+
+							@Override
+							public void onFailure(Throwable caught) {
+								caught.printStackTrace();
+							}
+
+							@Override
+							public void onSuccess(Boolean result) {
+								if (result) {
+									StaticTables.getInstance().reloadIconography(); // we need to reload the whole tree otherwise this won't work
+									
+								} else {
+									Info.display("Failed", "Iconography Entry still in user?");
+								}
+							}
+						});
+						addIconographyEntryDialog.hide();
+					}
+				});
+				newIconographyEntryFP.addTool(deleteTB);
+
 				ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 				cancelTB.addSelectHandler(new SelectHandler() {
 

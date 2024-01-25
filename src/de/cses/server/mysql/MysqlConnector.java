@@ -5032,6 +5032,101 @@ public boolean isHan(String s) {
 		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateIconographyEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
+
+	/**
+	 * 
+	 * @param iconographyEntryToEdit
+	 * @return true for delted, false for prevented
+	 */
+	private boolean icoIsUsed(IconographyEntry ico) {
+		System.out.println("delete Iconography Entry");
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateIconographyEntry wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		if (ico.getChildren() != null) {
+			if (ico.getChildren().size() > 0) {
+				return true;
+			}
+		}
+		try {
+			pstmt = dbc.prepareStatement(" Select i.IconographyID  from Iconography i left join DepictionPolygonRelation dpr on (i.IconographyID = dpr.IconographyID) where  dpr.deleted = 0 and i.IconographyID = ?"
+					+ " UNION "
+					+ "SELECT i.IconographyID  from Iconography i left join OrnamentPolygonRelation opr on (opr.IconographyID = i.IconographyID) where opr.deleted = 0  and i.IconographyID = ? \n"
+					+ " Union "
+					+ "SELECT o.IconographyID  From Ornaments o WHERE o.IconographyID  = ?");
+			pstmt.setInt(1, ico.getIconographyID());
+			pstmt.setInt(2, ico.getIconographyID());
+			pstmt.setInt(3, ico.getIconographyID());
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				pstmt.close();
+				return true;
+			}
+			pstmt.close();
+			return false;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return true;
+		}
+		
+	}
+
+	/**
+	 * 
+	 * @param iconographyEntryToEdit
+	 * @return
+	 */
+	public boolean deleteIconographyEntry(IconographyEntry icoToDelete) {
+		System.out.println("delete Iconography Entry");
+		long start = System.currentTimeMillis();
+		if (dologgingbegin){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateIconographyEntry wurde ausgelöst.");;
+		}
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+
+		if (icoIsUsed(icoToDelete)) {
+			return false;
+		}
+		try {
+			pstmt = dbc.prepareStatement(" DELETE FROM Iconography WHERE IconographyID =?");
+			pstmt.setInt(1, icoToDelete.getIconographyID());
+			pstmt.executeUpdate();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return false;
+		}
+
+		icoToDelete.setModifiedOn("");
+		Gson gson = new Gson();
+		Date date = new Date(System.currentTimeMillis());
+		String url = serverProperties.getProperty("home.elastic.url");
+		int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+		String elastic_user = serverProperties.getProperty("home.elastic.login");
+		String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+		String json2 = gson.toJson(getIconography(0));
+		json2 = json2.replace("\"text\"", "\"name\"");
+		String updateResult = doUploadToElastic("iconographyTree","{\"doc\":{\"iconography\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
+		ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+		System.out.println(er.result + " "+ updateResult);
+		if (!er.result.equals("noop")) {
+			System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconography\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+		}		
+		if (dologging){
+		long end = System.currentTimeMillis();
+		long diff = (end-start);
+		if (diff>100){
+		System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateIconographyEntry brauchte "+diff + " Millisekunden.");;}}
+		return true;
+	}
+
+
 	public boolean updateWallTreeEntry(WallTreeEntry wte) {
 		System.out.println("Update WallTree Entry");
 		long start = System.currentTimeMillis();

@@ -1144,6 +1144,11 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		return connector.updateIconographyEntry(iconographyEntryToEdit, user);
 	}
 
+	public boolean deleteIconographyEntry(IconographyEntry iconographyEntryToEdit, String sessionID) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.deleteIconographyEntry(iconographyEntryToEdit);
+	}
+
 	public boolean updateWallTreeEntry(WallTreeEntry wte) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateWallTreeEntry(wte);

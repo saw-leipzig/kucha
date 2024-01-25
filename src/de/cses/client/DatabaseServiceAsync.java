@@ -409,6 +409,8 @@ public interface DatabaseServiceAsync {
 	
 	void updateIconographyEntry(IconographyEntry iconographyEntryToEdit, String user,  AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
+	void deleteIconographyEntry(IconographyEntry iconographyEntryToEdit, String sessioID,  AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 	void updateWallTreeEntry(WallTreeEntry wte, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void getUsers(AsyncCallback<ArrayList<UserEntry>> asyncCallback) throws IllegalArgumentException;
