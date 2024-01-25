@@ -4952,7 +4952,7 @@ public boolean isHan(String s) {
 	 * @param iconographyEntryToEdit
 	 * @return
 	 */
-	public boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit) {
+	public boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit, String user) {
 		System.out.println("Update Iconography Entry");
 		long start = System.currentTimeMillis();
 		if (dologgingbegin){
@@ -4961,6 +4961,8 @@ public boolean isHan(String s) {
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
+			IconographyEntry oldEntry = getIconographyEntry(iconographyEntryToEdit.getIconographyID());
+			sendMail("kuchaadmin@saw-leipzig.de","kuchaadmin@saw-leipzig.de","Kucha-Admin","IconographyEntry "+ iconographyEntryToEdit.getText() +" is to be updated!","Dear Admin,\n the IconographyEntry " + oldEntry.getIconographyID() + ", ParentID: " + Integer.toString(oldEntry.getParentID()) + ", IcoText: " + oldEntry.getText() + ", search: " + oldEntry.getSearch() + " is to be changed to IconographyID: " +  Integer.toString(iconographyEntryToEdit.getIconographyID()) + ", ParentID: " + Integer.toString(iconographyEntryToEdit.getParentID()) + ", IcoText: " + iconographyEntryToEdit.getText() + ", search: " + iconographyEntryToEdit.getSearch() + "\n by User: " + user );
 			pstmt = dbc.prepareStatement("UPDATE Iconography SET ParentID=?, Text=?, search=? WHERE IconographyID =?");
 			if (iconographyEntryToEdit.getParentID()==0) {
 				pstmt.setNull(1, java.sql.Types.INTEGER);}
@@ -5010,10 +5012,16 @@ public boolean isHan(String s) {
 		String json2 = gson.toJson(getIconography(0));
 		json2 = json2.replace("\"text\"", "\"name\"");
 		String updateResult = doUploadToElastic("iconographyTree","{\"doc\":{\"iconography\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
-		ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
-		System.out.println(er.result + " "+ updateResult);
-		if (!er.result.equals("noop")) {
-			System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconography\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+		try {
+			ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+			System.out.println(er.result + " "+ updateResult);
+			if (!er.result.equals("noop")) {
+				System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconography\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+			}			
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Jsonupload did not result in expacted response. We are probably in kuchatest. Response:"+e.getLocalizedMessage());;
+			return false;
 		}
 	    iconographyEntryToEdit.setModifiedOn(df.format(date));			
 				

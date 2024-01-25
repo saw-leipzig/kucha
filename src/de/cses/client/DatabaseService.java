@@ -379,7 +379,7 @@ public interface DatabaseService extends RemoteService {
 
 	int insertIconographyEntry(IconographyEntry iconographyEntry) throws IllegalArgumentException;
 
-	boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit) throws IllegalArgumentException;
+	boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit, String user) throws IllegalArgumentException;
 
 	boolean updateWallTreeEntry(WallTreeEntry wte) throws IllegalArgumentException;
 

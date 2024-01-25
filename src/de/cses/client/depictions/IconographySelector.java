@@ -142,7 +142,7 @@ public class IconographySelector extends FramedPanel {
 	 */
 	private final DatabaseServiceAsync dbService = GWT.create(DatabaseService.class);
 
-	private TreeStore<IconographyEntry> iconographyTreeStore = iconographyTreeStore = new TreeStore<IconographyEntry>(new IconographyKeyProvider());;
+	private TreeStore<IconographyEntry> iconographyTreeStore = new TreeStore<IconographyEntry>(new IconographyKeyProvider());;
 	private Tree<IconographyEntry, String> iconographyTree;
 	private ArrayList<OrnamentEntry> ornaments;
 	private PopupPanel imgPop = new PopupPanel();
@@ -168,7 +168,22 @@ public class IconographySelector extends FramedPanel {
 	private StoreFilter<IconographyEntry> filterFieldDropUnselected;
 	private Context draggedItem;
 	
-
+	private void removeAllChildrenFromStore(IconographyEntry ico) {
+		if (ico.getChildren() != null) {
+			for (IconographyEntry child: ico.getChildren()) {
+				removeAllChildrenFromStore(child);
+				iconographyTree.getStore().remove(child);
+			}
+		}
+	}
+	private void addAllChildrenToStore(IconographyEntry ico) {
+		if (ico.getChildren() != null) {
+			for (IconographyEntry child: ico.getChildren()) {
+				iconographyTree.getStore().add(ico, child);
+				addAllChildrenToStore(child);
+			}
+		}
+	}
 	ArrayList<IconographyEntry> iconographyRelationList;
 	public IconographySelector(Collection<IconographyEntry> elements,EditorListener el,boolean dropunselected, ArrayList<AnnotationEntry> relatedAnnotationList, IconographySelectorListener icoSelectorListener) {
 		this.el=el;
@@ -300,18 +315,40 @@ public class IconographySelector extends FramedPanel {
 			    	    showPOPUP(context, event.getClientX()+10,event.getClientY()+10);
 			    	}
 		    	    if (BrowserEvents.DRAG.equals(eventType) ) {
-		    	    	GWT.debugger();
 		    	    	draggedItem = context;
 			    	}
 		    	    if (BrowserEvents.DROP.equals(eventType) ) {
 		    	    	IconographyEntry draggedIco = iconographyTree.getStore().findModelWithKey(draggedItem.getKey().toString());
 		    	    	IconographyEntry droppedToIco = iconographyTree.getStore().findModelWithKey(context.getKey().toString());
 		    	    	if (context.getKey().toString() != draggedItem.getKey().toString() && Integer.toString(draggedIco.getParentID()) != context.getKey().toString()) {
-		    	    		Util.showYesNo("Warning!", "You are about to set \"" + droppedToIco.getText() + "\" as Parent of \"" + draggedIco.getText() + "\". Are you sure?", new SelectHandler() {
+		    	    		Util.showYesNo("Warning!", "You are about to set \"" + droppedToIco.getText() + "\" as Parent of \"" + draggedIco.getText() + "\". Are you sure, that this alteration is necessary?", new SelectHandler() {
 
 		    					@Override
 		    					public void onSelect(SelectEvent event) {
-				    	    		Info.display("connection " + draggedItem.getKey().toString() + " to", context.getKey().toString());
+		    						removeAllChildrenFromStore(draggedIco);
+					    	    	iconographyTree.getStore().remove(draggedIco);
+		    						draggedIco.setParentID(droppedToIco.getIconographyID());
+					    	    	droppedToIco.getChildren().add(draggedIco);
+					    	    	iconographyTree.getStore().add(droppedToIco, draggedIco);
+					    	    	addAllChildrenToStore(draggedIco);
+					    	    	iconographyTree.getStore().update(droppedToIco);
+					    	    	iconographyTree.getStore().update(draggedIco);
+					    	    	iconographyTree.refresh(droppedToIco);
+					    	    	iconographyTree.refresh(draggedIco);
+				    	    		dbService.updateIconographyEntry(draggedIco, UserLogin.getInstance().getUsername(), new AsyncCallback<Boolean>() {
+
+										@Override
+										public void onFailure(Throwable arg0) {
+											// TODO Auto-generated method stub
+											
+										}
+
+										@Override
+										public void onSuccess(Boolean arg0) {
+											Info.display("Iconography succsessfully", "altered!");
+											StaticTables.getInstance().reloadIconography();										}
+				    	    			
+				    	    		});
 		    					}
 		    				}, new SelectHandler() {
 
@@ -596,7 +633,11 @@ public class IconographySelector extends FramedPanel {
 			}
 		};
 	}
-
+	public void refreshTreeStore(Collection<IconographyEntry> elements) {
+		Info.display("refreshing ", "tree store");
+		iconographyTreeStore.clear();
+		buildTreeStore(elements,false, dropUnselected);
+	}
 	public void dropunselected() {
 		filterFieldDropUnselected = new StoreFilter<IconographyEntry>() {
 
@@ -878,7 +919,7 @@ public class IconographySelector extends FramedPanel {
 							iconographyEntryToEdit.setText(ieTextArea.getValue());
 							iconographyEntryToEdit.setSearch(ieTextAreaSearch.getValue());
 							iconographyTreeStore.update(iconographyEntryToEdit);
-							dbService.updateIconographyEntry(iconographyEntryToEdit, new AsyncCallback<Boolean>() {
+							dbService.updateIconographyEntry(iconographyEntryToEdit, UserLogin.getInstance().getUsername(), new AsyncCallback<Boolean>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
