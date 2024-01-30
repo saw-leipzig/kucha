@@ -4966,7 +4966,7 @@ public boolean isHan(String s) {
 			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.getLocalizedMessage());;
 			return false;
 		}
 
