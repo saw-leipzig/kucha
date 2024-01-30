@@ -290,6 +290,10 @@ public class ResourceDownloadServlet extends HttpServlet {
 			out.close();
 		}else if (request.getParameter("imageIDValid") != null) {
 			String imageID = request.getParameter("imageIDValid");
+			if (imageID == "accessNotPermitted") {
+				response.setStatus(200);
+				return;
+			}
 			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));
 			String filename;
 			File inputFile;
