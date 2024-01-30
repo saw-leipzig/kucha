@@ -711,6 +711,7 @@ public class DepictionFilter extends AbstractFilter {
 
 	private void showIconographySelection() {
 		if (extendedFilterDialog == null) {
+			icoSelector.refreshTreeStore(StaticTables.getInstance().getIconographyEntries().values());
 			icoSelector.testforUserRights();
 			extendedFilterDialog = new PopupPanel();
 			icoSelector.closeTB.setToolTip(Util.createToolTip("Close selection.", "Currently selected items will be used in the filter."));

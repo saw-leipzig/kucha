@@ -22,6 +22,8 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -29,6 +31,7 @@ import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.sencha.gxt.widget.core.client.button.ToggleButton;
 import com.sencha.gxt.core.client.XTemplates;
 import com.sencha.gxt.widget.core.client.FramedPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
@@ -80,6 +83,7 @@ public class UserLogin extends PopupPanel {
 	private UserInformationTemplate uiTemplate;
 	private ToolButton exportDBTB = null;
 	private ToolButton updateDBTB = null;
+	private ToggleButton toggleLogging = null;
 	
 	/**
 	 * 
@@ -216,11 +220,47 @@ public class UserLogin extends PopupPanel {
 	}
 
 	private void showUserView() { // all Information about the user and the possibility to change it
+		dbService.isDoLogging(new AsyncCallback<Boolean>() {
+			
+			@Override
+			public void onFailure(Throwable caught) {
+				Info.display("getting logging state", "failed");
+			}
+			
+			@Override
+			public void onSuccess(Boolean result) {
+					toggleLogging.setValue(result);
+			}
+		});
 		PasswordField passwordField = new PasswordField();
 		passwordField.setWidth(200);
 		FramedPanel passwordFP = new FramedPanel();
 		passwordFP.setHeading("Password (for update/change password only)");
 		passwordFP.add(passwordField);
+		toggleLogging = new ToggleButton("Logging");
+		toggleLogging.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent arg0) {
+				dbService.switchDoLogging(new AsyncCallback() {
+					
+					@Override
+					public void onFailure(Throwable caught) {
+						Info.display("switching logging", "failed");
+					}
+					
+					@Override
+					public void onSuccess(Object arg0) {
+//						toggleLogging.setValue(!toggleLogging.getValue());
+					}
+
+				});
+				
+			}
+		});
+		FramedPanel loggingdFP = new FramedPanel();
+		loggingdFP.setHeading("Change Logging");
+		loggingdFP.add(toggleLogging);
 		TextField emailTF = new TextField();
 		emailTF.setWidth(300);
 		emailTF.setValue(currentUser.getEmail());
@@ -406,11 +446,12 @@ public class UserLogin extends PopupPanel {
 			}
 		});
 		VerticalLayoutContainer userVL = new VerticalLayoutContainer();
-		userVL.add(new HTML(uiTemplate.userLabel(currentUser.getFirstname() + " " + currentUser.getLastname(), currentUser.getUsername())), new VerticalLayoutData(1.0, .2));
+		userVL.add(new HTML(uiTemplate.userLabel(currentUser.getFirstname() + " " + currentUser.getLastname(), currentUser.getUsername())), new VerticalLayoutData(1.0, .13));
+		userVL.add(loggingdFP, new VerticalLayoutData(1.0, .14));
 		userVL.add(emailFP, new VerticalLayoutData(1.0, .14));
-		userVL.add(affiliationFP, new VerticalLayoutData(1.0, .3));
-		userVL.add(changePasswordFP, new VerticalLayoutData(1.0, .22));
-		userVL.add(passwordFP, new VerticalLayoutData(1.0, .14));
+		userVL.add(affiliationFP, new VerticalLayoutData(1.0, .2));
+		userVL.add(changePasswordFP, new VerticalLayoutData(1.0, .20));
+		userVL.add(passwordFP, new VerticalLayoutData(1.0, .12));
 		HorizontalLayoutContainer userHL = new HorizontalLayoutContainer();
 		userHL.add(userVL, new HorizontalLayoutData(1.0, 1.0));
 		FramedPanel userFP = new FramedPanel();

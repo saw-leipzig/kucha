@@ -20,6 +20,7 @@ import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBibliographyEntry;
@@ -732,6 +733,7 @@ public class StaticTables {
 				for (IconographyEntry ie : result) {
 					iconographyEntryMap.put(ie.getIconographyID(), ie);
 				}
+				Info.display("refreshing", "iconogrpahy done");				
 			}
 		});
 	}

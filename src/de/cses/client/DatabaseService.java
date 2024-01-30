@@ -339,6 +339,10 @@ public interface DatabaseService extends RemoteService {
 
 	void doLogging(String usertag, String message);
 
+	void switchDoLogging();
+
+	Boolean isDoLogging();
+
 	boolean updateOrnamentEntry(OrnamentEntry oEntry) throws IllegalArgumentException;
 
 	ArrayList<AnnotatedBibliographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) throws IllegalArgumentException;
@@ -379,7 +383,9 @@ public interface DatabaseService extends RemoteService {
 
 	int insertIconographyEntry(IconographyEntry iconographyEntry) throws IllegalArgumentException;
 
-	boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit) throws IllegalArgumentException;
+	boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit, String user, Boolean moved) throws IllegalArgumentException;
+
+	boolean deleteIconographyEntry(IconographyEntry iconographyEntryToEdit, String sessionID) throws IllegalArgumentException;
 
 	boolean updateWallTreeEntry(WallTreeEntry wte) throws IllegalArgumentException;
 

@@ -276,6 +276,29 @@ dl.simple-list>dd {
 	font-family: verdana;
 	font-size: 12px;
 }
+div..gwt-ToggleButton-up {
+   color:green;
+}
+
+div..gwt-ToggleButton-down {
+   color:blue;
+}
+
+div..gwt-ToggleButton-up-hovering {
+   color:pink;
+}
+
+div..gwt-ToggleButton-down-hovering {
+   color:aqua;
+}
+
+div..gwt-ToggleButton-up-disabled {
+   color:lime;
+}
+
+div..gwt-ToggleButton-down-disabled {
+   color:maroon;
+} 
 
 details.data-display {
 	margin-left: 1em;
@@ -469,7 +492,6 @@ div.removeButtonOver {
 	background-repeat: no-repeat;
 	cursor: pointer;
 }
-
 div.resetButton {
 	background-image: url(icons/reset_results_icon2.png);
 	width: 20px;
