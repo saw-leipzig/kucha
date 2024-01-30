@@ -979,6 +979,24 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 
 	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#shwitchdoLogging(java.lang.String, java.lang.String)
+	 */
+
+	public void switchDoLogging() {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		connector.switchDoLogging();
+	}
+	
+	/* (non-Javadoc)
+	 * @see de.cses.client.DatabaseService#doLogging(java.lang.String, java.lang.String)
+	 */
+
+	public Boolean isDoLogging() {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.isDoLogging();
+	}
+
+	/* (non-Javadoc)
 	 * @see de.cses.client.DatabaseService#doLogging(java.lang.String, java.lang.String)
 	 */
 
@@ -1139,14 +1157,14 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	}
 
 
-	public boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit, String user) throws IllegalArgumentException {
+	public boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit, String user, Boolean moved) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.updateIconographyEntry(iconographyEntryToEdit, user);
+		return connector.updateIconographyEntry(iconographyEntryToEdit, user, moved);
 	}
 
 	public boolean deleteIconographyEntry(IconographyEntry iconographyEntryToEdit, String sessionID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		return connector.deleteIconographyEntry(iconographyEntryToEdit);
+		return connector.deleteIconographyEntry(iconographyEntryToEdit, sessionID);
 	}
 
 	public boolean updateWallTreeEntry(WallTreeEntry wte) throws IllegalArgumentException {

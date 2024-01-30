@@ -367,6 +367,10 @@ public interface DatabaseServiceAsync {
 
 	void doLogging(String usertag, String message, AsyncCallback asyncCallback) throws IllegalArgumentException;
 
+	void switchDoLogging(AsyncCallback asyncCallback) throws IllegalArgumentException;
+
+	void isDoLogging(AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
 	void updateOrnamentEntry(OrnamentEntry oEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList, AsyncCallback<ArrayList<AnnotatedBibliographyEntry>> asyncCallback) throws IllegalArgumentException;
@@ -407,7 +411,7 @@ public interface DatabaseServiceAsync {
 
 	void insertIconographyEntry(IconographyEntry iconographyEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
 	
-	void updateIconographyEntry(IconographyEntry iconographyEntryToEdit, String user,  AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+	void updateIconographyEntry(IconographyEntry iconographyEntryToEdit, String user, Boolean moved,  AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
 	void deleteIconographyEntry(IconographyEntry iconographyEntryToEdit, String sessioID,  AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 

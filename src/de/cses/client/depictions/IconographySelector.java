@@ -335,7 +335,7 @@ public class IconographySelector extends FramedPanel {
 					    	    	iconographyTree.getStore().update(draggedIco);
 					    	    	iconographyTree.refresh(droppedToIco);
 					    	    	iconographyTree.refresh(draggedIco);
-				    	    		dbService.updateIconographyEntry(draggedIco, UserLogin.getInstance().getUsername(), new AsyncCallback<Boolean>() {
+				    	    		dbService.updateIconographyEntry(draggedIco, UserLogin.getInstance().getUsername(), true, new AsyncCallback<Boolean>() {
 
 										@Override
 										public void onFailure(Throwable arg0) {
@@ -428,9 +428,11 @@ public class IconographySelector extends FramedPanel {
 	    events.add(BrowserEvents.MOUSEOVER);
 	    events.add(BrowserEvents.MOUSEOUT);
 	    events.add(BrowserEvents.MOUSEUP);
-	    events.add(BrowserEvents.DROP);
-	    events.add(BrowserEvents.DRAG);
-	    events.add(BrowserEvents.DRAGOVER);
+	    if (UserLogin.getInstance().getAccessRights() == 4) {
+		    events.add(BrowserEvents.DROP);
+		    events.add(BrowserEvents.DRAG);
+		    events.add(BrowserEvents.DRAGOVER);	    	
+	    }
 		Cell<String> cCell = new CustomImageCell(events);
 	    iconographyTree.setCell(cCell);
 	    
@@ -918,7 +920,7 @@ public class IconographySelector extends FramedPanel {
 							iconographyEntryToEdit.setText(ieTextArea.getValue());
 							iconographyEntryToEdit.setSearch(ieTextAreaSearch.getValue());
 							iconographyTreeStore.update(iconographyEntryToEdit);
-							dbService.updateIconographyEntry(iconographyEntryToEdit, UserLogin.getInstance().getUsername(), new AsyncCallback<Boolean>() {
+							dbService.updateIconographyEntry(iconographyEntryToEdit, UserLogin.getInstance().getUsername(), false, new AsyncCallback<Boolean>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
@@ -952,7 +954,9 @@ public class IconographySelector extends FramedPanel {
 							public void onSuccess(Boolean result) {
 								if (result) {
 									StaticTables.getInstance().reloadIconography(); // we need to reload the whole tree otherwise this won't work
-									
+									iconographyTree.getStore().findModelWithKey(Integer.toString(iconographyEntryToEdit.getParentID())).getChildren().remove(iconographyEntryToEdit);
+					    	    	iconographyTree.getStore().remove(iconographyEntryToEdit);
+
 								} else {
 									Info.display("Failed", "Iconography Entry still in user?");
 								}
@@ -961,8 +965,9 @@ public class IconographySelector extends FramedPanel {
 						addIconographyEntryDialog.hide();
 					}
 				});
-				newIconographyEntryFP.addTool(deleteTB);
-
+				if (UserLogin.getInstance().getAccessRights() == 4) {
+					newIconographyEntryFP.addTool(deleteTB);					
+				}
 				ToolButton cancelTB = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
 				cancelTB.addSelectHandler(new SelectHandler() {
 
