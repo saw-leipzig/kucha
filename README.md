@@ -4,4 +4,4 @@ the Kucha Mural Information System is a GWT-Based Java Client-Server solution fo
 
 The research data is stored in a mysql-databse as well as in json-format.
 
-For information, how to set up the Kucha Information System, contact radisch@saw-leipzig.de.
+The main dokumentation of the information system is stored and maintained in the internal documantation system of the saxon academy. For information, how to set up the Kucha Information System, contact radisch@saw-leipzig.de.
