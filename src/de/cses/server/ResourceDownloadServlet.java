@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.net.DatagramSocket;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 
 import javax.servlet.ServletException;
@@ -269,17 +270,18 @@ public class ResourceDownloadServlet extends HttpServlet {
 			if (request.getParameter("thumb") != null) {
 				int tnSize = Integer.valueOf(request.getParameter("thumb")); // the requested size is given as a parameter
 				imageURL = new URL(
-						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/" + tnSize + ",/0/default.jpg"
+						serverProperties.getProperty("iiif.osd") + filename + "/full/" + tnSize + ",/0/default.jpg"
 					);
 			} else {
 
 				imageURL = new URL(
-						"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.jpg"
+						serverProperties.getProperty("iiif.osd") + filename + "/full/max/0/default.jpg"
 					);
 			}
-//			System.out.println("Öffne Stream");
-			InputStream in = imageURL.openStream();
-			response.setContentType("image/jpg");
+			HttpURLConnection myURLConnection = (HttpURLConnection)imageURL.openConnection();
+			myURLConnection.setRequestProperty ("SessionID", sessionID);
+			myURLConnection.setRequestMethod("GET");
+			InputStream in = myURLConnection.getInputStream();
 			byte buffer[] = new byte[4096];
 			int bytesRead = 0;
 			while ((bytesRead = in.read(buffer)) > 0) {

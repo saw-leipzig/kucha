@@ -31,13 +31,14 @@ public class ImageEntry extends AbstractEntry {
 	private double width = 0, height = 0;
 	private boolean isExpiring = false;
 	private long expiresAt = 0;
+	private CCEntry cc = null;
 	
 //	private boolean publicImage;
 
 	public static final int FILENAME = 2;
 
 	public ImageEntry() {
-		this(0, "", "", "", "", null, "", "", 1, AbstractEntry.ACCESS_LEVEL_PRIVATE, "", null, "",-1,-1, false, -1);
+		this(0, "", "", "", "", null, "", "", 1, AbstractEntry.ACCESS_LEVEL_PRIVATE, "", null, "",-1,-1, false, -1, null);
 	}
 	
 	/**
@@ -51,7 +52,7 @@ public class ImageEntry extends AbstractEntry {
 	 * @param captureDate
 	 */
 	public ImageEntry(int imageID, String filename, String title, String shortName, String copyright,
-			PhotographerEntry imageAuthor, String comment, String date, int imageTypeID, int accessLevel, String modifiedOns, LocationEntry location, String inventoryNumber, double width, double height, boolean expiring, long expiresAt) {
+			PhotographerEntry imageAuthor, String comment, String date, int imageTypeID, int accessLevel, String modifiedOns, LocationEntry location, String inventoryNumber, double width, double height, boolean expiring, long expiresAt, CCEntry cc) {
 		super(accessLevel);
 		this.imageID = imageID;
 		this.filename = filename;
@@ -70,10 +71,11 @@ public class ImageEntry extends AbstractEntry {
 		this.height=height;
 		this.isExpiring=expiring;
 		this.expiresAt=expiresAt;
+		this.cc = cc;
 	}
 	
 	public ImageEntry clone() {
-		ImageEntry clonedImageEntry = new ImageEntry(imageID, filename, title, shortName, copyright, imageAuthor, comment, date, imageTypeID, this.getAccessLevel(), super.modifiedOn, location, inventoryNumber, width, height, isExpiring, expiresAt);
+		ImageEntry clonedImageEntry = new ImageEntry(imageID, filename, title, shortName, copyright, imageAuthor, comment, date, imageTypeID, this.getAccessLevel(), super.modifiedOn, location, inventoryNumber, width, height, isExpiring, expiresAt, cc);
 		return clonedImageEntry;
 	}
 
@@ -122,6 +124,13 @@ public class ImageEntry extends AbstractEntry {
 
 	public void setLocation(LocationEntry location) {
 		this.location = location;
+	}
+	public CCEntry getCC() {
+		return cc;
+	}
+
+	public void setCC(CCEntry cc) {
+		this.cc =  cc;
 	}
 	public double getWidth() {
 		return width;

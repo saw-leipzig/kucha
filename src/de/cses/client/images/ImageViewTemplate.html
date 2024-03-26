@@ -1,19 +1,22 @@
 <table class='image-view'>
 	<tr>
 		<td rowspan='4' style='width: 130px; text-align: center; vertical-align: middle;'><img src='{imgUri}' style='max-height: 90px; max-width: 120px; margin: 0 5px 0 0;'></td>
-		<td colspan='1' class='image-view'><i>Shortname:</i> {shortName}</td>
-		<td colspan='1' class='image-view'>ID: {imageID}</td>
-		<tpl if="isPublic"> <td rowspan='4'><span class='freeIconText'></span></td>  </tpl>
-		<tpl if="!isPublic"> <td rowspan='4'><span class='blockedIconText'></span></td>  </tpl>
+		<td colspan='1' style='width: 100px;'  class='image-view'><i>Shortname:</i> {shortName}</td>
+		<td colspan='1' style='width: 50px;'class='image-view'>ID: {imageID}</td>
 	</tr>
 	<tr>
-		<td class='image-view'><i>Author:</i> {author}</td>
+		<td style='min-width: 160px;' class='image-view'><i>Author:</i> {author}</td>
+		<tpl if="isPublic"> <td rowspan='2' style='width: 30px;'><span class='freeIconText'></span></td>  </tpl>
+		<tpl if="!isPublic"> <td rowspan='2' style='width: 30px;'><span class='blockedIconText'></span></td>  </tpl>
 	</tr>
 	<tr>
 		<td class='image-view'><i>Image type:</i> {imgType}</td>
 	</tr>
 	<tr>
-		<td class='image-view'><i>Date:</i> {date}</td>
+		<td colspan='1' class='image-view'><i>Date:</i> {date}</td>
+		<tpl if="hasLicense">
+			<td colspan='2' class='image-view' style="object-fit: scale-down;max-height: 20px;">{license}</td>
+		</tpl>
 	</tr>
 	<tr>
 		<td  colspan='3' class='image-view'>{title}</td>

@@ -214,6 +214,7 @@ public class DepictionEditor extends AbstractEditor {
 	private PreservationAttributeProperties presAttributeProps;
 	private ListStore<PreservationAttributeEntry> preservationAttributesLS, selectedPreservationAttributesLS;
 	private TextField shortNameTF;
+	private SimpleComboBox<String> accessRightsCB;
 	private BibliographySelector bibliographySelector;
 	private StoreFilterField<ImageEntry> filterField;
 	private OSDLoaderEditorImageAnnotation osdLoader;
@@ -744,6 +745,7 @@ public class DepictionEditor extends AbstractEditor {
 				for (String s : item.getTitle().split("_")) {
 					titleList.add(new TextElement(s));
 				}
+				titleList.add(new TextElement("(ID: " + Integer.toString(item.getImageID()) + ")"));
 				String imageAuthor = item.getImageAuthor() != null ? "Author: " + item.getImageAuthor().getLabel() : "";
 				String copyrightStr = (item.getCopyright() != null && item.getCopyright().length() > 0)
 						? "\u00A9 " + item.getCopyright()
@@ -751,20 +753,28 @@ public class DepictionEditor extends AbstractEditor {
 				SafeHtml sb;
 				long now = new Date().getTime();  
 				if (item.getImageID() == correspondingDepictionEntry.getMasterImageID()) {
-					sb = imageViewTemplates.masterImage(item.getFilename(), item.getShortName(), titleList,
-							item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
-							imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
-									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
+					if (item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
+						sb = imageViewTemplates.masterImageFree(item.getFilename(), item.getShortName(), titleList,
+								item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
+								imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
+										+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()),  SafeHtmlUtils.fromTrustedString(item.getCC() == null? "":  "<p class=\"image-view-author\">"  + item.getCC().getHtml() + "</p>"));
+					} else {
+						sb = imageViewTemplates.masterImageNonPublic(item.getFilename(), item.getShortName(), titleList,
+								item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
+								imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
+										+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()),  SafeHtmlUtils.fromTrustedString(item.getCC() == null? "": "<p class=\"image-view-author\">" + item.getCC().getHtml() + "</p>"));
+
+					}
 				} else if (((item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) && (!item.getIsExpiring()))|| ((item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) && (item.getIsExpiring())&&(now < item.getExpiriesAt()))) {
 					sb = imageViewTemplates.publicImage(item.getFilename(), item.getShortName(), titleList,
 							item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
 							imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
-									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
+									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()),  SafeHtmlUtils.fromTrustedString(item.getCC() == null? "":  "<p class=\"image-view-author\">" + item.getCC().getHtml() + "</p>"));;
 				} else {
 					sb = imageViewTemplates.nonPublicImage(item.getFilename(), item.getShortName(), titleList,
 							item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
 							imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
-									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
+									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()),  SafeHtmlUtils.fromTrustedString(item.getCC() == null? "":  "<p class=\"image-view-author\">" + item.getCC().getHtml() + "</p>"));
 				}
 				SafeHtml s = null;
 				// Util.doLogging("ImageListView:
@@ -775,11 +785,9 @@ public class DepictionEditor extends AbstractEditor {
 					
 				}
 				if (Window.getClientWidth() * 0.8 * imageWindowRelation > 300) {
-					s = SafeHtmlUtils.fromTrustedString("<figure class='paintRepImgPreview' style='height: "
-							+ Integer.toString((int) (Window.getClientHeight() * (imageWindowRelation)))
-							+ "px;width:98%;text-align: center;'><div id= '" + item.getFilename().split(";")[0]
+					s = SafeHtmlUtils.fromTrustedString("<figure class='paintRepImgPreview' style='width:98%;text-align: center;'><div id= '" + item.getFilename().split(";")[0]
 							+ "' style='overflow:hidden;width: 100%; height: "
-							+ Integer.toString((int) (Window.getClientHeight() * (imageWindowRelation))-65)
+							+ Integer.toString((int) (Window.getClientHeight() * (imageWindowRelation)))
 							+ "px;text-align: center;' ></div>");
 				} else {
 					s = SafeHtmlUtils.fromTrustedString(
@@ -913,7 +921,7 @@ public class DepictionEditor extends AbstractEditor {
 			}
 		});
 
-		SimpleComboBox<String> accessRightsCB = new SimpleComboBox<String>(new LabelProvider<String>() {
+		accessRightsCB = new SimpleComboBox<String>(new LabelProvider<String>() {
 
 			@Override
 			public String getLabel(String item) {
@@ -930,6 +938,9 @@ public class DepictionEditor extends AbstractEditor {
 				"The acccess rights for the painted representation will influence which fields are visible.",
 				"There are no restrictions at the moment but this might be implemented in the future."));
 		accessRightsCB.setValue(AbstractEntry.ACCESS_LEVEL_LABEL.get(correspondingDepictionEntry.getAccessLevel()));
+		if (correspondingDepictionEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
+			accessRightsCB.disable();
+		}
 		accessRightsCB.addValueChangeHandler(new ValueChangeHandler<String>() {
 
 			@Override
@@ -2393,6 +2404,10 @@ public class DepictionEditor extends AbstractEditor {
 
 						@Override
 						public void onSuccess(Integer newDepictionID) {
+							if (correspondingDepictionEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
+								accessRightsCB.disable();
+							}
+
 							saveToolButton.enable();
 							// We have to update the CaveEntries in StaticTables, so that other possible downloaded Entries are displayed with the updated cave version.
 							StaticTables.getInstance().loadCaves();
@@ -2443,6 +2458,9 @@ public class DepictionEditor extends AbstractEditor {
 						public void onSuccess(Boolean updateSucessful) {
 							// We have to update the CaveEntries in StaticTables, so that other possible downloaded Entries are displayed with the updated cave version.
 							StaticTables.getInstance().loadCaves();
+							if (correspondingDepictionEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
+								accessRightsCB.disable();
+							}
 							saveToolButton.enable();
 							Util.doLogging("Updating Depiction successfull!");
 //					updateEntry(correspondingDepictionEntry);
@@ -2472,7 +2490,7 @@ public class DepictionEditor extends AbstractEditor {
 		if (saveSuccess) {
 			Util.doLogging("Depiction saved sucessfully!");
 		} else {
-			Util.showYesNo("Saving Process finished with errors!", "Do you want to retray saving?",
+			Util.showYesNo("Saving Process finished with errors!", "Do you want to retry saving?",
 					new SelectHandler() {
 
 						@Override

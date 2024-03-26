@@ -29,6 +29,7 @@ import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AnnotationEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
+import de.cses.shared.CCEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -354,6 +355,12 @@ public interface DatabaseService extends RemoteService {
 	boolean deleteBibKeyword(int bkEntry) throws IllegalArgumentException;
 
 	int insertBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException;
+
+	int insertCCEntry(CCEntry cCEntry) throws IllegalArgumentException;
+
+	boolean updateCCEntry(CCEntry cCEntry) throws IllegalArgumentException;
+
+	ArrayList<CCEntry> getCCEntries() throws IllegalArgumentException;
 
 	Boolean updateBibKeyword(BibKeywordEntry bkEntry) throws IllegalArgumentException;
 

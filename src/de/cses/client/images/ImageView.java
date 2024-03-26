@@ -19,6 +19,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
 import com.sencha.gxt.core.client.XTemplates;
@@ -56,7 +58,7 @@ public class ImageView extends AbstractView {
 		SafeHtml view(SafeUri imgUri);
 		
 		@XTemplate(source = "ImageViewTemplate.html")
-		SafeHtml view(SafeUri imgUri, String title, String shortName, String author, String imgType, String date, boolean isPublic, int imageID);
+		SafeHtml view(SafeUri imgUri, String title, String shortName, String author, String imgType, String date, boolean isPublic, int imageID, boolean hasLicense, SafeHtml license);
 	}
 	
 	private ImageEntry imgEntry;
@@ -76,7 +78,9 @@ public class ImageView extends AbstractView {
 		this.irv=irv;
 
 		refreshHTML();
-		setSize("350px", "130px");
+		getStyleElement().getStyle().setProperty("minHeight", "130px");
+		setWidth("350px");
+		//setSize("350px", "130px");
 
 		new DragSource(this) {
 
@@ -100,7 +104,7 @@ public class ImageView extends AbstractView {
 				imgEntry.getImageTypeID() > 0 ? StaticTables.getInstance().getImageTypeEntries().get(imgEntry.getImageTypeID()).getName() : "n/a", 
 				imgEntry.getDate(),
 				(((imgEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) && (!imgEntry.getIsExpiring()))|| ((imgEntry.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) && (imgEntry.getIsExpiring())&&(now < imgEntry.getExpiriesAt()))),
-				imgEntry.getImageID()));
+				imgEntry.getImageID(), imgEntry.getCC() == null? false: true, imgEntry.getCC() == null ? null : SafeHtmlUtils.fromTrustedString(imgEntry.getCC().getHtml())));
 	}
 
 	/* (non-Javadoc)

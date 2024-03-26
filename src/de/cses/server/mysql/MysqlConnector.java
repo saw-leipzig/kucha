@@ -117,6 +117,7 @@ import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.C14AnalysisUrlEntry;
 import de.cses.shared.C14DocumentEntry;
+import de.cses.shared.CCEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -592,10 +593,6 @@ public class MysqlConnector implements IsSerializable {
 		ArrayList<DistrictEntry> result = new ArrayList<DistrictEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDistricts wurde ausgelöst.");;
-		}
 		try {
 			stmt = dbc.createStatement();
 			ResultSet rs = stmt.executeQuery(sqlWhere != null ? "SELECT * FROM Districts WHERE " + sqlWhere + " ORDER BY Name Asc"
@@ -612,11 +609,6 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDistricts brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -1020,7 +1012,7 @@ public class MysqlConnector implements IsSerializable {
     					versionOutput.close();
 
     				}catch (IOException e) {
-    				    if (dologging) System.err.println(e);
+    				    System.err.println(e);
     				}
     	        } else if (index == "/kucha_discussion") {
     				String filename=serverProperties.getProperty("home.jsons")+"discussions.json";
@@ -1033,7 +1025,7 @@ public class MysqlConnector implements IsSerializable {
     					versionOutput.close();
 
     				}catch (IOException e) {
-    				    if (dologging) System.err.println(e);
+    				    System.err.println(e);
     				}
     	        	
     	        } else if (index == "/kucha_news") {
@@ -1047,14 +1039,14 @@ public class MysqlConnector implements IsSerializable {
     					versionOutput.close();
 
     				}catch (IOException e) {
-    				    if (dologging) System.err.println(e);
+    				    System.err.println(e);
     				}
     	        	
     	        }
     		} catch (Exception ex) {
     			output += "Failed to do request ";
     			output += ex.getLocalizedMessage();
-    			if (dologging) System.err.println(output);
+    			System.err.println(output);
     		} finally {
     		    // @Deprecated httpClient.getConnectionManager().shutdown(); 
     		}        	
@@ -1513,14 +1505,14 @@ public class MysqlConnector implements IsSerializable {
 		long start = System.currentTimeMillis();
 		if (!serverProperties.getProperty("MysqlConnector.db.url").contains("test")) {
 			try {
-				if (dologging) System.out.println("Started DataUpdate!");
+				System.out.println("Started DataUpdate!");
 				DepictionEntry result = null;
 				Statement stmt;
 				Connection dbc = getConnection();
 				stmt = dbc.createStatement();
 				ResultSet rs = stmt.executeQuery("SELECT * FROM Depictions WHERE deleted=0");
-				if (dologging) System.out.println("Start Select");
-				if (dologging) System.out.println("Starting serialization for: "+serverProperties.getProperty("MysqlConnector.db.url"));
+				System.out.println("Start Select");
+				System.out.println("Starting serialization for: "+serverProperties.getProperty("MysqlConnector.db.url"));
 				int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
 				String url = serverProperties.getProperty("home.elastic.url");
 				String index_data = serverProperties.getProperty("home.elastic.index_data");
@@ -1541,179 +1533,179 @@ public class MysqlConnector implements IsSerializable {
 				Gson gson = new Gson();
 				Date date = new Date(System.currentTimeMillis());
 				DateFormat df = DateFormat.getDateInstance();
-		        if (dologging) System.out.println("Starting preparing Kucha-Dictionary");
+		        System.out.println("Starting preparing Kucha-Dictionary");
 				Gson gson2 = new Gson();
 				String json2 = gson2.toJson(getDistricts());
 
 				json2 = json2.replace("\"text\"", "\"name\"");
 				String updateResult = doUploadToElastic("districts","{\"doc\":{\"districts\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
 				ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
-				if (dologging) System.out.println(er.result + " "+ updateResult);
+				System.out.println(er.result + " "+ updateResult);
 				if (er.result != null) {
 					if (!er.result.equals("noop")) {
-						if (dologging) System.out.println(doUploadToElastic("districts-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"districts\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						System.out.println(doUploadToElastic("districts-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"districts\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 					}
 				} else {
 					doUploadToElastic("districts","{\"districts\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
-					if (dologging) System.out.println(doUploadToElastic("districts-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"districts\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					System.out.println(doUploadToElastic("districts-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"districts\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 				}
 				json2 = gson2.toJson(getLocations());
 				json2 = json2.replace("\"text\"", "\"name\"");
 				updateResult = doUploadToElastic("locations","{\"doc\":{\"locations\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
 				er = gson.fromJson(updateResult, ElasticResult.class);
-				if (dologging) System.out.println(er.result + " "+ updateResult);
+				System.out.println(er.result + " "+ updateResult);
 				if (er.result != null) {
 					if (!er.result.equals("noop")) {
-						if (dologging) System.out.println(doUploadToElastic("locations-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"locations\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						System.out.println(doUploadToElastic("locations-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"locations\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 					}
 				} else {
 					doUploadToElastic("locations","{\"locations\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
-					if (dologging) System.out.println(doUploadToElastic("locations-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"locations\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					System.out.println(doUploadToElastic("locations-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"locations\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 					updateNumber +=1;
 				}
 				json2 = gson2.toJson(getSites());
 				json2 = json2.replace("\"text\"", "\"name\"");
 				updateResult = doUploadToElastic("sites","{\"doc\":{\"sites\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
 				er = gson.fromJson(updateResult, ElasticResult.class);
-				if (dologging) System.out.println(er.result + " "+ updateResult);
+				System.out.println(er.result + " "+ updateResult);
 				if (er.result != null) {				
 					if (!er.result.equals("noop")) {
-						if (dologging) System.out.println(doUploadToElastic("sites-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"sites\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						System.out.println(doUploadToElastic("sites-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"sites\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 					}
 				} else {
 					updateResult = doUploadToElastic("sites","{\"sites\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
-					if (dologging) System.out.println(doUploadToElastic("sites-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"sites\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+					System.out.println(doUploadToElastic("sites-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"sites\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
 					updateNumber +=1;
 				}
 				json2 = gson2.toJson(getRegions());
 				json2 = json2.replace("\"text\"", "\"name\"");
 				updateResult = doUploadToElastic("regions","{\"doc\":{\"regions\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
 				er = gson.fromJson(updateResult, ElasticResult.class);
-				if (dologging) System.out.println(er.result + " "+ updateResult);
+				System.out.println(er.result + " "+ updateResult);
 				if (er.result != null) {
 					if (!er.result.equals("noop")) {
-						if (dologging) System.out.println(doUploadToElastic("regions-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"regions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						System.out.println(doUploadToElastic("regions-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"regions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 					}
 				} else {
 					updateResult = doUploadToElastic("regions","{\"regions\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
-					if (dologging) System.out.println(doUploadToElastic("regions-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"regions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+					System.out.println(doUploadToElastic("regions-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"regions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
 					updateNumber +=1;
 				}
 				json2 = gson2.toJson(getCaveTypes());
 				json2 = json2.replace("\"text\"", "\"name\"");
 				updateResult = doUploadToElastic("caveTypes","{\"doc\":{\"caveTypes\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
 				er = gson.fromJson(updateResult, ElasticResult.class);
-				if (dologging) System.out.println(er.result + " "+ updateResult);
+				System.out.println(er.result + " "+ updateResult);
 				if (er.result != null) {
 					if (!er.result.equals("noop")) {
-						if (dologging) System.out.println(doUploadToElastic("caveTypes-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"caveTypes\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						System.out.println(doUploadToElastic("caveTypes-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"caveTypes\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 					}
 				} else {
 					updateResult = doUploadToElastic("caveTypes","{\"caveTypes\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
-					if (dologging) System.out.println(doUploadToElastic("caveTypes-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"caveTypes\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+					System.out.println(doUploadToElastic("caveTypes-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"caveTypes\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
 					updateNumber +=1;
 				}
 				json2 = gson2.toJson(getIconography(0));
 				json2 = json2.replace("\"text\"", "\"name\"");
 				updateResult = doUploadToElastic("iconographyTree","{\"doc\":{\"iconographyTree\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
 				er = gson.fromJson(updateResult, ElasticResult.class);
-				if (dologging) System.out.println(er.result + " "+ updateResult);
+				System.out.println(er.result + " "+ updateResult);
 				if (er.result != null) {
 					if (!er.result.equals("noop")) {
-						if (dologging) System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconographyTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconographyTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 					}
 				} else {
 					updateResult = doUploadToElastic("iconographyTree","{\"iconography\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
-					if (dologging) System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconographyTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+					System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconographyTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
 					updateNumber +=1;
 				}
 				json2 = gson2.toJson(getWallTree(0));
 				json2 = json2.replace("\"text\"", "\"name\"");
 				updateResult = doUploadToElastic("wallTree","{\"doc\":{\"wallTree\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
 				er = gson.fromJson(updateResult, ElasticResult.class);
-				if (dologging) System.out.println(er.result + " "+ updateResult);
+				System.out.println(er.result + " "+ updateResult);
 				if (er.result != null) {
 					if (!er.result.equals("noop")) {
-						if (dologging) System.out.println(doUploadToElastic("wallTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"wallTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						System.out.println(doUploadToElastic("wallTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"wallTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 					}
 				} else {
 					doUploadToElastic("wallTree","{\"wallTree\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
-					if (dologging) System.out.println(doUploadToElastic("wallTree-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"wallTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+					System.out.println(doUploadToElastic("wallTree-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"wallTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
 					updateNumber +=1;
 				}
 				json2 = gson2.toJson(getPosition());
 				json2 = json2.replace("\"text\"", "\"name\"");
 				updateResult = doUploadToElastic("positions","{\"doc\":{\"positions\":" + json2 + "}}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
 				er = gson.fromJson(updateResult, ElasticResult.class);
-				if (dologging) System.out.println(er.result + " "+ updateResult);
+				System.out.println(er.result + " "+ updateResult);
 				if (er.result != null) {
 					if (!er.result.equals("noop")) {
-						if (dologging) System.out.println(doUploadToElastic("positions-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"positions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						System.out.println(doUploadToElastic("positions-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"positions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 					}
 				} else {
 					updateResult = doUploadToElastic("positions","{\"positions\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);					
-					if (dologging) System.out.println(doUploadToElastic("positions-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"positions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+					System.out.println(doUploadToElastic("positions-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"positions\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 					updateNumber +=1;
 				}
 				json2 = gson2.toJson(getBibKeywords());
 				json2 = json2.replace("\"text\"", "\"name\"");
 				updateResult = doUploadToElastic("bibKeywords","{\"bibKeywords\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, true);
 				er = gson.fromJson(updateResult, ElasticResult.class);
-				if (dologging) System.out.println(er.result + " "+ updateResult);
+				System.out.println(er.result + " "+ updateResult);
 				if (er.result != null) {
 					if (!er.result.equals("noop")) {
-						if (dologging) System.out.println(doUploadToElastic("bibKeywords-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"bibKeywords\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						System.out.println(doUploadToElastic("bibKeywords-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"bibKeywords\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 					}
 				} else {
 					updateResult = doUploadToElastic("bibKeywords","{\"bibKeywords\":" + json2 + "}", url,"/kucha_dic", Integer.toString(port), elastic_user,elastic_pw, false);
-					if (dologging) System.out.println(doUploadToElastic("bibKeywords-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"bibKeywords\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
+					System.out.println(doUploadToElastic("bibKeywords-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\": {\"bibKeywords\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));					
 					updateNumber +=1;
 				}
 				ArrayList<CaveEntry> caves = getCaves();
 				for (CaveEntry cave : caves) {
-					//if (dologging) System.out.println(filename);
+					//System.out.println(filename);
 					String json = prepareCaveEntryForElastic(cave);
 					try {
 						updateResult = doUploadToElastic(cave.getUniqueID(), "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
 					} catch (Exception ex){
 						updateResult = doUploadToElastic(cave.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
-						if (dologging) System.out.println("exception:" + ex.getLocalizedMessage());
-						if (dologging) System.out.println("depictionentry was written new:" + updateResult);
+						System.out.println("exception:" + ex.getLocalizedMessage());
+						System.out.println("depictionentry was written new:" + updateResult);
 						updateNumber +=1;
 					}
 					er = gson.fromJson(updateResult, ElasticResult.class);
-					if (dologging) System.out.println(er.result + " "+ updateResult);
+					System.out.println(er.result + " "+ updateResult);
 					if (er.result != null) {
 						if (!er.result.equals("noop")) {
-							if (dologging) System.out.println(doUploadToElastic(cave.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+							 System.out.println(doUploadToElastic(cave.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 						}					
 					} else {
 						updateResult = doUploadToElastic(cave.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);							
-						if (dologging) System.out.println(doUploadToElastic(cave.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						System.out.println(doUploadToElastic(cave.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 						updateNumber +=1;
 					}
 				}
 				ArrayList<AnnotatedBibliographyEntry> bibs = getAnnotatedBiblography();
 				for (AnnotatedBibliographyEntry bib : bibs) {
 					String json = gson.toJson(bib);
-					if (dologging) System.out.println("Annotated Bibliography jason" + json);
+					System.out.println("Annotated Bibliography jason" + json);
 					try {
 						updateResult = doUploadToElastic(bib.getUniqueID(), "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
 					} catch (Exception ex){
 						updateResult = doUploadToElastic(bib.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
-						if (dologging) System.out.println("exception:" + ex.getLocalizedMessage());
-						if (dologging) System.out.println("depictionentry was written new:" + updateResult);
+						System.out.println("exception:" + ex.getLocalizedMessage());
+						System.out.println("depictionentry was written new:" + updateResult);
 					}							
 					er = gson.fromJson(updateResult, ElasticResult.class);
-					if (dologging) System.out.println(er.result + " "+ updateResult);
+					System.out.println(er.result + " "+ updateResult);
 					if (er.result != null) {
 						if (!er.result.equals("noop")) {
-							if (dologging) System.out.println(doUploadToElastic(bib.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+							System.out.println(doUploadToElastic(bib.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 						}
 						
 					} else {
 						updateResult = doUploadToElastic(bib.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);							
-						if (dologging) System.out.println(doUploadToElastic(bib.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						System.out.println(doUploadToElastic(bib.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 						updateNumber +=1;
 					}					
 				}
@@ -1724,35 +1716,35 @@ public class MysqlConnector implements IsSerializable {
 						if (orn.getIconographyID() == ico.getIconographyID()) {
 							if (orn.getAccessLevel() == 2) {
 								ico.setOrnamentEntry(orn);
-								if (dologging) System.out.println("Found Ornamententry for:"+ Integer.toString(ico.getIconographyID())+", ornament:" +Integer.toString(ico.getOrnamentEntry().getTypicalID()));									
+								System.out.println("Found Ornamententry for:"+ Integer.toString(ico.getIconographyID())+", ornament:" +Integer.toString(ico.getOrnamentEntry().getTypicalID()));									
 							}
 						}
 					}
 					String json = gson.toJson(ico);
-					//if (dologging) System.out.println(filename);
+					//System.out.println(filename);
 					try {
 						updateResult = doUploadToElastic(ico.getUniqueID(), "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
 					} catch (Exception ex){
 						updateResult = doUploadToElastic(ico.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
-						if (dologging) System.out.println("exception:" + ex.getLocalizedMessage());
-						if (dologging) System.out.println("depictionentry was written new:" + updateResult);
+						System.out.println("exception:" + ex.getLocalizedMessage());
+						System.out.println("depictionentry was written new:" + updateResult);
 					}							
 
 					er = gson.fromJson(updateResult, ElasticResult.class);
-					if (dologging) System.out.println(er.result + " "+ updateResult);
+					System.out.println(er.result + " "+ updateResult);
 					if (er.result != null) {
 						if (!er.result.equals("noop")) {
-							if (dologging) System.out.println(doUploadToElastic(ico.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+							System.out.println(doUploadToElastic(ico.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 						}							
 					} else {
 						updateResult = doUploadToElastic(ico.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);							
-						if (dologging) System.out.println(doUploadToElastic(ico.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+						System.out.println(doUploadToElastic(ico.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 						updateNumber +=1;
 					}					
 				}
 				date = new Date(System.currentTimeMillis());
 				while (rs.next()) { 
-					//if (dologging) System.out.println("got result");				
+					//System.out.println("got result");				
 					result = new DepictionEntry(rs.getInt("DepictionID"), rs.getInt("StyleID"), rs.getString("Inscriptions"),
 							rs.getString("SeparateAksaras"), rs.getString("Dating"), stripAccents(rs.getString("Description")), rs.getString("BackgroundColour"),
 							rs.getString("GeneralRemarks"), rs.getString("OtherSuggestedIdentifications"), rs.getDouble("Width"), rs.getDouble("Height"),
@@ -1767,18 +1759,18 @@ public class MysqlConnector implements IsSerializable {
 							updateResult = doUploadToElastic(result.getUniqueID(),"{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
 						} catch (Exception ex){
 							updateResult = doUploadToElastic(result.getUniqueID(),json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false);
-							if (dologging) System.out.println("exception:" + ex.getLocalizedMessage());
-							if (dologging) System.out.println("depictionentry was written new:" + updateResult);
+							System.out.println("exception:" + ex.getLocalizedMessage());
+							System.out.println("depictionentry was written new:" + updateResult);
 						}															
 						er = gson.fromJson(updateResult, ElasticResult.class);
-						if (dologging) System.out.println(er.result + " "+ updateResult);
+						System.out.println(er.result + " "+ updateResult);
 						if (er.result != null) {
 							if (!er.result.equals("noop")) {
-								if (dologging) System.out.println(doUploadToElastic(result.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+								System.out.println(doUploadToElastic(result.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 							}								
 						} else {
-							if (dologging) System.out.println(doUploadToElastic(result.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false));							
-							if (dologging) System.out.println(doUploadToElastic(result.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
+							System.out.println(doUploadToElastic(result.getUniqueID(), json, url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, false));							
+							System.out.println(doUploadToElastic(result.getUniqueID()+"-1","{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 							updateNumber +=1;
 						}
 					}
@@ -1787,13 +1779,13 @@ public class MysqlConnector implements IsSerializable {
 				stmt.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
-				if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+				System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			}
 			
 		}
 		long end = System.currentTimeMillis();
 		long diff = (end-start);
-		if (dologging) System.out.println("Writing Elastic Indices took "+diff + " Milliseconds.");
+		System.out.println("Writing Elastic Indices took "+diff + " Milliseconds.");
 		this.isSerializing = false;
 		return updateNumber;
 	}
@@ -2257,7 +2249,7 @@ public class MysqlConnector implements IsSerializable {
 		String elastic_role = serverProperties.getProperty("home.elastic.role");
 		String elasticReadOnlyUser = serverProperties.getProperty("home.elastic.user");
 		int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
-		if (dologging) System.out.println(doUploadToElastic(uuid,news, url,"/kucha_news", Integer.toString(port), elastic_user,elastic_pw, false));
+		System.out.println(doUploadToElastic(uuid,news, url,"/kucha_news", Integer.toString(port), elastic_user,elastic_pw, false));
 		try{
 			String title = "";
 			JSONArray userIDs;
@@ -2266,7 +2258,7 @@ public class MysqlConnector implements IsSerializable {
 			sendMail("kuchaadmin@saw-leipzig.de","kuchaadmin@saw-leipzig.de","Kucha-Admin", "The News \"" + title + "\" has been updated.","Dear Erik,\n The news\"" + title + "\" has been updated.\n the User was:\n" +user + "\n The news:\n" + news + "\nuuid:\n" + uuid + "\n The new message text is:\n" + messageText);
 			
         }catch(JSONException ex){
-            if (dologging) System.out.println("Error parsing json " + ex.getMessage());
+            System.out.println("Error parsing json " + ex.getMessage());
         }						
 
 		return true;
@@ -2346,7 +2338,7 @@ public class MysqlConnector implements IsSerializable {
 				while (rs.next()) {
 					ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 							rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-							rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"));
+							rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"), getCCEntry(rs.getInt("CCID")));
 					if (image.getLocation()==null) {
 						if (rs.getString("Title")!=null){
 							image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -2437,10 +2429,6 @@ public class MysqlConnector implements IsSerializable {
 	 * @return The corresponding DistrictEntry from the table Districts
 	 */
 	public DistrictEntry getDistrict(int id) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDistrict wurde ausgelöst.");;
-		}
 		DistrictEntry result = null;
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -2456,19 +2444,10 @@ public class MysqlConnector implements IsSerializable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDistrict brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	private PublicationTypeEntry getPublicationType(int id) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPublicationType wurde ausgelöst.");;
-		}
 		PublicationTypeEntry result = null;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -2490,19 +2469,10 @@ public class MysqlConnector implements IsSerializable {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPublicationType brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public ArrayList<PublicationTypeEntry> getPublicationTypes() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPublicationTypes wurde ausgelöst.");;
-		}
 		ArrayList<PublicationTypeEntry> result = new ArrayList<PublicationTypeEntry>();
 		PublicationTypeEntry entry;
 		Connection dbc = getConnection();
@@ -2526,11 +2496,6 @@ public class MysqlConnector implements IsSerializable {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPublicationTypes brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -2540,10 +2505,6 @@ public class MysqlConnector implements IsSerializable {
 	 * @return auto incremented primary key 'ImageID'
 	 */
 	public synchronized ImageEntry createNewImageEntry() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von createNewImageEntry wurde ausgelöst.");;
-		}
 		ImageEntry entry = new ImageEntry();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -2551,7 +2512,7 @@ public class MysqlConnector implements IsSerializable {
 		try {
 			if (dologging) System.err.println("Preparing statement.");
 			pstmt = dbc.prepareStatement(
-					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, AccessLevel, deleted, InventoryNumber, Width, Height, IsExpiring, ExpiresAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					"INSERT INTO Images (Filename, Title, ShortName, Copyright, PhotographerID, Comment, Date, ImageTypeID, AccessLevel, deleted, InventoryNumber, Width, Height, IsExpiring, ExpiresAt, CCID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, "");
 			pstmt.setString(2, entry.getTitle());
@@ -2574,6 +2535,7 @@ public class MysqlConnector implements IsSerializable {
 			pstmt.setDouble(13, entry.getHeight());
 			pstmt.setBoolean(14, entry.getIsExpiring());
 			pstmt.setLong(15, entry.getExpiriesAt());
+			pstmt.setLong(16, entry.getCC() == null? -1: entry.getCC().getCCID());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here
@@ -2582,14 +2544,9 @@ public class MysqlConnector implements IsSerializable {
 			keys.close();
 			pstmt.close();
 		} catch (SQLException e) {
-			if (dologging) System.err.println(e.getMessage());
+			System.err.println(e.getMessage());
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von createNewImageEntry brauchte "+diff + " Millisekunden.");;}}
 		return entry;
 	}
 	/**
@@ -2598,10 +2555,6 @@ public class MysqlConnector implements IsSerializable {
 	 * @return WallsSetchEntry'
 	 */
 	public synchronized int insertWallSketchEntry(WallSketchEntry entry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von createNewImageEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 
@@ -2622,11 +2575,6 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.err.println(e.getMessage());
 			return -1;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von createNewImageEntry brauchte "+diff + " Millisekunden.");;}}
 		return -1;
 	}
 	
@@ -2636,10 +2584,6 @@ public class MysqlConnector implements IsSerializable {
 	 * @return
 	 */
 	public WallSketchEntry getWallSketchEntryByID(int wallSketchID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getC14Documents wurde ausgelöst.");;
-		}
 		WallSketchEntry wallSketch = null;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -2655,11 +2599,6 @@ public class MysqlConnector implements IsSerializable {
 		} catch (SQLException e) {
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getC14Documents brauchte "+diff + " Millisekunden.");;}}
 		return wallSketch;
 	}
 	
@@ -2669,10 +2608,6 @@ public class MysqlConnector implements IsSerializable {
 	 * @return
 	 */
 	public ArrayList<WallSketchEntry> getWallSketches() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getWallSketches wurde ausgelöst.");;
-		}
 		ArrayList<WallSketchEntry> wallSketches = new ArrayList<WallSketchEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -2689,11 +2624,6 @@ public class MysqlConnector implements IsSerializable {
 		} catch (SQLException e) {
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getC14Documents brauchte "+diff + " Millisekunden.");;}}
 		if (dologging) System.err.println("Wallsketches served");
 		return wallSketches;
 	}
@@ -2705,10 +2635,6 @@ public class MysqlConnector implements IsSerializable {
 	 * @return
 	 */
 	protected ArrayList<C14DocumentEntry> getC14Documents(int caveID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getC14Documents wurde ausgelöst.");;
-		}
 		C14DocumentEntry entry = new C14DocumentEntry();
 		ArrayList<C14DocumentEntry> result = new ArrayList<C14DocumentEntry>();
 		Connection dbc = getConnection();
@@ -2727,11 +2653,6 @@ public class MysqlConnector implements IsSerializable {
 		} catch (SQLException e) {
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getC14Documents brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -2742,10 +2663,6 @@ public class MysqlConnector implements IsSerializable {
 	 * @return
 	 */
 	private synchronized boolean writeC14DocumentEntry(int caveID, ArrayList<C14DocumentEntry> entryList) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von writeC14DocumentEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement prestat;
 		deleteEntry("DELETE FROM C14Documents WHERE CaveID=" + caveID);
@@ -2762,11 +2679,6 @@ public class MysqlConnector implements IsSerializable {
 			ex.printStackTrace();
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von writeC14DocumentEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
 
@@ -2806,10 +2718,6 @@ public class MysqlConnector implements IsSerializable {
 	 * @return true if sucessful
 	 */
 	public synchronized boolean updateEntry(String sqlUpdate) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
@@ -2821,12 +2729,6 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
 	
@@ -2836,10 +2738,6 @@ public class MysqlConnector implements IsSerializable {
 	 * @param int IconographyID
 	 */
 	public ArrayList<WallTreeEntry> getWallTreeEntriesByIconographyID(int IconographyID, String sessionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEntry wurde ausgelöst.");;
-		}
 		ArrayList<WallTreeEntry> results = new ArrayList<WallTreeEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -2922,20 +2820,10 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEntry brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
 	public Map<Integer,String> getMasterImageFromOrnament(int tnSize, String sessionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEntry wurde ausgelöst.");;
-		}
 		String result = "";
 		Map<Integer,String> images =null;
 		Connection dbc = getConnection();
@@ -2963,11 +2851,6 @@ public class MysqlConnector implements IsSerializable {
 			return null;
 		}
 		images=getPicsByImageID(result, tnSize, sessionID);
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEntry brauchte "+diff + " Millisekunden.");;}}
 		return images;
 	}
 
@@ -2979,10 +2862,6 @@ public class MysqlConnector implements IsSerializable {
 	 * @return true if sucessful
 	 */
 	public boolean deleteEntry(String sqlDelete) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von deleteEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		Statement stmt;
 		try {
@@ -2994,19 +2873,93 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von deleteEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
-	
-	public Map<Integer,ArrayList<ImageEntry>> searchImages(ImageSearchEntry searchEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchImages wurde ausgelöst.");;
+	public int insertCCEntry(CCEntry cCEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement ccStatement;
+		try {
+			ccStatement = dbc.prepareStatement("INSERT INTO CreativeCommonsLicenses (Name, HTML) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+			ccStatement.setString(1, cCEntry.getName());
+			ccStatement.setString(2, cCEntry.getHtml());
+			ccStatement.executeUpdate();
+			ResultSet keys = ccStatement.getGeneratedKeys();
+			if (keys.next()) { // there should only be 1 key returned here
+				int key = keys.getInt(1);
+				ccStatement.close();
+				return key;
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return -1;
 		}
+		return -1;	
+	}
+	public boolean updateCCEntry(CCEntry cCEntry) {
+		Connection dbc = getConnection();
+		PreparedStatement ccStatement;
+		try {
+			ccStatement = dbc.prepareStatement("UPDATE CreativeCommonsLicenses SET Name=?, HTML=? WHERE CCID=?");
+			ccStatement.setString(1, cCEntry.getName());
+			ccStatement.setString(2, cCEntry.getHtml());
+			ccStatement.setInt(3, cCEntry.getCCID());
+			ccStatement.executeUpdate();
+			ccStatement.close();	
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return false;
+		}
+	}
+	/**
+	 * @return
+	 */
+	public ArrayList<CCEntry> getCCEntries() {
+		ArrayList<CCEntry> results = new ArrayList<CCEntry>();
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM CreativeCommonsLicenses ORDER BY Name Asc");
+			while (rs.next()) {
+				results.add(new CCEntry(rs.getInt("CCID"), rs.getString("Name"), rs.getString("HTML")));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		return results;
+	}
+	/**
+	 * @return
+	 */
+	public CCEntry getCCEntry(int CCID) {
+		CCEntry result = null;
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM CreativeCommonsLicenses where CCID = " + Integer.toString(CCID));
+			while (rs.next()) {
+				result = new CCEntry(rs.getInt("CCID"), rs.getString("Name"), rs.getString("HTML"));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		return result;
+	}
+
+	public Map<Integer,ArrayList<ImageEntry>> searchImages(ImageSearchEntry searchEntry) {
 		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -3091,7 +3044,7 @@ public class MysqlConnector implements IsSerializable {
 			while (rs.next()) {
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Width"),rs.getDouble("Height"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Width"),rs.getDouble("Height"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"), getCCEntry(rs.getInt("CCID")));
 				if (image.getLocation()==null) {
 					//if (dologging) System.out.println("setting location");
 					if (rs.getString("Title")!=null){
@@ -3132,11 +3085,6 @@ public class MysqlConnector implements IsSerializable {
 //			}
 //			return subResultList;
 //		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchImages brauchte "+diff + " Millisekunden.");;}}
 		Map <Integer,ArrayList<ImageEntry>> endRes = new HashMap <Integer,ArrayList<ImageEntry>>();
 		endRes.put(anzahl, results);
 		//if (dologging) System.out.println(endRes);
@@ -3152,10 +3100,6 @@ public class MysqlConnector implements IsSerializable {
 	}
 
 	public ArrayList<ImageEntry> getImageEntries(String sqlWhere) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getImageEntries wurde ausgelöst.");;
-		}
 		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -3169,7 +3113,7 @@ public class MysqlConnector implements IsSerializable {
 			while (rs.next()) {
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"), getCCEntry(rs.getInt("CCID")));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -3190,11 +3134,6 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getImageEntries brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
@@ -3204,10 +3143,6 @@ public class MysqlConnector implements IsSerializable {
 	 * @return ImageEntry that matches imageID, or NULL
 	 */
 	public ImageEntry getImageEntry(int imageID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getImageEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		ImageEntry result = null;
 		Statement stmt;
@@ -3217,7 +3152,7 @@ public class MysqlConnector implements IsSerializable {
 			if (rs.first()) {
 				result = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), 
-						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"));
+						rs.getInt("ImageTypeID"), rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"), getCCEntry(rs.getInt("CCID")));
 				if (result.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						result.setLocation(searchLocationByFilename(result.getTitle()));
@@ -3238,11 +3173,6 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getImageEntry brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -3251,10 +3181,6 @@ public class MysqlConnector implements IsSerializable {
 	 * @return
 	 */
 	public ArrayList<PhotographerEntry> getPhotographerEntries() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPhotographerEntries wurde ausgelöst.");;
-		}
 		ArrayList<PhotographerEntry> results = new ArrayList<PhotographerEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -3271,11 +3197,6 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPhotographerEntries brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
@@ -3284,10 +3205,6 @@ public class MysqlConnector implements IsSerializable {
 	 * @return
 	 */
 	public PhotographerEntry getPhotographerEntry(int id) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPhotographerEntry wurde ausgelöst.");;
-		}
 		PhotographerEntry result = null;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -3306,19 +3223,10 @@ public class MysqlConnector implements IsSerializable {
 			return null;
 		}
 		
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPhotographerEntry brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public ArrayList<CaveEntry> searchCaves(CaveSearchEntry searchEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchCaves wurde ausgelöst.");;
-		}
 		ArrayList<CaveEntry> results = new ArrayList<CaveEntry>();
 		Connection dbc = getConnection();
 		String caveTypeIdSet = "";
@@ -3456,11 +3364,6 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchCaves brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
@@ -3469,10 +3372,6 @@ public class MysqlConnector implements IsSerializable {
 	}
 
 	public ArrayList<CaveEntry> getCaves(String sqlWhere) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCaves wurde ausgelöst. WHERE-Klausel: "+sqlWhere);;
-		}
 		ArrayList<CaveEntry> results = new ArrayList<CaveEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -3635,19 +3534,10 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCaves brauchte "+diff + " Millisekunden. Where-Klausel: "+sqlWhere);;}}
 		return results;
 	}
 
 	public CaveEntry getCave(int id) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCave wurde ausgelöst.");;
-		}
 		CaveEntry result = null;
 		if (id == -1) {
 			result = new CaveEntry();
@@ -3684,19 +3574,10 @@ public class MysqlConnector implements IsSerializable {
 				return null;
 			}			
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCave brauchte "+diff + " Millisekunden. Where-Klausel: ");;}}
 		return result;
 	}
 
 	public ArrayList<CaveEntry> getCavesbyDistrictID(int districtID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCavesbyDistrictID wurde ausgelöst.");;
-		}
 		ArrayList<CaveEntry> results = new ArrayList<CaveEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -3729,19 +3610,10 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCavesbyDistrictID brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
 	public ArrayList<OrnamentEntry> getOrnaments() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnaments wurde ausgelöst.");;
-		}
 		ArrayList<OrnamentEntry> results = new ArrayList<OrnamentEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -3767,21 +3639,9 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnaments brauchte "+diff + " Millisekunden.");;}}
-
-
 		return results;
 	}
 	public List<ExternalRessourceTypeEntry> getOrnamentRessourceTypeList(){
-		long start = System.currentTimeMillis();
-		//if (dologging) System.err.println("Entering getAnnotations for DepictionID: "+Integer.toString(depictionID));
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		List<ExternalRessourceTypeEntry> results = new ArrayList<ExternalRessourceTypeEntry>();
 		Statement stmt;
@@ -3801,19 +3661,9 @@ public class MysqlConnector implements IsSerializable {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDepictionEntry brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 	private List<ExternalRessourceEntry> getOrnamentRessourceList(Integer typicalID){
-		long start = System.currentTimeMillis();
-		//if (dologging) System.err.println("Entering getAnnotations for DepictionID: "+Integer.toString(depictionID));
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		List<ExternalRessourceEntry> results = new ArrayList<ExternalRessourceEntry>();
 		Statement stmt;
@@ -3834,18 +3684,9 @@ public class MysqlConnector implements IsSerializable {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDepictionEntry brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 	public Boolean insertExternalRessourceType (ExternalRessourceTypeEntry ert) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertOrnamentRelatedExternalRessources wurde ausgelöst.");;
-		}
 		if (dologging) System.err.println("insertOrnamentRelatedExternalRessources started");
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
@@ -3860,18 +3701,9 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionIconographyRelation brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
 	public boolean updateExternalRessourceType (ExternalRessourceTypeEntry ert) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertOrnamentRelatedExternalRessources wurde ausgelöst.");;
-		}
 		if (dologging) System.err.println("insertOrnamentRelatedExternalRessources started");
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
@@ -3887,20 +3719,11 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionIconographyRelation brauchte "+diff + " Millisekunden.");;}}
 		return true;
 
 	}
 	private ExternalRessourceTypeEntry geExternalRessourceType(Integer ExternalRessourceType) {
-		long start = System.currentTimeMillis();
 		//if (dologging) System.err.println("Entering getAnnotations for DepictionID: "+Integer.toString(depictionID));
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		List<ExternalRessourceEntry> results = new ArrayList<ExternalRessourceEntry>();
 		Statement stmt;
@@ -3922,18 +3745,9 @@ public class MysqlConnector implements IsSerializable {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDepictionEntry brauchte "+diff + " Millisekunden.");;}}
 		return extResType;
 	}
 	private void insertOrnamentRelatedExternalRessources(OrnamentEntry oe) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertOrnamentRelatedExternalRessources wurde ausgelöst.");;
-		}
 		if (dologging) System.err.println("insertOrnamentRelatedExternalRessources started");
 		deleteEntry("DELETE FROM OrnamentExternalRessource WHERE OrnamentID=" + oe.getTypicalID());
 		Connection dbc = getConnection();
@@ -3951,18 +3765,8 @@ public class MysqlConnector implements IsSerializable {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionIconographyRelation brauchte "+diff + " Millisekunden.");;}}
-
 	}
 	public ArrayList<OrnamentOfOtherCulturesEntry> getOrnametsOfOtherCultures() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnametsOfOtherCultures wurde ausgelöst.");;
-		}
 		ArrayList<OrnamentOfOtherCulturesEntry> results = new ArrayList<OrnamentOfOtherCulturesEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -3979,19 +3783,10 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging) {
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnametsOfOtherCultures brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
 	public CaveTypeEntry getCaveTypebyID(int caveTypeID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCaveTypebyID wurde ausgelöst.");;
-		}
 		CaveTypeEntry result = null;
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -4008,11 +3803,6 @@ public class MysqlConnector implements IsSerializable {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCaveTypebyID brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -4021,10 +3811,6 @@ public class MysqlConnector implements IsSerializable {
 	}
 
 	public ArrayList<CaveTypeEntry> getCaveTypes(String sqlWhere) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCaveTypes wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		ArrayList<CaveTypeEntry> results = new ArrayList<CaveTypeEntry>();
 		Statement stmt;
@@ -4045,19 +3831,10 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return results;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCaveTypes brauchte "+diff + " Millisekunden.");;}}
 		return results;
 
 	}
 	private Boolean saveWallDimension(ArrayList<WallDimensionEntry> wdes, Integer wallID, Integer caveID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveWallDimension wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement dimensionsStatement;	
 		//deleteEntry("DELETE FROM CaveWallDimension WHERE CaveID = "+Integer.toString(caveID));
@@ -4119,22 +3896,10 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		Date date = new Date(System.currentTimeMillis());
-		DateFormat df = DateFormat.getDateTimeInstance();
-
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveOrnamentEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 
 	}
 	public Boolean saveWallDimensionCoordinates(ArrayList<CoordinateEntry> pes, Integer wallDimensionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveWallDimension wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement positionStatement;
 		if (dologging) System.err.println("saveWallDimensionPositions started");
@@ -4173,22 +3938,10 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		Date date = new Date(System.currentTimeMillis());
-		DateFormat df = DateFormat.getDateTimeInstance();
-
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveOrnamentEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 
 	}
 	public Boolean saveEmptySpots(ArrayList<EmptySpotEntry> eses, Integer wallDimensionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveWallDimension wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement positionStatement;
 		if (dologging) System.err.println("saveWallDimensionPositions started");
@@ -4224,22 +3977,10 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		Date date = new Date(System.currentTimeMillis());
-		DateFormat df = DateFormat.getDateTimeInstance();
-
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveOrnamentEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 
 	}
 	public Map<Integer,ArrayList<WallDimensionEntry>> getWallDimension(Integer caveID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveWallDimension wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		Statement stmt;	
 		Map<Integer,ArrayList<WallDimensionEntry>> result = new HashMap<Integer,ArrayList<WallDimensionEntry>>();
@@ -4262,21 +4003,9 @@ public class MysqlConnector implements IsSerializable {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		Date date = new Date(System.currentTimeMillis());
-		DateFormat df = DateFormat.getDateTimeInstance();
-
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getWallDimension brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 	public int saveOrnamentEntry(OrnamentEntry ornamentEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveOrnamentEntry wurde ausgelöst.");;
-		}
 		int newOrnamentID = 0;
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
@@ -4312,8 +4041,6 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return 0;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
 		ornamentEntry.setOrnamentID(newOrnamentID);
 		Date date = new Date(System.currentTimeMillis());
 		DateFormat df = DateFormat.getDateTimeInstance();
@@ -4343,10 +4070,6 @@ public class MysqlConnector implements IsSerializable {
 		    }
 		    ico.setModifiedOn(df.format(date));			
 		}
-
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveOrnamentEntry brauchte "+diff + " Millisekunden.");;}}
 		return newOrnamentID;
 	}
 	
@@ -4355,10 +4078,6 @@ public class MysqlConnector implements IsSerializable {
 	 * @return
 	 */
 	public boolean updateOrnamentEntry(OrnamentEntry ornamentEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateOrnamentEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement ornamentStatement;
 		try {
@@ -4416,20 +4135,10 @@ public class MysqlConnector implements IsSerializable {
 		    }
 		    ico.setModifiedOn(df.format(date));			
 		}
-
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateOrnamentEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
 
 	private void updateOrnamentComponentsRelations(int ornamentID, List<OrnamentComponentsEntry> ornamentComponents) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateOrnamentComponentsRelations wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		deleteEntry("DELETE FROM OrnamentComponentRelation WHERE OrnamentID=" + ornamentID);
 		PreparedStatement stmt;
@@ -4444,18 +4153,9 @@ public class MysqlConnector implements IsSerializable {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateOrnamentComponentsRelations brauchte "+diff + " Millisekunden.");;}}
 	}
 
 	private void updateInnerSecondaryPatternsRelations(int ornamentID, List<InnerSecondaryPatternsEntry> innerSecPatterns) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateInnerSecondaryPatternsRelations wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		deleteEntry("DELETE FROM InnerSecondaryPatternRelation WHERE OrnamentID=" + ornamentID);
 		PreparedStatement stmt;
@@ -4466,11 +4166,6 @@ public class MysqlConnector implements IsSerializable {
 				stmt.setInt(2, innerSecPatterns.get(i).getInnerSecondaryPatternsID());
 				stmt.executeUpdate();
 			}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateInnerSecondaryPatternsRelations brauchte "+diff + " Millisekunden.");;}}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
@@ -4482,10 +4177,6 @@ public class MysqlConnector implements IsSerializable {
 	 * @param cavesRelations
 	 */
 	private void updateCaveOrnamentRelation(int ornamentID, List<OrnamentCaveRelation> cavesRelations) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateCaveOrnamentRelation wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		int newCaveOrnamentRelationID = 0;
 		deleteEntry("DELETE FROM CaveOrnamentRelation WHERE OrnamentID=" + ornamentID);
@@ -4560,19 +4251,9 @@ public class MysqlConnector implements IsSerializable {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateCaveOrnamentRelation brauchte "+diff + " Millisekunden.");;}}
-
 	}
 
 	private void updateOrnamentImageRelations(int ornamentID, ArrayList<ImageEntry> imgEntryList) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateOrnamentImageRelations wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement oirStatement;
 		try {
@@ -4585,11 +4266,6 @@ public class MysqlConnector implements IsSerializable {
 				oirStatement.setInt(2, entry.getImageID());
 				oirStatement.executeUpdate();
 			}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateOrnamentImageRelations brauchte "+diff + " Millisekunden.");;}}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
@@ -4630,10 +4306,6 @@ public class MysqlConnector implements IsSerializable {
 		}
 	}
 	public ArrayList<IconographyEntry> getIconographyEntriesUsedInDepictions() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<IconographyEntry> results = new ArrayList<IconographyEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -4657,19 +4329,10 @@ public class MysqlConnector implements IsSerializable {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntriesUsedInDepictions brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
 	public IconographyEntry getIconographyEntry(int id) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntry wurde ausgelöst.");;
-		}
 		IconographyEntry result = null;
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -4692,19 +4355,10 @@ public class MysqlConnector implements IsSerializable {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntry brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public ArrayList<IconographyEntry> getIconographyEntries(String sqlWhere) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntries wurde ausgelöst.");;
-		}
 		ArrayList<IconographyEntry> results = new ArrayList<IconographyEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -4729,29 +4383,15 @@ public class MysqlConnector implements IsSerializable {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntries brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
 	public ArrayList<IconographyEntry> getIconography(int rootIndex) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconography wurde ausgelöst.");;
-		}
 		ArrayList<IconographyEntry> root = getIconographyEntries(rootIndex);
 
 		for (IconographyEntry item : root) {
 			processIconographyTree(item);
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconography brauchte "+diff + " Millisekunden.");;}}
 		return root;
 	}
 
@@ -4766,10 +4406,6 @@ public class MysqlConnector implements IsSerializable {
 	}
 
 	protected ArrayList<IconographyEntry> getIconographyEntries(int parentID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntries wurde ausgelöst.");;
-		}
 		ArrayList<IconographyEntry> results = new ArrayList<IconographyEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -4796,28 +4432,14 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntries brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
   	public ArrayList<WallTreeEntry> getWallTree(int rootIndex) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconography wurde ausgelöst.");;
-		}
 		ArrayList<WallTreeEntry> root = getWallTreeEntries(rootIndex);
 
 		for (WallTreeEntry item : root) {
 			processWallEntryTree(item);
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconography brauchte "+diff + " Millisekunden.");;}}
 		return root;
 	}
 	protected void processWallEntryTree(WallTreeEntry parent) {
@@ -4830,10 +4452,6 @@ public class MysqlConnector implements IsSerializable {
 		}
 	}
 	protected ArrayList<WallTreeEntry> getWallTreeEntries(int parentID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntries wurde ausgelöst.");;
-		}
 		ArrayList<WallTreeEntry> results = new ArrayList<WallTreeEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -4852,11 +4470,6 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyEntries brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 public boolean isHan(String s) {
@@ -4876,10 +4489,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public int insertIconographyEntry(IconographyEntry entry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertIconographyEntry wurde ausgelöst.");;
-		}
 		if (entry.getIconographyID() != 0 || entry.getParentID() == 0 || entry.getText().isEmpty()) { // otherwise this is not a new entry!
 			return 0;
 		}
@@ -4925,12 +4534,6 @@ public boolean isHan(String s) {
 		if (!er.result.equals("noop")) {
 			if (dologging) System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconographyTree\":"+json+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 		}
-
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertIconographyEntry brauchte "+diff + " Millisekunden.");;}}
 		return newID;		
 	}
 
@@ -4941,10 +4544,6 @@ public boolean isHan(String s) {
 	 */
 	public boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit, String sessionID, boolean moved) {
 		if (dologging) System.out.println("Update Iconography Entry");
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateIconographyEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		if (getAccessLevelForSessionID(sessionID) < 4) {
@@ -5014,12 +4613,6 @@ public boolean isHan(String s) {
 			return false;
 		}
 	    iconographyEntryToEdit.setModifiedOn(df.format(date));			
-				
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateIconographyEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
 
@@ -5030,10 +4623,6 @@ public boolean isHan(String s) {
 	 */
 	private boolean icoIsUsed(IconographyEntry ico) {
 		if (dologging) System.out.println("delete Iconography Entry");
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateIconographyEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		if (ico.getChildren() != null) {
@@ -5072,10 +4661,6 @@ public boolean isHan(String s) {
 	 */
 	public boolean deleteIconographyEntry(IconographyEntry icoToDelete, String sessionID) {
 		if (dologging) System.out.println("delete Iconography Entry");
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateIconographyEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		if (getAccessLevelForSessionID(sessionID) < 4) {
@@ -5110,21 +4695,12 @@ public boolean isHan(String s) {
 		if (!er.result.equals("noop")) {
 			if (dologging) System.out.println(doUploadToElastic("iconographyTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"iconography\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 		}		
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateIconographyEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
 
 
 	public boolean updateWallTreeEntry(WallTreeEntry wte) {
 		if (dologging) System.out.println("Update WallTree Entry");
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateWallTreeEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
@@ -5163,19 +4739,9 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println(doUploadToElastic("wallTree-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"wallTree\":"+json2+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 		}
 	    wte.setModifiedOn(df.format(date));			
-				
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateIconographyEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
 	public boolean iconographyIDisUsed(int iconographyID, int OrnamentID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von iconographyIDisUsed wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
@@ -5196,19 +4762,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			if (dologging) System.out.println("error");
-			if (dologging){
-		long end = System.currentTimeMillis();
-			long diff = (end-start);
-		if (diff>100){
-			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von iconographyIDisUsed brauchte "+diff + " Millisekunden.");;}}
 			return false;
 		}
 	}
 	public boolean isGoodDimension(int caveID, int register, int number) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von isGoodDimension wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
@@ -5230,40 +4787,22 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			if (dologging) System.out.println("error");
-			if (dologging){
-		long end = System.currentTimeMillis();
-			long diff = (end-start);
-		if (diff>100){
-			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von isGoodDimension brauchte "+diff + " Millisekunden.");;}}
 			return false;
 		}
 	}
 
 	@Deprecated
 	public ArrayList<CurrentLocationEntry> getCurrentLocations() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCurrentLocations wurde ausgelöst.");;
-		}
 		ArrayList<CurrentLocationEntry> root = getCurrentLocationEntries(0);
 
 		for (CurrentLocationEntry item : root) {
 			processCurrentLocationTree(item);
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCurrentLocations brauchte "+diff + " Millisekunden.");;}}
 		return root;
 	}
 
 	@Deprecated
 	protected void processCurrentLocationTree(CurrentLocationEntry parent) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von processCurrentLocationTree wurde ausgelöst.");;
-		}
 		ArrayList<CurrentLocationEntry> children = getCurrentLocationEntries(parent.getCurrentLocationID());
 		if (children != null) {
 			parent.setChildren(children);
@@ -5271,19 +4810,10 @@ public boolean isHan(String s) {
 				processCurrentLocationTree(child);
 			}
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von processCurrentLocationTree brauchte "+diff + " Millisekunden.");;}}
 	}
 
 	@Deprecated
 	protected ArrayList<CurrentLocationEntry> getCurrentLocationEntries(int parentID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCurrentLocationEntries wurde ausgelöst.");;
-		}
 		ArrayList<CurrentLocationEntry> results = new ArrayList<CurrentLocationEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -5302,19 +4832,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCurrentLocationEntries brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
 	public ArrayList<VendorEntry> getVendors() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getVendors wurde ausgelöst.");;
-		}
 		ArrayList<VendorEntry> results = new ArrayList<VendorEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -5331,19 +4852,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getVendors brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
 	public VendorEntry getVendor(int id) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getVendor wurde ausgelöst.");;
-		}
 		VendorEntry result = null;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -5361,11 +4873,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getVendor brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -5374,10 +4881,6 @@ public boolean isHan(String s) {
 	}
 
 	public ArrayList<StyleEntry> getStyles(String sqlWhere) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getStyles wurde ausgelöst.");;
-		}
 		ArrayList<StyleEntry> results = new ArrayList<StyleEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -5395,19 +4898,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getStyles brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
 	public StyleEntry getStylebyID(int styleID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getStylebyID wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		Statement stmt;
 		StyleEntry result = null;
@@ -5424,11 +4918,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getStylebyID brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -5437,10 +4926,6 @@ public boolean isHan(String s) {
 	}
 
 	public ArrayList<ExpeditionEntry> getExpeditions(String sqlWhere) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getExpeditions wurde ausgelöst.");;
-		}
 		ArrayList<ExpeditionEntry> results = new ArrayList<ExpeditionEntry>();
 		Connection dbc = getConnection();
 
@@ -5460,19 +4945,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getExpeditions brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 	
 	public ExpeditionEntry getExpedition(int id) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getExpedition wurde ausgelöst.");;
-		}
 		ExpeditionEntry result = null;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -5491,19 +4967,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getExpedition brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public ArrayList<PublicationEntry> getPublications() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPublications wurde ausgelöst.");;
-		}
 		ArrayList<PublicationEntry> results = new ArrayList<PublicationEntry>();
 		Connection dbc = getConnection();
 
@@ -5523,19 +4990,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPublications brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
 	public PublicationEntry getPublicationEntry(int id) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPublicationEntry wurde ausgelöst.");;
-		}
 		PublicationEntry result = null;
 		Connection dbc = getConnection();
 
@@ -5555,11 +5013,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPublicationEntry brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -5568,10 +5021,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public AuthorEntry getAuthorEntry(int id) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAuthorEntry wurde ausgelöst.");;
-		}
 		AuthorEntry result = null;
 		Connection dbc = getConnection();
 
@@ -5591,11 +5040,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAuthorEntry brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -5605,10 +5049,6 @@ public boolean isHan(String s) {
 	 */
 	@Deprecated
 	public int getRelatedMasterImageID(int depictionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedMasterImageID wurde ausgelöst.");;
-		}
 		int result = 0;
 		Connection dbc = getConnection();
 
@@ -5626,11 +5066,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return 0;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedMasterImageID brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -5641,10 +5076,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	private ArrayList<ImageEntry> getRelatedImages(int depictionID, String sessionID, int accessLevel) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedImages wurde ausgelöst.");;
-		}
 //		if (dologging) System.out.println("                -->  "+depictionID+" - "+sessionID+" - "+accessLevel);;
 		accessLevel=-1;
 		String inStatement = Integer.toString(AbstractEntry.ACCESS_LEVEL_PUBLIC); // public is always permitted
@@ -5679,7 +5110,7 @@ public boolean isHan(String s) {
 				//if (dologging) System.out.println("ImageID = "+Integer.toString(depictionID)+" ImageID = "+Integer.toString(rs.getInt("ImageID")));
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"), getCCEntry(rs.getInt("CCID")));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -5700,19 +5131,9 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedImages brauchte "+diff + " Millisekunden.");;}}
-//		if (dologging) System.out.println("Größe von relatedimages: "+results.size());
 		return results;
 	}
 	private ArrayList<ImageEntry> getRelatedPublicImages(int depictionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedImages wurde ausgelöst.");;
-		}
 		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
 		Connection dbc = getConnection();
 
@@ -5725,7 +5146,7 @@ public boolean isHan(String s) {
 			while (rs.next()) {
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"), getCCEntry(rs.getInt("CCID")));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -5750,20 +5171,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedImages brauchte "+diff + " Millisekunden.");;}}
-//		if (dologging) System.out.println("Größe von relatedimages: "+results.size());
 		return results;
 	}
 
 	public ArrayList<DepictionEntry> getAllDepictionsbyWall(int wallID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAllDepictionsbyWall wurde ausgelöst.");;
-		}
 		ArrayList<DepictionEntry> depictions = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -5783,19 +5194,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAllDepictionsbyWall brauchte "+diff + " Millisekunden.");;}}
 		return depictions;
 	}
 
 	public String saveDepiction(int depictionID, int AbsoluteLeft, int AbsoluteTop) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveDepiction wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
@@ -5810,11 +5212,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return "failed to save depiction";
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveDepiction brauchte "+diff + " Millisekunden.");;}}
 		return "saved";
 	}
 
@@ -5825,10 +5222,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public synchronized boolean updateImageEntry(ImageEntry entry, String sessionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateImageEntry wurde ausgelöst.");;
-		}
 		if (dologging) System.out.println("Starting UpdateImageEntry");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -5840,7 +5233,7 @@ public boolean isHan(String s) {
 					if (dologging) System.out.println("UPDATE Images SET Filename="+entry.getFilename()+", Title="+entry.getTitle()+", ShortName="+entry.getShortName()+", Copyright="+entry.getCopyright()+", PhotographerID=0, Comment="+entry.getComment()+", Date="+entry.getDate()+", ImageTypeID="+Integer.toString(entry.getImageTypeID())+", AccessLevel="+Integer.toString(entry.getAccessLevel())+", deleted="+entry.isdeleted()+"  WHERE ImageID="+entry.getImageID());
 				}
 			pstmt = dbc.prepareStatement(
-					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, location=?, deleted=?, InventoryNumber=?, Width=?, Height=?, IsExpiring=?, ExpiresAt=?  WHERE ImageID=?");
+					"UPDATE Images SET Filename=?, Title=?, ShortName=?, Copyright=?, PhotographerID=?, Comment=?, Date=?, ImageTypeID=?, AccessLevel=?, location=?, deleted=?, InventoryNumber=?, Width=?, Height=?, IsExpiring=?, ExpiresAt=?, CCID=?  WHERE ImageID=?");
 			pstmt.setString(1, entry.getFilename());
 			pstmt.setString(2, entry.getTitle());
 			pstmt.setString(3, entry.getShortName());
@@ -5867,11 +5260,12 @@ public boolean isHan(String s) {
 			pstmt.setDouble(14, entry.getHeight());
 			pstmt.setBoolean(15, entry.getIsExpiring());
 			pstmt.setLong(16, entry.getExpiriesAt());
-			pstmt.setInt(17, entry.getImageID());
-			pstmt.execute();
-			pstmt.close();
+			pstmt.setInt(17, entry.getCC() == null? -1: entry.getCC().getCCID());
+			pstmt.setInt(18, entry.getImageID());
+			pstmt.executeUpdate();
+			pstmt.closeOnCompletion();
 		} catch (SQLException e) {
-			if (dologging) System.err.println(e.getMessage());
+			System.err.println(e.getMessage());
 			return false;
 		}
 		Date date = new Date(System.currentTimeMillis());
@@ -5887,11 +5281,6 @@ public boolean isHan(String s) {
 		for(DepictionEntry de: des) {
 			doUploadDepictionEntryToElastic(de);
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateImageEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
 
@@ -5909,10 +5298,6 @@ public boolean isHan(String s) {
 	 * @return A list of all Regions mathing the where clause as RegionEntry objects
 	 */
 	public ArrayList<RegionEntry> getRegions(String sqlWhere) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRegions wurde ausgelöst.");;
-		}
 		ArrayList<RegionEntry> result = new ArrayList<RegionEntry>();
 		Connection dbc = getConnection();
 
@@ -5933,11 +5318,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRegions brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -5951,10 +5331,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<SiteEntry> getSites(String sqlWhere) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getSites wurde ausgelöst.");;
-		}
 		ArrayList<SiteEntry> result = new ArrayList<SiteEntry>();
 		Connection dbc = getConnection();
 
@@ -5973,11 +5349,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getSites brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -5987,10 +5358,6 @@ public boolean isHan(String s) {
 	 */
 
 	public SiteEntry getSite(int id) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getSite wurde ausgelöst.");;
-		}
 		SiteEntry result = null;
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -6006,11 +5373,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getSite brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -6039,10 +5401,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<OrientationEntry> getOrientationInformation() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrientationInformation wurde ausgelöst.");;
-		}
 		ArrayList<OrientationEntry> result = new ArrayList<OrientationEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -6058,19 +5416,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrientationInformation brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public ArrayList<MainTypologicalClass> getMainTypologicalClass() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getMainTypologicalClass wurde ausgelöst.");;
-		}
 		MainTypologicalClass result = null;
 		ArrayList<MainTypologicalClass> maintypologicalclasses = new ArrayList<MainTypologicalClass>();
 		Connection dbc = getConnection();
@@ -6088,19 +5437,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getMainTypologicalClass brauchte "+diff + " Millisekunden.");;}}
 		return maintypologicalclasses;
 	}
 
 	public MainTypologicalClass getMainTypologicalClassbyID(int maintypoID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getMainTypologicalClassbyID wurde ausgelöst.");;
-		}
 		MainTypologicalClass result = null;
 
 		Connection dbc = getConnection();
@@ -6117,19 +5457,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getMainTypologicalClassbyID brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public ArrayList<WallEntry> getWalls() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getWalls wurde ausgelöst.");;
-		}
 		WallEntry result = null;
 		ArrayList<WallEntry> walls = new ArrayList<WallEntry>();
 		Connection dbc = getConnection();
@@ -6148,19 +5479,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getWalls brauchte "+diff + " Millisekunden.");;}}
 		return walls;
 	}
 
 	public WallEntry getWall(int caveID, int wallLocationID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getWall wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		WallEntry result = null;
@@ -6178,19 +5500,10 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getWall brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public ArrayList<AnnotatedBibliographyEntry> searchAnnotatedBibliography(AnnotatedBibliographySearchEntry searchEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchAnnotatedBibliography wurde ausgelöst.");;
-		}
 		AnnotatedBibliographyEntry entry = null;
 		ArrayList<AnnotatedBibliographyEntry> result = new ArrayList<AnnotatedBibliographyEntry>();
 		Connection dbc = getConnection();
@@ -6331,11 +5644,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		} 
 		result.sort(null); // because AnnotatedBibliographyEntry implements Comparable
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchAnnotatedBibliography brauchte "+diff + " Millisekunden.");;}}
 		if (dologging) System.out.println("Length of AnnotatedBibliography results:"+Integer.toString(result.size()));
 		return result;
 	}
@@ -6362,10 +5670,6 @@ public boolean isHan(String s) {
 	 * @return sorted list based on implementation of {@link #Comparable} in {@link #AnnotatedBibliographyEntry}
 	 */
 	public ArrayList<AnnotatedBibliographyEntry> getAnnotatedBibliography(String sqlWhere) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAnnotatedBibliography wurde ausgelöst.");;
-		}
 		AnnotatedBibliographyEntry entry = null;
 		ArrayList<AnnotatedBibliographyEntry> result = new ArrayList<AnnotatedBibliographyEntry>();
 		Connection dbc = getConnection();
@@ -6412,11 +5716,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		} 
 		result.sort(null); // because AnnotatedBibliographyEntry implements Comparable
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAnnotatedBibliography brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -6425,10 +5724,6 @@ public boolean isHan(String s) {
 	 * @return sorted list based on implementation of {@link #Comparable} in {@link #AnnotatedBibliographyEntry}
 	 */
 	public ArrayList<AnnotatedBibliographyEntry> getAnnotatedBibliographyFromAuthors(ArrayList<AuthorEntry> authorList) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAnnotatedBibliographyFromAuthors wurde ausgelöst.");;
-		}
 		AnnotatedBibliographyEntry entry;
 		ArrayList<AnnotatedBibliographyEntry> result = new ArrayList<AnnotatedBibliographyEntry>();
 		if (authorList.isEmpty()) {
@@ -6474,11 +5769,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
 		result.sort(null); // because AnnotatedBibliographyEntry implements Comparable
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAnnotatedBibliographyFromAuthors brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -6487,10 +5777,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	private ArrayList<AnnotatedBibliographyEntry> getDepictionBibRelation(int depictionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDepictionBibRelation wurde ausgelöst.");;
-		}
 		AnnotatedBibliographyEntry entry = null;
 		ArrayList<AnnotatedBibliographyEntry> result = new ArrayList<AnnotatedBibliographyEntry>();
 		Connection dbc = getConnection();
@@ -6509,11 +5795,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDepictionBibRelation brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -6529,10 +5810,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	private ArrayList<AuthorEntry> getEditorBibRelation(int annotatedBiblographyID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getEditorBibRelation wurde ausgelöst.");;
-		}
 		AuthorEntry entry = null;
 		ArrayList<AuthorEntry> result = new ArrayList<AuthorEntry>();
 		Connection dbc = getConnection();
@@ -6551,11 +5828,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getEditorBibRelation brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -6564,10 +5836,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	private ArrayList<AuthorEntry> getAuthorBibRelation(int annotatedBiblographyID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAuthorBibRelation wurde ausgelöst.");;
-		}
 		AuthorEntry entry = null;
 		ArrayList<AuthorEntry> result = new ArrayList<AuthorEntry>();
 		Connection dbc = getConnection();
@@ -6586,19 +5854,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAuthorBibRelation brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 	
 	public AnnotatedBibliographyEntry getAnnotatedBibliographybyID(int bibID, String page) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAnnotatedBiblographybyID wurde ausgelöst.");;
-		}
 		AnnotatedBibliographyEntry result = null;
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -6638,19 +5897,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAnnotatedBiblographybyID brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public ArrayList<StructureOrganization> getStructureOrganizations() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getStructureOrganizations wurde ausgelöst.");;
-		}
 		StructureOrganization result = null;
 		ArrayList<StructureOrganization> structureOrganizations = new ArrayList<StructureOrganization>();
 		Connection dbc = getConnection();
@@ -6668,19 +5918,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getStructureOrganizations brauchte "+diff + " Millisekunden.");;}}
 		return structureOrganizations;
 	}
 
 	public ArrayList<OrnamentPositionEntry> getOrnamentPosition() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentPosition wurde ausgelöst.");;
-		}
 		OrnamentPositionEntry result = null;
 		ArrayList<OrnamentPositionEntry> positions = new ArrayList<OrnamentPositionEntry>();
 		Connection dbc = getConnection();
@@ -6698,18 +5939,9 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentPosition brauchte "+diff + " Millisekunden.");;}}
 		return positions;
 	}
 	public ArrayList<PositionEntry> getPosition() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentPosition wurde ausgelöst.");;
-		}
 		PositionEntry result = null;
 		ArrayList<PositionEntry> positions = new ArrayList<PositionEntry>();
 		Connection dbc = getConnection();
@@ -6728,18 +5960,9 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPosition brauchte "+diff + " Millisekunden.");;}}
 		return positions;
 	}
 	public ArrayList<OrnamentFunctionEntry> getOrnamentFunction() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentFunction wurde ausgelöst.");;
-		}
 		OrnamentFunctionEntry result = null;
 		ArrayList<OrnamentFunctionEntry> functions = new ArrayList<OrnamentFunctionEntry>();
 		Connection dbc = getConnection();
@@ -6757,19 +5980,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentFunction brauchte "+diff + " Millisekunden.");;}}
 		return functions;
 	}
 
 	public ArrayList<OrnamentCaveType> getOrnamentCaveTypes() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentCaveTypes wurde ausgelöst.");;
-		}
 		OrnamentCaveType result = null;
 		ArrayList<OrnamentCaveType> cavetypes = new ArrayList<OrnamentCaveType>();
 		Connection dbc = getConnection();
@@ -6787,11 +6001,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentCaveTypes brauchte "+diff + " Millisekunden.");;}}
 		return cavetypes;
 	}
 
@@ -6801,10 +6010,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<OrnamentEntry> searchOrnaments(OrnamenticSearchEntry searchEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchOrnaments wurde ausgelöst.");;
-		}
 		if (dologging) System.out.println("Search Ornaments wurde gestartet.");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -6970,20 +6175,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchOrnaments brauchte "+diff + " Millisekunden.");;}}
-
 		return resultList;
 	}
 
 	public ArrayList<OrnamentEntry> getOrnamentsWhere(String sqlWhere) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentsWhere wurde ausgelöst.");;
-		}
 		ArrayList<OrnamentEntry> results = new ArrayList<OrnamentEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -7007,19 +6202,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentsWhere brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
 	public OrnamentEntry getOrnamentEntry(int id) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentEntry wurde ausgelöst.");;
-		}
 		OrnamentEntry result = null;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -7045,11 +6231,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentEntry brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -7057,10 +6238,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<CeilingTypeEntry> getCeilingTypes() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCeilingTypes wurde ausgelöst.");;
-		}
 		ArrayList<CeilingTypeEntry> result = new ArrayList<CeilingTypeEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -7077,11 +6254,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCeilingTypes brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -7089,10 +6261,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public CeilingTypeEntry getCeilingType(int id) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCeilingType wurde ausgelöst.");;
-		}
 		if (id == 0) {
 			return null;
 		}
@@ -7112,11 +6280,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCeilingType brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -7124,10 +6287,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<PreservationClassificationEntry> getPreservationClassifications() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPreservationClassifications() wurde ausgelöst.");;
-		}
 		ArrayList<PreservationClassificationEntry> result = new ArrayList<PreservationClassificationEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -7144,11 +6303,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPreservationClassifications brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -7156,9 +6310,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	private PreservationClassificationEntry getPreservationClassification(int id) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPreservationClassification wurde ausgelöst. ID= "+id);;}
 		if (id == 0) {
 			return null;
 		}
@@ -7178,11 +6329,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPreservationClassification brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -7193,10 +6339,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public synchronized boolean updateCaveEntry(CaveEntry caveEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateCaveEntry wurde ausgelöst.");;
-		}
 		if (dologging) System.out.println("updating cave");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -7278,11 +6420,6 @@ public boolean isHan(String s) {
 		    caveEntry.setModifiedOn(df.format(date));			
 		}
 		protocollModifiedAbstractEntry(caveEntry,"");
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateCaveEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
 
@@ -7291,10 +6428,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public synchronized int insertCaveEntry(CaveEntry caveEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertCaveEntry wurde ausgelöst.");;
-		}
 		int newCaveID = 0;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -7370,14 +6503,9 @@ public boolean isHan(String s) {
 		if (dologging) System.out.println(doUploadToElastic(caveEntry.getUniqueID(),   json, url,index_data, Integer.toString(port), elastic_user,elastic_pw, false));
 	    if (dologging) System.out.println(doUploadToElastic(caveEntry.getUniqueID(),   "{\"versions\":[{\"timestamp\":\""+df.format(date)+"\", \"content\":"+json+"}]}", url,index_backup, Integer.toString(port), elastic_user,elastic_pw, false));
 
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
 		caveEntry.setCaveID(newCaveID);
 		caveEntry.setModifiedOn(df.format(date));
 		protocollModifiedAbstractEntry(caveEntry,"");
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertCaveEntry brauchte "+diff + " Millisekunden.");;}}
 		return newCaveID;
 	}
 
@@ -7387,10 +6515,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public synchronized int insertCaveSketchEntry(CaveSketchEntry entry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertCaveSketchEntry wurde ausgelöst.");;
-		}
 		int newCaveSketchID = 0;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -7412,19 +6536,10 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return 0;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertCaveSketchEntry brauchte "+diff + " Millisekunden.");;}}
 		return newCaveSketchID;
 	}
 	
 	private ArrayList<CaveSketchEntry> getCaveSketchEntriesFromCave(int caveID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCaveSketchEntriesFromCave wurde ausgelöst.");;
-		}
 		ArrayList<CaveSketchEntry> results = new ArrayList<CaveSketchEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -7441,11 +6556,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCaveSketchEntriesFromCave brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
@@ -7453,10 +6563,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<CaveGroupEntry> getCaveGroups() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCaveGroups wurde ausgelöst.");;
-		}
 		ArrayList<CaveGroupEntry> result = new ArrayList<CaveGroupEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -7473,11 +6579,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCaveGroups brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -7487,10 +6588,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public synchronized UserEntry userLogin(String username, String password) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von userLogin wurde ausgelöst.");;
-		}
 		String newSessionID = null;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -7522,11 +6619,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von userLogin brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -7536,10 +6628,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public synchronized UserEntry userLoginFrontEnd(String username, String password) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von userLogin wurde ausgelöst.");;
-		}
 		String newSessionID = null;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -7567,11 +6655,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von userLogin brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -7581,10 +6664,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public UserEntry getUser(String username) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getUser wurde ausgelöst.");;
-		}
 		if (dologging) System.out.println("getUser called for username = " + username);
 		if (username == null || username.isEmpty()) {
 			return null;
@@ -7610,11 +6689,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getUser brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -7624,10 +6698,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public UserEntry getUserFrontend(String username) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getUser wurde ausgelöst.");;
-		}
 		if (dologging) System.out.println("getUser called for username = " + username);
 		if (username == null || username.isEmpty()) {
 			return null;
@@ -7654,11 +6724,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getUser brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -7668,10 +6733,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	private UserEntry getUser(int userID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getUser wurde ausgelöst.");;
-		}
 		if (userID == 0) {
 			return null;
 		}
@@ -7696,19 +6757,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getUser brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	private UserEntry getUserFrontEnd(int userID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getUser wurde ausgelöst.");;
-		}
 		if (userID == 0) {
 			return null;
 		}
@@ -7733,11 +6785,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getUser brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -7747,10 +6794,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public String getSessionIDfromUser(String username) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getSessionIDfromUser wurde ausgelöst.");;
-		}
 		String sessionID = null;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -7770,11 +6813,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getSessionIDfromUser brauchte "+diff + " Millisekunden.");;}}
 		return sessionID;
 	}
 
@@ -7784,10 +6822,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public int getAccessLevelForSessionID(String sessionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAccessLevelForSessionID wurde ausgelöst.");;
-		}
 		int accessRights = 0;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -7806,11 +6840,6 @@ public boolean isHan(String s) {
 			return 0;
 		}
 
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAccessLevelForSessionID brauchte "+diff + " Millisekunden.");;}}
 		return accessRights;
 	}
 
@@ -7820,10 +6849,6 @@ public boolean isHan(String s) {
 	 * @param sessionID
 	 */
 	public void updateSessionIDforUser(String username, String sessionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateSessionIDforUser wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
@@ -7839,12 +6864,6 @@ public boolean isHan(String s) {
 		} catch (SQLException e) {
 			if (dologging) System.err.println(e.getLocalizedMessage());
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateSessionIDforUser brauchte "+diff + " Millisekunden.");;}}
-
 	}
 	
 	/**
@@ -7853,10 +6872,6 @@ public boolean isHan(String s) {
 	 * @param sessionID
 	 */
 	public void updateSessionIDforUserFrontEnd(String username, String sessionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateSessionIDforUser wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
@@ -7868,19 +6883,9 @@ public boolean isHan(String s) {
 		} catch (SQLException e) {
 			if (dologging) System.err.println(e.getLocalizedMessage());
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateSessionIDforUser brauchte "+diff + " Millisekunden.");;}}
-
 	}
 	
 	public UserEntry checkSessionID(String sessionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von checkSessionID wurde ausgelöst.");;
-		}
 		if (sessionID == null) {
 			return null;
 		}
@@ -7903,19 +6908,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von checkSessionID brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
  
 	public UserEntry checkSessionIDFrontEnd(String sessionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von checkSessionID wurde ausgelöst.");;
-		}
 		if (sessionID == null) {
 			return null;
 		}
@@ -7938,11 +6934,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von checkSessionID brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
  
@@ -7952,10 +6943,6 @@ public boolean isHan(String s) {
 	 * @return UserEntry if user & sessionID combination exists, null else
 	 */
 	public UserEntry checkSessionID(String sessionID, String username) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von checkSessionID wurde ausgelöst.");;
-		}
 		if ((sessionID == null) || (username == null)) {
 			return null;
 		}
@@ -7982,11 +6969,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von checkSessionID brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -7994,10 +6976,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<ImageTypeEntry> getImageTypes() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getImageTypes wurde ausgelöst.");;
-		}
 		ArrayList<ImageTypeEntry> result = new ArrayList<ImageTypeEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -8014,11 +6992,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getImageTypes brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -8029,10 +7002,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public synchronized int insertDepictionEntry(DepictionEntry de, ArrayList<IconographyEntry> iconographyLists) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionEntry wurde ausgelöst.");;
-		}
 		if (dologging) System.out.println("Insert Depiction Entry triggered. Length of images: " + Integer.toString(de.getRelatedImages().size()) + ", length of bibliographyEntries: " + Integer.toString(de.getRelatedBibliographyList().size()));
 		int newDepictionID = 0;
 		Connection dbc = getConnection();
@@ -8123,11 +7092,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println(doUploadToElastic(de.getUniqueID(),   json, url,index_data, Integer.toString(port), elastic_user,elastic_pw, false));
 		    if (dologging) System.out.println(doUploadToElastic(de.getUniqueID(),   "{\"versions\":[{\"timestamp\":\""+df.format(date)+"\", \"content\":"+json+"}]}", url,index_backup, Integer.toString(port), elastic_user,elastic_pw, false));
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionEntry brauchte "+diff + " Millisekunden.");;}}
 		return newDepictionID;
 	}
 
@@ -8138,10 +7102,6 @@ public boolean isHan(String s) {
 	 * @return <code>true</code> when operation is successful
 	 */
 	public synchronized boolean updateDepictionEntry(DepictionEntry de, ArrayList<IconographyEntry> iconographyList, String sessionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateDepictionEntry wurde ausgelöst.");;
-		}
 		if (dologging) System.err.println("==> updateDepictionEntry called");
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -8237,11 +7197,6 @@ public boolean isHan(String s) {
 			updateCaveEntry(de.getCave());			
 		}
 		if (dologging) System.err.println("==> updateDepictionEntry finished");
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateDepictionEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
 	private void doUploadDepictionEntryToElastic(DepictionEntry de) {
@@ -8276,10 +7231,6 @@ public boolean isHan(String s) {
 		
 	}
 	private synchronized void insertDepictionImageRelation(int depictionID, ArrayList<ImageEntry> imgEntryList) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		if (dologging) System.out.println("insertDepictionImageRelation");
 		PreparedStatement pstmt;
@@ -8296,17 +7247,8 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation brauchte "+diff + " Millisekunden.");;}}
 	}
 	private synchronized void insertWallPositionsRelation(int depictionID, int wallID, ArrayList<PositionEntry> positions) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		if (dologging) System.err.println("==> WallPositionsRelation called for DepictionID "+Integer.toString(depictionID)+" WallID "+Integer.toString(wallID)+" Size of Positions: "+Integer.toString(positions.size()));
@@ -8324,17 +7266,8 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation brauchte "+diff + " Millisekunden.");;}}
 	}
 	private synchronized void insertPositionsCoordinatesRelation(int depictionID, int wallID, int positionID, ArrayList<CoordinatesEntry> coordinates) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertPositionsCoordinatesRelation wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		if (dologging) System.err.println("==> insertPositionsCoordinatesRelation called for DepictionID "+Integer.toString(depictionID)+" WallID "+Integer.toString(wallID)+" Position: "+Integer.toString(positionID));
@@ -8354,17 +7287,8 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertPositionsCoordinatesRelation brauchte "+diff + " Millisekunden.");;}}
 	}
 	private synchronized void insertDepictionWallsRelation(int depictionID, List<WallTreeEntry> wallsEntryList) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		if (dologging) System.err.println("==> insertDepictionWallsRelation called");
@@ -8381,17 +7305,8 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionImageRelation brauchte "+diff + " Millisekunden.");;}}
 	}
 	private synchronized void insertDepictionIconographyRelation(int depictionID, ArrayList<IconographyEntry> iconographyList) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionIconographyRelation wurde ausgelöst.");;
-		}
 		if (dologging) System.err.println("InsertIconography started");
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
@@ -8408,18 +7323,8 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionIconographyRelation brauchte "+diff + " Millisekunden.");;}}
-
 	}
 	private synchronized void insertOrnamentIconographyRelation(int ornamentID, ArrayList<IconographyEntry> iconographyList) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertOrnamentIconographyRelation wurde ausgelöst.");;
-		}
 		if (dologging) System.err.println("InsertIconography started");
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
@@ -8436,12 +7341,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertOrnamentIconographyRelation brauchte "+diff + " Millisekunden.");;}}
-
 	}
 
 	/**
@@ -8452,11 +7351,6 @@ public boolean isHan(String s) {
 			ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList) {
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionBibliographyRelation wurde ausgelöst.");;
-		}
-
 		try {
 			relationStatement = dbc.prepareStatement("INSERT INTO DepictionBibliographyRelation VALUES (?, ?, ?)");
 			for (AnnotatedBibliographyEntry entry : relatedBibliographyList) {
@@ -8470,19 +7364,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDepictionBibliographyRelation brauchte "+diff + " Millisekunden.");;}}
 	}
 
 	private ArrayList<AnnotatedBibliographyEntry> getRelatedBibliographyFromDepiction(int depictionID) {
 		// if (dologging) System.out.println("triggered getRelatedBibliography");
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedBibliographyFromDepiction wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
 		ArrayList<AnnotatedBibliographyEntry> result = new ArrayList<AnnotatedBibliographyEntry>();
@@ -8505,12 +7390,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedBibliographyFromDepiction brauchte "+diff + " Millisekunden.");;}}
-		// if (dologging) System.out.println("size of RelatedBibliography:"+Integer.toString(result.size()));
 		return result;
 	}
 
@@ -8519,10 +7398,6 @@ public boolean isHan(String s) {
 	 * @param relatedBibliographyList
 	 */
 	private synchronized void writeCaveBibliographyRelation(int caveID, ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von writeCaveBibliographyRelation wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
 
@@ -8542,18 +7417,9 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			}
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von writeCaveBibliographyRelation brauchte "+diff + " Millisekunden.");;}}
 	}
 	
 	private synchronized void writeOrnamenticBibliographyRelation(int OrnamentID, ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von writeOrnamenticBibliographyRelation wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
 
@@ -8576,11 +7442,6 @@ public boolean isHan(String s) {
 				}
 			}
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von writeOrnamenticBibliographyRelation brauchte "+diff + " Millisekunden.");;}}
 	}
 
 	/**
@@ -8589,10 +7450,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	private ArrayList<AnnotatedBibliographyEntry> getRelatedBibliographyFromCave(int caveID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedBibliographyFromCave wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
 		ArrayList<AnnotatedBibliographyEntry> result = new ArrayList<AnnotatedBibliographyEntry>();
@@ -8610,19 +7467,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedBibliographyFromCave brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	private ArrayList<AnnotatedBibliographyEntry> getRelatedBibliographyFromOrnamen(int ornamentID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedBibliographyFromOrnamen wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement relationStatement;
 		ArrayList<AnnotatedBibliographyEntry> result = new ArrayList<AnnotatedBibliographyEntry>();
@@ -8640,11 +7488,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedBibliographyFromOrnamen brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -8652,10 +7495,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<ModeOfRepresentationEntry> getModesOfRepresentations() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getModesOfRepresentations wurde ausgelöst.");;
-		}
 		ArrayList<ModeOfRepresentationEntry> result = new ArrayList<ModeOfRepresentationEntry>();
 		Connection dbc = getConnection();
 
@@ -8672,19 +7511,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getModesOfRepresentations brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public ArrayList<CaveAreaEntry> getCaveAreas(int caveID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCaveAreas wurde ausgelöst.");;
-		}
 		CaveAreaEntry caEntry;
 		Connection dbc = getConnection();
 		PreparedStatement caveAreaStatement;
@@ -8711,19 +7541,10 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCaveAreas brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	protected synchronized boolean writeCaveArea(CaveAreaEntry entry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von writeCaveArea wurde ausgelöst.");;
-		}
 		int rowCount = 0;
 		Connection dbc = getConnection();
 		PreparedStatement caveAreaStatement;
@@ -8776,19 +7597,10 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von writeCaveArea brauchte "+diff + " Millisekunden.");;}}
 		return (rowCount > 0);
 	}
 
 	protected synchronized boolean writeWall(WallEntry entry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von writeWall wurde ausgelöst.");;
-		}
 		int rowCount = 0;
 		Connection dbc = getConnection();
 		PreparedStatement wallStatement;
@@ -8811,19 +7623,10 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von writeWall brauchte "+diff + " Millisekunden.");;}}
 		return (rowCount > 0);
 	}
 
 	private synchronized boolean writeC14AnalysisUrlEntry(int caveID, ArrayList<C14AnalysisUrlEntry> entryList) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von writeC14AnalysisUrlEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement c14UrlStatement;
 		deleteEntry("DELETE FROM C14AnalysisUrls WHERE CaveID=" + caveID);
@@ -8840,11 +7643,6 @@ public boolean isHan(String s) {
 			ex.printStackTrace(System.err);
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von writeC14AnalysisUrlEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
 	private String buildPath(String path, JsonElement polygons) {
@@ -8908,11 +7706,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<AnnotationEntry> getProposedAnnotations(ArrayList<ImageEntry> images, int depictionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAnnotations wurde ausgelöst.");;
-		}
-		
 		Connection dbc = getConnection();
 		PreparedStatement proposedAnnosStatement;
 		Statement proposedIcoStatement;
@@ -8964,11 +7757,6 @@ public boolean isHan(String s) {
 				return null;
 			}
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getWalls brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -8977,10 +7765,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<WallEntry> getWalls(int caveID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getWalls wurde ausgelöst.");;
-		}
 		WallEntry entry;
 		Connection dbc = getConnection();
 		PreparedStatement wallStatement;
@@ -9000,11 +7784,6 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getWalls brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -9013,10 +7792,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	private ArrayList<C14AnalysisUrlEntry> getC14AnalysisEntries(int caveID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getC14AnalysisEntries wurde ausgelöst.");;
-		}
 		C14AnalysisUrlEntry entry;
 		Connection dbc = getConnection();
 		PreparedStatement c14AnalysisStatement;
@@ -9035,11 +7810,6 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getC14AnalysisEntries brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 	
@@ -9047,11 +7817,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<AnnotationEntry> getAnnotations(int depictionID) {
-		long start = System.currentTimeMillis();
-		//if (dologging) System.err.println("Entering getAnnotations for DepictionID: "+Integer.toString(depictionID));
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		ArrayList<AnnotationEntry> results = new ArrayList<AnnotationEntry>();
 		Statement stmt;
@@ -9102,11 +7867,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDepictionEntry brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 	public String getGame(){
@@ -9135,11 +7895,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	private ArrayList<AnnotationEntry> getAnnotationsByIconography(int depictionID, String iconographyID, int imageID) {
-		long start = System.currentTimeMillis();
-		//if (dologging) System.err.println("Entering getAnnotations for DepictionID: "+Integer.toString(depictionID));
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		ArrayList<AnnotationEntry> results = new ArrayList<AnnotationEntry>();
 		Statement stmt;
@@ -9189,19 +7944,9 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDepictionEntry brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 	public ArrayList<AnnotationEntry> getOrnamentAnnotations(int depictionID) {
-		long start = System.currentTimeMillis();
-		//if (dologging) System.err.println("Entering getAnnotations for DepictionID: "+Integer.toString(depictionID));
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		ArrayList<AnnotationEntry> results = new ArrayList<AnnotationEntry>();
 		Statement stmt;
@@ -9251,11 +7996,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDepictionEntry brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 	
@@ -9344,10 +8084,6 @@ public boolean isHan(String s) {
 		
 	}
 	public ArrayList<WallLocationEntry> getWallLocations() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getWallLocations wurde ausgelöst.");;
-		}
 		WallLocationEntry entry;
 		Connection dbc = getConnection();
 		PreparedStatement wallLocationStatement;
@@ -9366,11 +8102,6 @@ public boolean isHan(String s) {
 			ex.printStackTrace();
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getWallLocations brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -9379,10 +8110,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public boolean updateAuthorEntry(AuthorEntry authorEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateAuthorEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement authorStatement;
 		int rowCount = 0;
@@ -9405,11 +8132,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateAuthorEntry brauchte "+diff + " Millisekunden.");;}}
 		return rowCount > 0;
 	}
 
@@ -9418,10 +8140,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public int insertAuthorEntry(AuthorEntry authorEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertAuthorEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement authorStatement;
 		int authorID = 0;
@@ -9449,11 +8167,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertAuthorEntry brauchte "+diff + " Millisekunden.");;}}
 		return authorID;
 	}
 
@@ -9461,21 +8174,12 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	private String createBibtexKey(AuthorEntry entry, String year) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von createBibtexKey wurde ausgelöst.");;
-		}
 		String result = (entry.isInstitutionEnabled() ? entry.getInstitution().replace(" ", "") : entry.getLastname()) + year;
 		List<String> appendix = Arrays.asList("","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z");
 		int count = 0;
 		while (!getAnnotatedBibliography("BibTexKey='"+result+appendix.get(count)+"'").isEmpty()) {
 			++count;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von createBibtexKey brauchte "+diff + " Millisekunden.");;}}
 		return result+appendix.get(count);
 	}
 
@@ -9484,11 +8188,7 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public AnnotatedBibliographyEntry insertAnnotatedBiblographyEntry(AnnotatedBibliographyEntry bibEntry) {
-		long start = System.currentTimeMillis();
 		if (dologging) System.err.println("insertAnnotatedBiblographyEntry triggered");
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertAnnotatedBiblographyEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		int newBibID = 0;
@@ -9619,19 +8319,10 @@ public boolean isHan(String s) {
 		if (dologging) System.out.println(doUploadToElastic(bibEntry.getUniqueID(),   json, url,index_data, Integer.toString(port), elastic_user,elastic_pw, false));
 	    if (dologging) System.out.println(doUploadToElastic(bibEntry.getUniqueID(),   "{\"versions\":[{\"timestamp\":\""+df.format(date)+"\", \"content\":"+json+"}]}", url,index_backup, Integer.toString(port), elastic_user,elastic_pw, false));
 
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertAnnotatedBiblographyEntry brauchte "+diff + " Millisekunden.");;}}
 		return bibEntry;
 	}
 
 	private void updateAuthorBibRelation(int bibID, ArrayList<AuthorEntry> authorList) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateAuthorBibRelation wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		int sequence = 1;
@@ -9649,18 +8340,9 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateAuthorBibRelation brauchte "+diff + " Millisekunden.");;}}
 	}
 
 	private void updateEditorBibRelation(int bibID, ArrayList<AuthorEntry> editorList) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEditorBibRelation wurde ausgelöst.");;
-		}
 		if (editorList == null)
 			return;
 		Connection dbc = getConnection();
@@ -9680,21 +8362,12 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateEditorBibRelation brauchte "+diff + " Millisekunden.");;}}
 	}
 
 	/**
 	 * @return
 	 */
 	public ArrayList<PublisherEntry> getPublishers() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPublishers wurde ausgelöst.");;
-		}
 		ArrayList<PublisherEntry> result = new ArrayList<PublisherEntry>();
 		Connection dbc = getConnection();
 
@@ -9711,11 +8384,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPublishers brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -9723,10 +8391,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public PublisherEntry getPublisher(int id) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPublisher wurde ausgelöst.");;
-		}
 		PublisherEntry result = null;
 		Connection dbc = getConnection();
 
@@ -9743,11 +8407,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPublisher brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -9755,10 +8414,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<AuthorEntry> getAuthors() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAuthors wurde ausgelöst.");;
-		}
 		ArrayList<AuthorEntry> result = new ArrayList<AuthorEntry>();
 		Connection dbc = getConnection();
 
@@ -9777,11 +8432,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getAuthors brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -9790,10 +8440,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public int insertPhotographerEntry(PhotographerEntry photographerEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertPhotographerEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement peStatement;
 		int photographerID = 0;
@@ -9811,11 +8457,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertPhotographerEntry brauchte "+diff + " Millisekunden.");;}}
 		return photographerID;
 	}
 
@@ -9824,10 +8465,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public int insertCaveGroupEntry(CaveGroupEntry cgEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertCaveGroupEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement cgStatement;
 		int caveGroupID = 0;
@@ -9844,11 +8481,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertCaveGroupEntry brauchte "+diff + " Millisekunden.");;}}
 		return caveGroupID;
 	}
 
@@ -9857,10 +8489,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public int insertDistrictEntry(DistrictEntry de) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDistrictEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement deStatement;
 		int districtID = 0;
@@ -9895,11 +8523,6 @@ public boolean isHan(String s) {
 	    if (dologging) System.out.println(doUploadToElastic(de.getUniqueID()+"-"+Integer.toString(1),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 	    de.setModifiedOn(df.format(date));			
 
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertDistrictEntry brauchte "+diff + " Millisekunden.");;}}
 		return districtID;
 	}
 
@@ -9908,10 +8531,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public int insertRegionEntry(RegionEntry re) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertRegionEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement regionStatement;
 		int regionID = 0;
@@ -9949,11 +8568,6 @@ public boolean isHan(String s) {
 		}
 	    re.setModifiedOn(df.format(date));			
 
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertRegionEntry brauchte "+diff + " Millisekunden.");;}}
 		return regionID;
 	}
 
@@ -9962,10 +8576,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public int insertCeilingTypeEntry(CeilingTypeEntry ctEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertCeilingTypeEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement ceilingTypeStatement;
 		int ceilingTypeID = 0;
@@ -9982,11 +8592,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertCeilingTypeEntry brauchte "+diff + " Millisekunden.");;}}
 		return ceilingTypeID;
 	}
 
@@ -9995,10 +8600,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<IconographyEntry> getRelatedIconography(int depictionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedIconography wurde ausgelöst.");;
-		}
 		ArrayList<IconographyEntry> results = new ArrayList<IconographyEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -10025,11 +8626,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedIconography brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 	/**
@@ -10037,10 +8633,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<IconographyEntry> getOrnamentRelatedIconography(int ornamentID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedIconography wurde ausgelöst.");;
-		}
 		ArrayList<IconographyEntry> results = new ArrayList<IconographyEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -10067,11 +8659,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedIconography brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
@@ -10079,10 +8666,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<LocationEntry> getLocations() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getLocations wurde ausgelöst.");;
-		}
 		ArrayList<LocationEntry> results = new ArrayList<LocationEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -10100,11 +8683,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getLocations brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
@@ -10112,10 +8690,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public LocationEntry getLocation(int id) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getLocation wurde ausgelöst.");;
-		}
 		if (id>-1) {
 		
 			LocationEntry result = null;
@@ -10135,11 +8709,6 @@ public boolean isHan(String s) {
 				if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 				return null;
 			}
-			if (dologging){
-			long end = System.currentTimeMillis();
-			long diff = (end-start);
-			if (diff>100){
-			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getLocation brauchte "+diff + " Millisekunden.");;}}
 			return result;
 		}
 		else {
@@ -10152,10 +8721,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public int inserVendorEntry(VendorEntry vEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von inserVendorEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement cgStatement;
 		int vendorID = 0;
@@ -10172,11 +8737,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von inserVendorEntry brauchte "+diff + " Millisekunden.");;}}
 		return vendorID;
 	}
 
@@ -10185,10 +8745,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public int insertLocationEntry(LocationEntry lEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertLocationEntry wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pStatement;
 		int locationID = 0;
@@ -10225,19 +8781,10 @@ public boolean isHan(String s) {
 		if (!er.result.equals("noop")) {
 			if (dologging) System.out.println(doUploadToElastic("locations-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\": {\"locations\":"+json+"}}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false));
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertLocationEntry brauchte "+diff + " Millisekunden.");;}}
 		return locationID;
 	}
 
 	public ArrayList<InnerSecondaryPatternsEntry> getInnerSecondaryPatterns() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getInnerSecondaryPatterns wurde ausgelöst.");;
-		}
 		ArrayList<InnerSecondaryPatternsEntry> result = new ArrayList<InnerSecondaryPatternsEntry>();
 		Connection dbc = getConnection();
 
@@ -10254,19 +8801,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getInnerSecondaryPatterns brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public ArrayList<OrnamentClassEntry> getOrnamentClass() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentClass wurde ausgelöst.");;
-		}
 		ArrayList<OrnamentClassEntry> result = new ArrayList<OrnamentClassEntry>();
 		Connection dbc = getConnection();
 
@@ -10283,19 +8821,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName() +" brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public ArrayList<OrnamentComponentsEntry> getOrnamentComponents() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<OrnamentComponentsEntry> result = new ArrayList<OrnamentComponentsEntry>();
 		Connection dbc = getConnection();
 
@@ -10312,19 +8841,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentComponents brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public OrnamentComponentsEntry addOrnamentComponents(OrnamentComponentsEntry ornamentComponent) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		OrnamentComponentsEntry entry = null;
 		PreparedStatement stmt;
@@ -10346,19 +8866,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return entry;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von addOrnamentComponents brauchte "+diff + " Millisekunden.");;}}
 		return entry;
 	}
 
 	public OrnamentClassEntry addOrnamentClass(OrnamentClassEntry ornamentClass) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		OrnamentClassEntry entry = null;
 
@@ -10380,19 +8891,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return entry;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von addOrnamentClass brauchte "+diff + " Millisekunden.");;}}
 		return entry;
 	}
 
 	public OrnamentClassEntry renameOrnamentClass(OrnamentClassEntry ornamentClass) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		OrnamentClassEntry entry = null;
 
@@ -10408,11 +8910,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return entry;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von renameOrnamentClass brauchte "+diff + " Millisekunden.");;}}
 		return entry;
 	}
 	
@@ -10422,10 +8919,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public OrnamentComponentsEntry renameOrnamentComponents(OrnamentComponentsEntry ornamentComponents) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		OrnamentComponentsEntry entry = null;
 
@@ -10441,11 +8934,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return entry;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von renameOrnamentComponents brauchte "+diff + " Millisekunden.");;}}
 		return entry;
 	}
 
@@ -10455,10 +8943,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public InnerSecondaryPatternsEntry addInnerSecondaryPatterns(InnerSecondaryPatternsEntry innerSecPattern) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		InnerSecondaryPatternsEntry entry;
 
@@ -10481,11 +8965,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von addInnerSecondaryPatterns brauchte "+diff + " Millisekunden.");;}}
 		return entry;
 	}
 
@@ -10493,10 +8972,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<PreservationAttributeEntry> getPreservationAttributes() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<PreservationAttributeEntry> result = new ArrayList<PreservationAttributeEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -10512,11 +8987,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPreservationAttributes brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -10525,10 +8995,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public int insertPreservationAttributeEntry(PreservationAttributeEntry paEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pStatement;
 		int preservationAttributeID = 0;
@@ -10545,11 +9011,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertPreservationAttributeEntry brauchte "+diff + " Millisekunden.");;}}
 		return preservationAttributeID;
 	}
 
@@ -10558,10 +9019,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public int insertPublisherEntry(PublisherEntry publisherEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pStatement;
 		int newPublisherID = 0;
@@ -10579,19 +9036,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertPublisherEntry brauchte "+diff + " Millisekunden.");;}}
 		return newPublisherID;
 	}
 
 	public ArrayList<OrnamentPositionEntry> getPositionbyWall(WallEntry wall) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<OrnamentPositionEntry> result = new ArrayList<OrnamentPositionEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -10608,19 +9056,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPositionbyWall brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 	
 	public ArrayList<OrnamentPositionEntry> getPositionbyReveal(WallEntry wall) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<OrnamentPositionEntry> result = new ArrayList<OrnamentPositionEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -10637,20 +9076,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPositionbyReveal brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public ArrayList<OrnamentPositionEntry> getPositionbyCeilingTypes(int ceilingID1, int ceilingID2) {
-
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<OrnamentPositionEntry> result = new ArrayList<OrnamentPositionEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -10668,19 +9097,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getPositionbyCeilingTypes brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public ArrayList<OrnamentFunctionEntry> getFunctionbyPosition(OrnamentPositionEntry position) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<OrnamentFunctionEntry> result = new ArrayList<OrnamentFunctionEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -10698,11 +9118,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getFunctionbyPosition brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -10711,10 +9126,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public AnnotatedBibliographyEntry updateAnnotatedBiblographyEntry(AnnotatedBibliographyEntry bibEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		if (dologging) System.err.println("updateAnnotatedBiblographyEntry - saving");
@@ -10838,11 +9249,6 @@ public boolean isHan(String s) {
 		}
 	    bibEntry.setModifiedOn(df.format(date));			
 		protocollModifiedAbstractEntry(bibEntry,"");
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateAnnotatedBiblographyEntry brauchte "+diff + " Millisekunden.");;}}
 		return bibEntry;
 	}
 
@@ -10851,10 +9257,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<Integer> getDepictionFromIconography(String sqlWhere) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -10871,19 +9273,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDepictionFromIconography brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public ArrayList<ImageEntry> getImagesbyOrnamentID(int ornamentID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<ImageEntry> results = new ArrayList<ImageEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -10895,7 +9288,7 @@ public boolean isHan(String s) {
 			while (rs.next()) {
 				ImageEntry image = new ImageEntry(rs.getInt("ImageID"), rs.getString("Filename"), rs.getString("Title"), rs.getString("ShortName"),
 						rs.getString("Copyright"), getPhotographerEntry(rs.getInt("PhotographerID")), rs.getString("Comment"), rs.getString("Date"), rs.getInt("ImageTypeID"),
-						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"));
+						rs.getInt("AccessLevel"), new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),getLocation(rs.getInt("location")),rs.getString("InventoryNumber"),rs.getDouble("Height"),rs.getDouble("Width"), rs.getBoolean("IsExpiring"),rs.getLong("ExpiresAt"), getCCEntry(rs.getInt("CCID")));
 				if (image.getLocation()==null) {
 					if (rs.getString("Title")!=null){
 						image.setLocation(searchLocationByFilename(image.getTitle()));
@@ -10916,19 +9309,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDistricts brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
 	public ArrayList<InnerSecondaryPatternsEntry> getInnerSecPatternsbyOrnamentID(int ornamentID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<InnerSecondaryPatternsEntry> result = new ArrayList<InnerSecondaryPatternsEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -10946,19 +9330,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getImagesbyOrnamentID brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	private ArrayList<OrnamentCaveRelation> getCaveRelationbyOrnamentID(int ornamentID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		// zweite Hierarchie Ebene der Ornamentik
 		Connection dbc = getConnection();
 		ArrayList<OrnamentCaveRelation> result = new ArrayList<OrnamentCaveRelation>();
@@ -10984,20 +9359,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
 
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getCaveRelationbyOrnamentID brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public ArrayList<OrnamentComponentsEntry> getOrnamentComponentsbyOrnamentID(int ornamentID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
-
 		ArrayList<OrnamentComponentsEntry> result = new ArrayList<OrnamentComponentsEntry>();
 		Connection dbc = getConnection();
 
@@ -11016,11 +9381,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getOrnamentComponentsbyOrnamentID brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -11049,10 +9409,6 @@ public boolean isHan(String s) {
 */
 	
 	private ArrayList<IconographyEntry> getIconographyElementsbyOrnamentCaveID(int ornamentCaveID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<IconographyEntry> results = new ArrayList<IconographyEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -11081,19 +9437,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getIconographyElementsbyOrnamentCaveID brauchte "+diff + " Millisekunden.");;}}
 		return results;
 	}
 
 	public ArrayList<OrnamentEntry> getRelatedOrnamentsbyOrnamentCaveID(int ornamentCaveID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<OrnamentEntry> results = new ArrayList<OrnamentEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -11112,20 +9459,11 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedOrnamentsbyOrnamentCaveID brauchte "+diff + " Millisekunden.");;}}
 		return results;
 
 	}
 
 	public ArrayList<WallOrnamentCaveRelation> getWallsbyOrnamentCaveID(int ornamentCaveID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<WallOrnamentCaveRelation> results = new ArrayList<WallOrnamentCaveRelation>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -11144,11 +9482,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getWallsbyOrnamentCaveID brauchte "+diff + " Millisekunden.");;}}
 		return results;
 
 	}
@@ -11160,10 +9493,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	private WallEntry getWallbyWallLocationANDCaveID(int wallLocationID, int caveID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		WallEntry result = null;
 
 		Connection dbc = getConnection();
@@ -11182,11 +9511,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getWallbyWallLocationANDCaveID brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -11224,10 +9548,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<BibKeywordEntry> getBibKeywords() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<BibKeywordEntry> result = new ArrayList<BibKeywordEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -11243,11 +9563,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getBibKeywords brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
@@ -11255,10 +9570,6 @@ public boolean isHan(String s) {
 	 * @return true if used, false if unused
 	 */
 	public boolean bibKeywordIsUsed(BibKeywordEntry keyWord ) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		boolean result = false;
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -11275,11 +9586,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getBibKeywords brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 	
@@ -11289,10 +9595,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	private ArrayList<BibKeywordEntry> getRelatedBibKeywords(int bibID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<BibKeywordEntry> result = new ArrayList<BibKeywordEntry>();
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
@@ -11309,19 +9611,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedBibKeywords brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 	
 	private void updateBibKeywordRelation(int bibID, ArrayList<BibKeywordEntry> keywordList) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		if (keywordList == null)
 			return;
 		Connection dbc = getConnection();
@@ -11339,18 +9632,9 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateBibKeywordRelation brauchte "+diff + " Millisekunden.");;}}
 	}
 
 	public boolean deleteBibKeyword(int bibID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
@@ -11363,11 +9647,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateBibKeywordRelation brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
 
@@ -11376,10 +9655,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public int insertBibKeyword(BibKeywordEntry bkEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement cgStatement;
 		int bibKeywordID = 0;
@@ -11396,11 +9671,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertBibKeyword brauchte "+diff + " Millisekunden.");;}}
 		return bibKeywordID;
 	}
 	public Boolean updateBibKeyword(BibKeywordEntry keyword) {
@@ -11442,10 +9712,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public boolean deleteAuthorEntry(AuthorEntry selectedEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		try {
@@ -11468,11 +9734,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von deleteAuthorEntry brauchte "+diff + " Millisekunden.");;}}
 		return false;
 	}
 
@@ -11482,10 +9743,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public boolean updateUserEntry(UserEntry currentUser, String passwordHash, String newPasswordHash) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		int rowsChangedCount;
@@ -11512,11 +9769,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateUserEntry brauchte "+diff + " Millisekunden.");;}}
 		return rowsChangedCount > 0;
 	}
 	/**
@@ -11525,10 +9777,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public boolean updateUserEntryFrontEnd(UserEntry currentUser, String passwordHash, String newPasswordHash, String currentEmail) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;		
 		try {
@@ -11562,11 +9810,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateUserEntry brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
     private String shuffleString(String string) {
@@ -11602,10 +9845,6 @@ public boolean isHan(String s) {
 
     }
 	public boolean resetPassword(UserEntry currentUser) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		int rowsChangedCount;
@@ -11626,19 +9865,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateUserEntry brauchte "+diff + " Millisekunden.");;}}
 		return rowsChangedCount > 0;
 	}
 
 	public boolean resetPasswordFrontEnd(UserEntry currentUser) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		int rowsChangedCount;
@@ -11667,11 +9897,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateUserEntry brauchte "+diff + " Millisekunden.");;}}
 		return rowsChangedCount > 0;
 	}
 
@@ -11733,10 +9958,6 @@ public boolean isHan(String s) {
 	}
 
 	public int insertUserEntry(UserEntry userEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		if (dologging) System.out.println(userEntry.getUserID());
 		if (userEntry == null || userEntry.getUserID() > 0) {
 			return 0;
@@ -11776,11 +9997,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return 0;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von insertUserEntry brauchte "+diff + " Millisekunden.");;}}
 		return newUserID;
 	}
 
@@ -11790,10 +10006,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public boolean updateUserEntry(UserEntry userEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		if (userEntry == null) {
 			return false;
 		}
@@ -11817,11 +10029,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateUserEntry brauchte "+diff + " Millisekunden.");;}}
 		return rowsChangedCount > 0;
 	}
 
@@ -11831,10 +10038,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public boolean updateUserEntryFrontEnd(UserEntry userEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		if (userEntry == null) {
 			return false;
 		}
@@ -11868,11 +10071,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von updateUserEntry brauchte "+diff + " Millisekunden.");;}}
 		return rowsChangedCount > 0;
 	}
 	public boolean linkAnnoToEntry(String annotoriousID, ExportEntry entry) {
@@ -11938,10 +10136,6 @@ public boolean isHan(String s) {
 	 * @throws IOException 
 	 */
 	public ArrayList<DepictionEntry> searchDepictions(DepictionSearchEntry searchEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		if (dologging) System.out.println("invoked Search in mysql");
 		ArrayList<DepictionEntry> results = new ArrayList<DepictionEntry>();
 		Connection dbc = getConnection();
@@ -12039,7 +10233,7 @@ public boolean isHan(String s) {
 		if (dologging) System.err.println(where.isEmpty() ? "SELECT * FROM Depictions" : "SELECT * FROM Depictions WHERE " + where);
 
 		try {
-			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Depictions LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()): "SELECT * FROM Depictions WHERE " + where+" LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
+			pstmt = dbc.prepareStatement(where.isEmpty() ? "SELECT * FROM Depictions LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+ ", "+Integer.toString(searchEntry.getMaxentries()): "SELECT * FROM Depictions WHERE " + where+" ORDER BY DepictionID LIMIT "+Integer.toString(searchEntry.getEntriesShowed())+", "+Integer.toString(searchEntry.getMaxentries()));
 
 			if (!searchEntry.getShortName().isEmpty()) {
 				pstmt.setString(1,searchEntry.getShortName().replace("*", "%"));
@@ -12070,11 +10264,6 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von searchDepictions brauchte "+diff + " Millisekunden. where-Klausel: "+where);;}}
 		return results;
 	}
   	private ArrayList<WallTreeEntry> getwallsByDepictionID (Integer depictionID, Integer caveID){
@@ -12197,10 +10386,6 @@ public boolean isHan(String s) {
 	}
 
 	public ArrayList<UserEntry> getUsers() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<UserEntry> result = new ArrayList<UserEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -12218,18 +10403,9 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getUsers brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 	public ArrayList<UserEntry> getUsersFrontEnd() {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		ArrayList<UserEntry> result = new ArrayList<UserEntry>();
 		Connection dbc = getConnection();
 		Statement stmt;
@@ -12247,19 +10423,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getUsers brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public boolean saveCollectedEntries(String sessionID, String collectionLabel, boolean isGroupCollection, ArrayList<AbstractEntry> entryList) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		UserEntry ue = this.checkSessionID(sessionID);
 		if (ue == null) {
 			return false;
@@ -12322,19 +10489,10 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return false;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von saveCollectedEntries brauchte "+diff + " Millisekunden.");;}}
 		return true;
 	}
 
 	public ArrayList<CollectionEntry> getRelatedCollectionNames(String sessionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		ArrayList<CollectionEntry> resultList = new ArrayList<CollectionEntry>();
@@ -12356,19 +10514,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getRelatedCollectionNames brauchte "+diff + " Millisekunden.");;}}
 		return resultList;
 	}
 	
 	public CollectionEntry delCollectedEntries(CollectionEntry entry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		ArrayList<AbstractEntry> resultList = new ArrayList<AbstractEntry>();
@@ -12386,18 +10535,9 @@ public boolean isHan(String s) {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return null;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von delCollectedEntries brauchte "+diff + " Millisekunden.");;}}
 		return entry;
 	}
 	public ArrayList<AbstractEntry> loadCollectedEntries(CollectionEntry entry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pstmt;
 		ArrayList<AbstractEntry> resultList = new ArrayList<AbstractEntry>();
@@ -12437,11 +10577,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von loadCollectedEntries brauchte "+diff + " Millisekunden.");;}}
 		return resultList;
 	}
 	private String stripAccents(String input) {
@@ -12464,10 +10599,6 @@ public boolean isHan(String s) {
 		
 	}
 	private DepictionEntry getDepictionEntry(int depictionID, String sessionID) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		DepictionEntry result = null;
 		Statement stmt;
@@ -12495,19 +10626,10 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von getDepictionEntry brauchte "+diff + " Millisekunden.");;}}
 		return result;
 	}
 
 	public int addPreservationClassification(PreservationClassificationEntry pcEntry) {
-		long start = System.currentTimeMillis();
-		if (dologgingbegin){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde ausgelöst.");;
-		}
 		Connection dbc = getConnection();
 		PreparedStatement pStatement;
 		int preservationAttributeID = 0;
@@ -12524,11 +10646,6 @@ public boolean isHan(String s) {
 			e.printStackTrace();
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 		}
-		if (dologging){
-		long end = System.currentTimeMillis();
-		long diff = (end-start);
-		if (diff>100){
-		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von addPreservationClassification brauchte "+diff + " Millisekunden.");;}}
 		return preservationAttributeID;
 	}
 	

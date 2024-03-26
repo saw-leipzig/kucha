@@ -29,6 +29,7 @@ import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AnnotationEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
+import de.cses.shared.CCEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -1160,6 +1161,21 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	public boolean updateIconographyEntry(IconographyEntry iconographyEntryToEdit, String user, Boolean moved) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateIconographyEntry(iconographyEntryToEdit, user, moved);
+	}
+
+	public int insertCCEntry(CCEntry cCEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.insertCCEntry(cCEntry);
+	}
+
+	public boolean updateCCEntry(CCEntry cCEntry) throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.updateCCEntry(cCEntry);
+	}
+
+	public ArrayList<CCEntry> getCCEntries() throws IllegalArgumentException {
+		MysqlConnector connector = MysqlConnector.getInstance();
+		return connector.getCCEntries();
 	}
 
 	public boolean deleteIconographyEntry(IconographyEntry iconographyEntryToEdit, String sessionID) throws IllegalArgumentException {
