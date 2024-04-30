@@ -1401,20 +1401,28 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				
 				SafeHtml sb;
 				if (item.getImageID() == ornamentEntry.getMasterImageID()) {
-					sb = imageViewTemplates.masterImage(item.getFilename(), item.getShortName(), titleList,
-							item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
-							imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
-									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
+					if (item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
+
+						sb = imageViewTemplates.masterImageFree(item.getFilename(), item.getShortName(), titleList,
+								item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
+								imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
+										+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()),  SafeHtmlUtils.fromTrustedString(item.getCC() == null? "": "<p style='text-align:right;font-size: 8px;white-space: normal;'>" + item.getCC().getHtml() + "</p>"));
+					} else {
+						sb = imageViewTemplates.masterImageNonPublic(item.getFilename(), item.getShortName(), titleList,
+								item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
+								imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
+										+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()),  SafeHtmlUtils.fromTrustedString(item.getCC() == null? "": "<p style='text-align:right;font-size: 8px;white-space: normal;'>" + item.getCC().getHtml() + "</p>"));
+					}
 				} else if (item.getAccessLevel() == AbstractEntry.ACCESS_LEVEL_PUBLIC) {
 					sb = imageViewTemplates.publicImage(item.getFilename(), item.getShortName(), titleList,
 							item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
 							imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
-									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
+									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()),  SafeHtmlUtils.fromTrustedString(item.getCC() == null? "": "<p style='text-align:right;font-size: 8px;white-space: normal;'>" + item.getCC().getHtml() + "</p>"));
 				} else {
 					sb = imageViewTemplates.nonPublicImage(item.getFilename(), item.getShortName(), titleList,
 							item.getFilename().substring(item.getFilename().lastIndexOf(".") + 1).toUpperCase(),
 							imageAuthor, copyrightStr, UriUtils.fromString("resource?imageID=" + item.getImageID()
-									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()));
+									+ UserLogin.getInstance().getUsernameSessionIDParameterForUri()),  SafeHtmlUtils.fromTrustedString(item.getCC() == null? "": "<p style='text-align:right;font-size: 8px;white-space: normal;'>" + item.getCC().getHtml() + "</p>"));
 				}
 				SafeHtml s = null;
 				// Util.doLogging("ImageListView:
@@ -1433,7 +1441,9 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 				SafeHtmlBuilder sblast = new SafeHtmlBuilder();
 				sblast.append(s);
 				sblast.append(sb);
-
+				if (item.getCC() != null) {
+					sblast.append(SafeHtmlUtils.fromTrustedString(item.getCC().getHtml()));
+				}
 				return sblast.toSafeHtml();
 			}
 		}));

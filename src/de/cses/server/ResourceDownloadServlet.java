@@ -284,6 +284,7 @@ public class ResourceDownloadServlet extends HttpServlet {
 			myURLConnection.setRequestMethod("GET");
 			InputStream in = myURLConnection.getInputStream();
 			response.setContentType("image/jpg");
+
 			byte buffer[] = new byte[4096];
 			int bytesRead = 0;
 			while ((bytesRead = in.read(buffer)) > 0) {
@@ -294,6 +295,10 @@ public class ResourceDownloadServlet extends HttpServlet {
 			out.close();
 		}else if (request.getParameter("imageIDValid") != null) {
 			String imageID = request.getParameter("imageIDValid");
+			if (imageID == "accessNotPermitted") {
+				response.setStatus(200);
+				return;
+			}
 			ImageEntry imgEntry = connector.getImageEntry(Integer.parseInt(imageID));
 			String filename;
 			File inputFile;

@@ -919,8 +919,7 @@ public class IconographySelector extends FramedPanel {
 						if (ieTextArea.isValid()) {
 							iconographyEntryToEdit.setText(ieTextArea.getValue());
 							iconographyEntryToEdit.setSearch(ieTextAreaSearch.getValue());
-							iconographyTreeStore.update(iconographyEntryToEdit);
-							dbService.updateIconographyEntry(iconographyEntryToEdit, UserLogin.getInstance().getUsername(), false, new AsyncCallback<Boolean>() {
+							dbService.updateIconographyEntry(iconographyEntryToEdit, UserLogin.getInstance().getSessionID(), false, new AsyncCallback<Boolean>() {
 
 								@Override
 								public void onFailure(Throwable caught) {
@@ -929,6 +928,7 @@ public class IconographySelector extends FramedPanel {
 
 								@Override
 								public void onSuccess(Boolean result) {
+									iconographyTreeStore.update(iconographyEntryToEdit);
 									StaticTables.getInstance().reloadIconography(); // we need to reload the whole tree otherwise this won't work
 								}
 							});

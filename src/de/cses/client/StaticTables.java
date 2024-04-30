@@ -24,6 +24,7 @@ import com.sencha.gxt.widget.core.client.info.Info;
 
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AnnotatedBibliographyEntry;
+import de.cses.shared.CCEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
@@ -84,7 +85,7 @@ public class StaticTables {
 	protected HashMap<Integer, CaveEntry> caveEntryMap;
 	protected HashMap<Integer, OrientationEntry> orientationEntryMap;
 	protected Map<Integer,String> ornamentMasterPics = new HashMap<Integer,String>();
-	private ArrayList<OrnamentEntry> ornamentEntries;
+	private ArrayList<CCEntry> cCEntries;
 	private ArrayList<WallSketchEntry> wallSketchEntries;
 	private static Map<Character, Character> MAP_NORM;
 
@@ -137,12 +138,13 @@ public class StaticTables {
 		loadWallEntries();
 		loadPositionTable();
 		loadWallSketches();
+		loadCCEntries();
 	}
 
 	private void listLoaded() {
 		--loadCounter;
-		listener.listsLoaded((24.0 - loadCounter) / 24.0);
-		Double loaded = (24.0 - loadCounter) / 24.0;
+		listener.listsLoaded((25.0 - loadCounter) / 25.0);
+		Double loaded = (25.0 - loadCounter) / 25.0;
 	}
 	public Map<Character, Character> getMAP_NORM() {
 	    if (MAP_NORM == null || MAP_NORM.size() == 0)
@@ -251,6 +253,20 @@ public class StaticTables {
 	public void reloadWallSketches(ArrayList<WallSketchEntry> newWallSketches) {
 		wallSketchEntries = newWallSketches;
 	}
+	public void addCCEntry(CCEntry newCCEntry) {
+		cCEntries.add(newCCEntry);
+	}
+	public void updateCCEntry(CCEntry updatedCCEntry) {
+		ArrayList<CCEntry> newCCEntries = new ArrayList<CCEntry>();
+		for (CCEntry cC: cCEntries) {
+			if (cC.getCCID() == updatedCCEntry.getCCID()) {
+				newCCEntries.add(updatedCCEntry);
+			} else {
+				newCCEntries.add(cC);
+			}
+		}
+		cCEntries = newCCEntries;
+	}
 	private void loadWallSketches() {
 		dbService.getWallSketches(new AsyncCallback<ArrayList<WallSketchEntry>>() {
 
@@ -264,6 +280,24 @@ public class StaticTables {
 			@Override
 			public void onSuccess(ArrayList<WallSketchEntry> result) {
 				wallSketchEntries = result;
+				listLoaded();
+			}
+		});
+	}
+	private void loadCCEntries() {
+		dbService.getCCEntries(new AsyncCallback<ArrayList<CCEntry>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				System.err.println("Problem loading wallsketches");
+				listLoaded();
+				caught.printStackTrace();
+			}
+
+			@Override
+			public void onSuccess(ArrayList<CCEntry> result) {
+				Util.doLogging("Got the CCLicenses " + Integer.toString(result.size()));
+				cCEntries = result;
 				listLoaded();
 			}
 		});
@@ -810,6 +844,10 @@ public class StaticTables {
 
 	public Map<Integer, IconographyEntry> getIconographyForOrnamenticEntries() {
 		return iconographyForOrnamenticEntryMap;
+	}
+
+	public ArrayList<CCEntry> getCCEntries() {
+		return cCEntries;
 	}
 
 	public ArrayList<WallSketchEntry> getWallSketchEntry() {

@@ -76,6 +76,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.HtmlEditor;
 import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
@@ -95,6 +96,7 @@ import de.cses.client.ui.EditorListener;
 import de.cses.client.ui.OSDLoader;
 import de.cses.client.user.UserLogin;
 import de.cses.shared.AbstractEntry;
+import de.cses.shared.CCEntry;
 import de.cses.shared.ImageEntry;
 import de.cses.shared.ImageTypeEntry;
 import de.cses.shared.LocationEntry;
@@ -123,6 +125,8 @@ public class SingleImageEditor extends AbstractEditor {
 	private ComboBox<LocationEntry> locationSelectionCB;
 	private LocationProperties locationProps;
 	private ListStore<LocationEntry> locationEntryLS;
+	private CCEntryProperties cCProps;
+	private ListStore<CCEntry> cCEntryLS;
 	private JavaScriptObject osdDic;
 	private int numSave;
 	private OSDLoader osdLoader;
@@ -151,6 +155,11 @@ public class SingleImageEditor extends AbstractEditor {
 		SafeHtml caveLabel(String name);
 	}
 
+	interface CCViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}</div>")
+		SafeHtml caveLabel(String name);
+	}
+
 	interface ImageViewTemplates extends XTemplates {
 		@XTemplate("<figure style='text-align: center; margin: 0;'>"
 			
@@ -161,6 +170,11 @@ public class SingleImageEditor extends AbstractEditor {
 	interface LocationProperties extends PropertyAccess<LocationEntry> {
 		ModelKeyProvider<LocationEntry> locationID();
 		LabelProvider<LocationEntry> name();
+	}
+
+	interface CCEntryProperties extends PropertyAccess<CCEntry> {
+		ModelKeyProvider<CCEntry> cCID();
+		LabelProvider<CCEntry> name();
 	}
 
 
@@ -347,7 +361,6 @@ public class SingleImageEditor extends AbstractEditor {
 		imageTypeEntryList = new ListStore<ImageTypeEntry>(imageTypeProps.imageTypeID());
 
 		initPanel();
-
 		dbService.getPhotographer(new AsyncCallback<ArrayList<PhotographerEntry>>() {
 
 			@Override
@@ -474,7 +487,202 @@ public class SingleImageEditor extends AbstractEditor {
 		copyrightArea.setValue(imgEntry.getCopyright());
 		copyrightPanel.setHeading("Copyright");
 		copyrightPanel.add(copyrightArea);
+		cCProps = GWT.create(CCEntryProperties.class);
+		cCEntryLS = new ListStore<CCEntry>(cCProps.cCID());
+		if (StaticTables.getInstance().getCCEntries() != null) {
+			for (CCEntry cCEntry: StaticTables.getInstance().getCCEntries()) {
+				Util.doLogging("adding ccentry.");
+				cCEntryLS.add(cCEntry);
+			}			
+		}
+		StoreFilter<CCEntry> ccfilter = new StoreFilter<CCEntry>() {
+		    @Override
+		    public boolean select(Store<CCEntry> store, CCEntry parent, CCEntry item) {
+		    	
+		      boolean canView = false; 
+		      
+		      if ((item.getHtml()!=null)) {
+		    	  if (item.getHtml().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
+		    	  canView = true;
+		    	  }
+		      };
+		      if ((item.getName()!=null)) {
+		    	  if (item.getName().toLowerCase().contains(locationSelectionCB.getText().toLowerCase())) {
+		    	  canView = true;
+		    	  }
+		      };
+		      return canView;
+		    }
+		  };
+		  //cCEntryLS.addFilter(ccfilter);
 
+		FramedPanel cCLicenceFP = new FramedPanel();
+		cCLicenceFP.setHeading("Creative Commons License");
+		ComboBox<CCEntry>cCSelectionCB = new ComboBox<CCEntry>(cCEntryLS, cCProps.name(), new AbstractSafeHtmlRenderer<CCEntry>() {
+
+			@Override
+			public SafeHtml render(CCEntry item) {
+				final CCViewTemplates lvTemplates = GWT.create(CCViewTemplates.class);
+				return lvTemplates.caveLabel(item.getName());
+			}
+		});
+		cCSelectionCB.setEmptyText("select Creative Commons License");
+		cCSelectionCB.setTypeAhead(false);
+		cCSelectionCB.setEditable(true);
+	
+		cCSelectionCB.setTriggerAction(TriggerAction.ALL);
+		cCSelectionCB.addValueChangeHandler(new ValueChangeHandler<CCEntry>() {
+
+			@Override
+			public void onValueChange(ValueChangeEvent<CCEntry> event) {
+				imgEntry.setCC(event.getValue());
+			}
+		});
+		if (imgEntry.getCC() != null) {
+			
+			cCSelectionCB.setValue(cCEntryLS.findModelWithKey(Integer.toString(imgEntry.getCC().getCCID())));
+		}
+		
+		ToolButton resetCCSelectionTB = new ToolButton(new IconConfig("resetButton", "resetButtonOver"));
+		resetCCSelectionTB.setToolTip(Util.createToolTip("reset selection"));
+		resetCCSelectionTB.addSelectHandler(new SelectHandler() {
+			
+			@Override
+			public void onSelect(SelectEvent event) {
+				cCSelectionCB.setValue(null, true);
+			}
+		});
+		// adding new locations
+		ToolButton newCCPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
+		newCCPlusTool.setToolTip(Util.createToolTip("add Creative Commons Licence"));
+		newCCPlusTool.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addCCDialog = new PopupPanel();
+				FramedPanel newCCFP = new FramedPanel();
+				newCCFP.setHeading("Add Creative Commons License");
+				VerticalLayoutContainer ccVLC = new VerticalLayoutContainer();
+				TextField ccNameField = new TextField();
+				ccNameField.addValidator(new MinLengthValidator(2));
+				ccNameField.addValidator(new MaxLengthValidator(64));
+				ccVLC.add(new FieldLabel(ccNameField, "Name"));
+				HtmlEditor ccHtmlField =  new HtmlEditor();
+				ccHtmlField.forceLayout();
+				ccVLC.add(new FieldLabel(ccHtmlField, "Creativr Commons Licence"));
+				newCCFP.add(ccVLC);
+				TextButton saveButton = new TextButton("save");
+				saveButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						if (ccNameField.isValid()) {
+							CCEntry cCEntry = new CCEntry();
+							cCEntry.setName(ccNameField.getCurrentValue());
+							cCEntry.setHtml(ccHtmlField.getValue());
+							dbService.insertCCEntry(cCEntry, new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									caught.printStackTrace();
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									cCEntry.setCCID(result);
+									cCEntryLS.add(cCEntry);
+									StaticTables.getInstance().addCCEntry(cCEntry);
+								}
+							});
+							addCCDialog.hide();
+						}
+					}
+				});
+				newCCFP.addButton(saveButton);
+				TextButton cancelButton = new TextButton("cancel");
+				cancelButton.addSelectHandler(new SelectHandler() {
+
+					@Override
+					public void onSelect(SelectEvent event) {
+						addCCDialog.hide();
+					}
+				});
+				newCCFP.addButton(cancelButton);
+				addCCDialog.add(newCCFP);
+				addCCDialog.setModal(true);
+				addCCDialog.center();
+			}
+		});				
+		// adding new locations
+		ToolButton editCCTool = new ToolButton(new IconConfig("editButton", "editButtonOver"));
+		editCCTool.setToolTip(Util.createToolTip("edit selected Creative Commons Licence"));
+		editCCTool.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				if (cCSelectionCB.getValue() != null) {
+					PopupPanel editCCDialog = new PopupPanel();
+					FramedPanel newCCFP = new FramedPanel();
+					newCCFP.setHeading("Edit selected Creative Commons License");
+					VerticalLayoutContainer ccVLC = new VerticalLayoutContainer();
+					TextField ccNameField = new TextField();
+					ccNameField.addValidator(new MinLengthValidator(2));
+					ccNameField.addValidator(new MaxLengthValidator(64));
+					ccVLC.add(new FieldLabel(ccNameField, "Name"));
+					ccNameField.setValue(cCSelectionCB.getValue().getName());
+					HtmlEditor ccHtmlField =  new HtmlEditor();
+					ccHtmlField.forceLayout();
+					ccHtmlField.setValue(cCSelectionCB.getValue().getHtml());
+					ccVLC.add(new FieldLabel(ccHtmlField, "Creative Commons Licence"));
+					newCCFP.add(ccVLC);
+					TextButton saveButton = new TextButton("save");
+					saveButton.addSelectHandler(new SelectHandler() {
+
+						@Override
+						public void onSelect(SelectEvent event) {
+							if (ccNameField.isValid()) {
+								CCEntry cCEntry = cCSelectionCB.getValue();
+								cCEntry.setName(ccNameField.getCurrentValue());
+								cCEntry.setHtml(ccHtmlField.getValue());
+								dbService.updateCCEntry(cCEntry, new AsyncCallback<Boolean>() {
+
+									@Override
+									public void onFailure(Throwable caught) {
+										caught.printStackTrace();
+									}
+
+									@Override
+									public void onSuccess(Boolean result) {
+										StaticTables.getInstance().updateCCEntry(cCEntry);
+									}
+								});
+								editCCDialog.hide();
+							}
+						}
+					});
+					newCCFP.addButton(saveButton);
+					TextButton cancelButton = new TextButton("cancel");
+					cancelButton.addSelectHandler(new SelectHandler() {
+
+						@Override
+						public void onSelect(SelectEvent event) {
+							editCCDialog.hide();
+						}
+					});
+					newCCFP.addButton(cancelButton);
+					editCCDialog.add(newCCFP);
+					editCCDialog.setModal(true);
+					editCCDialog.center();
+				}					
+			}
+		});				
+		cCLicenceFP.addTool(newCCPlusTool);
+		cCLicenceFP.addTool(editCCTool);
+		cCLicenceFP.addTool(resetCCSelectionTB);
+		cCLicenceFP.add(cCSelectionCB);
+
+		
+		
 		FramedPanel commentPanel = new FramedPanel();
 		commentArea = new TextArea();
 		commentArea.setEmptyText("optional comments");
@@ -1000,10 +1208,11 @@ public class SingleImageEditor extends AbstractEditor {
 		imgFP.addTool(viewFullSizeTB);
 		
 		VerticalLayoutContainer leftEditVLC = new VerticalLayoutContainer();
-		leftEditVLC.add(inventoryNumberPanel, new VerticalLayoutData(1.0, .20));
-		leftEditVLC.add(shortNamePanel, new VerticalLayoutData(1.0, .20));
-		leftEditVLC.add(copyrightPanel, new VerticalLayoutData(1.0, .4));
-		leftEditVLC.add(datePanel, new VerticalLayoutData(1.0, .20));
+		leftEditVLC.add(inventoryNumberPanel, new VerticalLayoutData(1.0, .15));
+		leftEditVLC.add(shortNamePanel, new VerticalLayoutData(1.0, .15));
+		leftEditVLC.add(copyrightPanel, new VerticalLayoutData(1.0, .35));
+		leftEditVLC.add(cCLicenceFP, new VerticalLayoutData(1.0, .20));
+		leftEditVLC.add(datePanel, new VerticalLayoutData(1.0, .15));
 
 		VerticalLayoutContainer rightEditVLC = new VerticalLayoutContainer();
 		rightEditVLC.add(imageDimensionslHLC, new VerticalLayoutData(1.0, .15));

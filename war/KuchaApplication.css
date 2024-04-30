@@ -124,6 +124,7 @@ div.data-view {
 div.bib-view {
 	font-size: 16px;
 	background-color: #ffcc66;
+
 	margin: 0
 }
 
@@ -178,6 +179,22 @@ td.data-view-left {
 	background-color: #ffdd99;
 	width: 30%;
 }
+td.image-view * {
+	height: 100%;
+	width: 100%;
+	object-fit: scale-down;
+
+}
+p.image-view-author {
+	font-size: 8px;
+	text-align: right;
+	white-space: normal;
+}
+p.image-view-author * {
+	height: 4em;
+	object-fit: scale-down;
+    	object-position: right;
+}
 
 td.data-view-right {
 	background-color: #ffdd99;
@@ -196,6 +213,7 @@ table.image-view {
 
 td.image-view {
 	height: 23px;
+	overflow-wrap: anywhere;
 }
 
 
@@ -881,7 +899,9 @@ span.freeIconText {
 	font-size: 20px;
 	background-repeat: no-repeat;
 	background-position: right;
-  padding-left: 30px
+  	display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 span.blockedIconText {
@@ -891,12 +911,37 @@ span.blockedIconText {
 	font-size: 20px;
 	background-repeat: no-repeat;
 	background-position: right;
-  padding-left: 30px
+  	display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+span.freeIconTextList {
+	font-size: 20px;
+	background-repeat: no-repeat;
+	background-position: right;
+  	display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+span.blockedIconTextList {
+	font-size: 20px;
+	background-repeat: no-repeat;
+	background-position: right;
+  	display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+img.imgIcon {
+    height: 22px;
+    width: 22px;
+    margin-right: 5px;
+    margin-right: 5px;
 }
 
 span.favouriteIconText {
-	background-image: url(icons/favourite_active.png);
-	width: 25px;
 	height: 25px;
 	font-size: 20px;
 	background-repeat: no-repeat;

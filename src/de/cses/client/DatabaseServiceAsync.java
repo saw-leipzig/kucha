@@ -26,6 +26,7 @@ import de.cses.shared.AnnotatedBibliographySearchEntry;
 import de.cses.shared.AnnotationEntry;
 import de.cses.shared.AuthorEntry;
 import de.cses.shared.BibKeywordEntry;
+import de.cses.shared.CCEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -378,6 +379,12 @@ public interface DatabaseServiceAsync {
 	void getBibKeywords(AsyncCallback<ArrayList<BibKeywordEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void insertBibKeyword(BibKeywordEntry bkEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
+	void insertCCEntry(CCEntry cCEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+
+	void updateCCEntry(CCEntry cCEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+
+	void getCCEntries(AsyncCallback<ArrayList<CCEntry>> asyncCallback) throws IllegalArgumentException;
 
 	void updateBibKeyword(BibKeywordEntry bkEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
 
