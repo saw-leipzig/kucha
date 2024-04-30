@@ -72,6 +72,8 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
+import com.sencha.gxt.widget.core.client.event.BeforeRemoveEvent;
+import com.sencha.gxt.widget.core.client.event.BeforeRemoveEvent.BeforeRemoveHandler;
 import com.sencha.gxt.widget.core.client.event.BeforeShowEvent;
 import com.sencha.gxt.widget.core.client.event.BeforeShowEvent.BeforeShowHandler;
 import com.sencha.gxt.widget.core.client.event.BlurEvent;
@@ -177,13 +179,6 @@ public class DimensionEditor implements IsWidget {
 		loadWallSketches();
 		FramedPanel positionTabPanel = new FramedPanel();
 		mainView = new VerticalLayoutContainer();
-		mainView.addBeforeShowHandler(new BeforeShowHandler() {
-
-			@Override
-			public void onBeforeShow(BeforeShowEvent event) {
-				loadWallSketches();
-			}
-		});
 		VerticalLayoutContainer vlcWallViewEditor = new VerticalLayoutContainer();
 		HorizontalLayoutContainer hlcWallUpperView = new HorizontalLayoutContainer();
 		FramedPanel editNameFP = new FramedPanel();
@@ -399,7 +394,6 @@ public class DimensionEditor implements IsWidget {
 		editDimensionFP.add(vlcWallViewEditor);
 		mainView.add(editDimensionFP, new VerticalLayoutData(1.0, .35));
 		mainView.add(positionTabPanel, new VerticalLayoutData(1.0, .65));
-		GWT.debugger();
 		if (wallSketchEntryList.size() > 0) {
 			if (wde.getWallSketch() == null) {
 				WallSketchEntry wse = wallSketchEntryList.findModelWithKey("1");

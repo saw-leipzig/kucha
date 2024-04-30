@@ -37,6 +37,8 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.button.IconButton.IconConfig;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.event.CloseEvent;
+import com.sencha.gxt.widget.core.client.event.CloseEvent.CloseHandler;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
@@ -69,7 +71,6 @@ import de.cses.shared.VendorEntry;
 import de.cses.shared.WallDimensionEntry;
 import de.cses.shared.WallSketchEntry;
 import de.cses.shared.WallTreeEntry;
-
 
 interface ImageViewTemplates extends XTemplates {
 	@XTemplate("<div>{filename}</div>")
@@ -157,9 +158,11 @@ public class WallView implements IsWidget{
 					}
 					
 				};
-				DimensionEditor de = new DimensionEditor(wde,del, correspondingDepictionEntry);
-				tabPanel.add(de, new TabItemConfig(wde.getName(), false));
+				DimensionEditor deEntry = new DimensionEditor(wde,del, correspondingDepictionEntry);
+				
+				tabPanel.add(deEntry, new TabItemConfig(wde.getName(), true));
 			}
+
 			mainPanel.center();			
 		}
 	}
@@ -173,6 +176,7 @@ public class WallView implements IsWidget{
 			public void onSelect(SelectEvent event) {
 				WallDimensionEntry wde = new WallDimensionEntry();
 				wde.setName("New Entry");
+				wde.setWallId(wte.getWallLocationID());
 				wte.addDimension(wde);
 				setWall(wte);
 			}

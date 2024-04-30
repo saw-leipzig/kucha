@@ -751,7 +751,6 @@ public class OSDLoaderWallDimension extends AbstractOSDLoader {
 		}
 	}
 	public void setPositionEmpty(String reg, String number, String depictionText) {
-		GWT.debugger();
 		int num = wde.getRegisters() - Integer.parseInt(number) + 1;
 		int minusOneForEvenRowRombus = 0;
 		if (wde.getType() == 0 && (Integer.parseInt(reg) % 2) == 0 && wde.getDirection() == 1 ) {

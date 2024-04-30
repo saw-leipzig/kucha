@@ -2609,9 +2609,11 @@ public class CaveEditor extends AbstractEditor {
 				new ArrayList<WallTreeEntry>(), "Add Wall Layout", false, true) {
 			@Override
 			protected void save(ArrayList<WallTreeEntry> results) {
-				Util.doLogging("test");
 				for (WallTreeEntry wte: results) {
-					correspondingCaveEntry.getWallDimensions().put(wte.getWallLocationID(), wte.getDimensions());
+					if (!correspondingCaveEntry.setWallDimensionsInWall(wte.getWallLocationID(), wte.getDimensions())) {
+						WallEntry we = new WallEntry(correspondingCaveEntry.getCaveID(), wte.getWallLocationID(), 0, 0.0, 0.0, wte.getDimensions());
+						correspondingCaveEntry.addWall(we);
+					};
 				}
 //				dbService.saveWallDimension(results, correspondingCaveEntry.getCaveID() , new AsyncCallback<Boolean>() {
 //
@@ -2632,13 +2634,12 @@ public class CaveEditor extends AbstractEditor {
 //				});
 			}
 		};
-		for (Entry<Integer, ArrayList<WallDimensionEntry>> pair: correspondingCaveEntry.getWallDimensions().entrySet()) {
-			Integer key = pair.getKey();
-			ArrayList<WallDimensionEntry> value = pair.getValue();
-			WallTreeEntry wte = pe.getWallByID(key);
-			wte.setDimensions(value);
-			pe.setWall(wte);
-		}
+//		for (WallDimensionEntry wde: correspondingCaveEntry.getWallDimensions()) {
+//			WallTreeEntry wte = pe.getWallByID(wde.getWallID());
+//			if (wte.getDimensions() == null) wte.setDimensions(new ArrayList<WallDimensionEntry>());
+//			wte.getDimensions().add(wde);
+//			pe.setWall(wte);
+//		}
 		pe.enablePoistionVisualization();
 		VerticalLayoutContainer wallLayoutHlC = new VerticalLayoutContainer();
 
@@ -3380,7 +3381,7 @@ public class CaveEditor extends AbstractEditor {
 			correspondingCaveEntry.setRelatedBibliographyList(bibliographySelector.getSelectedEntries());
 			
 			if (correspondingCaveEntry.getCaveID() > 0) {
-				dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<Boolean>() {
+				dbService.updateCaveEntry(correspondingCaveEntry, new AsyncCallback<CaveEntry>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -3388,11 +3389,11 @@ public class CaveEditor extends AbstractEditor {
 					}
 
 					@Override
-					public void onSuccess(Boolean result) {
+					public void onSuccess(CaveEntry result) {
+						
+						StaticTables.getInstance().updateCave(result.getCaveID(), result);
 						saveToolButton.enable();
-						// We have to update the CaveEntries in StaticTables, so that other possible downloaded Entries are displayed with the updated cave version.
-						StaticTables.getInstance().loadCaves();
-//						updateEntry(correspondingCaveEntry);
+						correspondingCaveEntry = result;
 						if (close) {
 							closeEditor(correspondingCaveEntry);
 						}
@@ -3404,7 +3405,7 @@ public class CaveEditor extends AbstractEditor {
 				});
 
 			} else { // its 0 and we need to create a new entry
-				dbService.insertCaveEntry(correspondingCaveEntry, new AsyncCallback<Integer>() {
+				dbService.insertCaveEntry(correspondingCaveEntry, new AsyncCallback<CaveEntry>() {
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -3412,11 +3413,10 @@ public class CaveEditor extends AbstractEditor {
 					}
 
 					@Override
-					public void onSuccess(Integer result) {
-						// We have to update the CaveEntries in StaticTables, so that other possible downloaded Entries are displayed with the updated cave version.
-						StaticTables.getInstance().loadCaves();
+					public void onSuccess(CaveEntry result) {
+						StaticTables.getInstance().updateCave(result.getCaveID(), result);
 						saveToolButton.enable();
-						correspondingCaveEntry.setCaveID(result.intValue());
+						correspondingCaveEntry = result;
 //						updateEntry(correspondingCaveEntry);
 						if (close) {
 							closeEditor(correspondingCaveEntry);

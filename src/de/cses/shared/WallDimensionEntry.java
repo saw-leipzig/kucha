@@ -3,8 +3,6 @@ package de.cses.shared;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.google.gwt.core.client.GWT;
 
@@ -21,13 +19,14 @@ public class WallDimensionEntry extends AbstractEntry {
 	public static final List<String> TYPE_LABEL = Arrays.asList("rhombus", "square");
 	
 	private int wallDimensionID;
+	private int wallID;
 	private String name;
 	private int registers = 0;
 	private int columns = 0;
-	private int type;
-	private int direction;
-	private float x,y,w,h = 0;
-	private WallSketchEntry wse;
+	private int registerType;
+	private int registerDirection;
+	private float registerPositionX,registerPositionY,registerPositionW,registerPositionH = 0;
+	private WallSketchEntry wallSketchEntry;
 	private String wallPosition;
 	private ArrayList<CoordinateEntry> coordinates = new ArrayList<CoordinateEntry>();
 	private ArrayList<EmptySpotEntry> emptySpots = new ArrayList<EmptySpotEntry>();
@@ -37,58 +36,65 @@ public class WallDimensionEntry extends AbstractEntry {
 		this.wallDimensionID = wallDimensionID;
 		this.name = name;
 	}
-	public WallDimensionEntry(int wallDimensionID, String name, WallSketchEntry wse, String wallPosition, Integer type, Integer direction, Integer registers, Integer columns, Integer x, Integer y, Integer w, Integer h, ArrayList<CoordinateEntry> coordinates, ArrayList<EmptySpotEntry> emptySpots) {
+	public WallDimensionEntry(int wallDimensionID, int wallID, String name, WallSketchEntry wallSketchEntry, String wallPosition, Integer type, Integer direction, Integer registers, Integer columns, Integer x, Integer y, Integer w, Integer h, ArrayList<CoordinateEntry> coordinates, ArrayList<EmptySpotEntry> emptySpots) {
 		this.wallDimensionID = wallDimensionID;
+		this.wallID = wallID;
 		this.name = name;
-		this.type = type;
-		this.direction = direction;
+		this.registerType = type;
+		this.registerDirection = direction;
 		this.registers = registers;
 		this.columns = columns;
-		this.wse = wse;
+		this.wallSketchEntry = wallSketchEntry;
 		this.wallPosition = wallPosition;
-		this.x = x;
-		this.y = y;
-		this.w = w;
-		this.h = h;
+		this.registerPositionX = x;
+		this.registerPositionY = y;
+		this.registerPositionW = w;
+		this.registerPositionH = h;
 		this.coordinates = coordinates;
 		this.emptySpots = emptySpots;
 	}
+	public int getWallID() {
+		return wallID;
+	}
+	public void setWallId(int wallID) {
+		this.wallID = wallID;
+	}
 	public int getDirection() {
-		return this.direction;
+		return this.registerDirection;
 	}
 	public void setDirection(int direction) {
-		this.direction = direction;
+		this.registerDirection = direction;
 	}
 	public float getX() {
-		return x;
+		return registerPositionX;
 	}
 
 	public void setX(float x) {
-		this.x = x;
+		this.registerPositionX = x;
 	}
 
 	public float getY() {
-		return y;
+		return registerPositionY;
 	}
 
 	public void setY(float y) {
-		this.y = y;
+		this.registerPositionY = y;
 	}
 
 	public float getW() {
-		return w;
+		return registerPositionW;
 	}
 
 	public void setW(float w) {
-		this.w = w;
+		this.registerPositionW = w;
 	}
 
 	public float getH() {
-		return h;
+		return registerPositionH;
 	}
 
 	public void setH(float h) {
-		this.h = h;
+		this.registerPositionH = h;
 	}
 
 
@@ -122,10 +128,10 @@ public class WallDimensionEntry extends AbstractEntry {
 		this.coordinates = updatedCoordinates;
 	}
 	public int getType() {
-		return this.type;
+		return this.registerType;
 	}
 	public void setType(int type) {
-		this.type = type;
+		this.registerType = type;
 	}
 	public int getRegisters() {
 		return this.registers;
@@ -156,9 +162,8 @@ public class WallDimensionEntry extends AbstractEntry {
 				emptySpots += 1;
 			}
 		}
-		GWT.debugger();
 		int minusOneForEvenRowRombus = 0;
-		if (type == 0 && (reg % 2) == 0) { 
+		if (registerType == 0 && (reg % 2) == 0) { 
 			minusOneForEvenRowRombus = 1;
 		}
 		for (CoordinateEntry pe: this.coordinates) {
@@ -207,12 +212,12 @@ public class WallDimensionEntry extends AbstractEntry {
 	}
 
 	public WallSketchEntry getWallSketch() {
-		return wse;
+		return wallSketchEntry;
 	}
 	
 
-	public void setWallSketch(WallSketchEntry wse) {
-		this.wse = wse;
+	public void setWallSketch(WallSketchEntry wallSketchEntry) {
+		this.wallSketchEntry = wallSketchEntry;
 	}
 
 	public String getWallPosition() {

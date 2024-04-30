@@ -8,13 +8,13 @@ public class EmptySpotEntry extends AbstractEntry {
 	
 	private int emptySpotID;
 	private String name;
-	private int x = -1;
-	private int y = -1;
+	private int registerPositionX = -1;
+	private int registerPositionY = -1;
 	
 	public EmptySpotEntry(int emptySpotID, int y, int x, String name, boolean deleted) {
 		this.emptySpotID = emptySpotID;
-		this.y = y;
-		this.x = x;
+		this.registerPositionY = y;
+		this.registerPositionX = x;
 		this.name = name;
 		this.deleted = deleted;
 	}
@@ -25,16 +25,16 @@ public class EmptySpotEntry extends AbstractEntry {
 		this.emptySpotID = emptySpotID;
 	}
 	public int getY() {
-		return this.y;
+		return this.registerPositionY;
 	}
 	public void setY(int y) {
-		this.y = y;
+		this.registerPositionY = y;
 	}
 	public int getX() {
-		return this.x;
+		return this.registerPositionX;
 	}
 	public void setX(int x) {
-		this.x = x;
+		this.registerPositionX = x;
 	}
 	public EmptySpotEntry() {
 		this(-1, -1, -1, "", false);
