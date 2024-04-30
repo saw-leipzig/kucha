@@ -13,31 +13,13 @@
  */
 package de.cses.shared;
 
-public class WallEntry extends AbstractEntry {
-	
-	public static String ANTECHAMBER_FRONT_WALL = "antechamber front wall";
-	public static String ANTECHAMBER_LEFT_WALL = "antechamber left wall";
-	public static String ANTECHAMBER_REAR_WALL = "antechamber rear wall";
-	public static String ANTECHAMBER_RIGHT_WALL = "antechamber right wall";
-	public static String MAIN_CHAMBER_CORRIDOR_INNER_WALL = "main chamber corridor inner wall";
-	public static String MAIN_CHAMBER_CORRIDOR_OUTER_WALL = "main chamber corridor outer wall";
-	public static String MAIN_CHAMBER_FRONT_WALL = "main chamber front wall";
-	public static String MAIN_CHAMBER_LEFT_WALL = "main chamber left wall";
-	public static String MAIN_CHAMBER_REAR_WALL = "main chamber rear wall";
-	public static String MAIN_CHAMBER_RIGHT_WALL = "main chamber right wall";
-	public static String REAR_AREA_LEFT_CORRIDOR_INNER_WALL = "rear area left corridor inner wall";
-	public static String REAR_AREA_LEFT_CORRIDOR_OUTER_WALL = "rear area left corridor outer wall";
-	public static String REAR_AREA_RIGHT_CORRIDOR_INNER_WALL = "rear area right corridor inner wall";
-	public static String REAR_AREA_RIGHT_CORRIDOR_OUTER_WALL = "rear area right corridor outer wall";
-	public static String REAR_AREA_INNER_WALL = "rear area inner wall";
-	public static String REAR_AREA_LEFT_WALL = "rear area left wall";
-	public static String REAR_AREA_OUTER_WALL = "rear area outer wall";
-	public static String REAR_AREA_RIGHT_WALL = "rear area right wall";
+import java.util.ArrayList;
 
+public class WallEntry extends AbstractWallEntry {
+	
 	private int caveID = 0;
-	private int wallLocationID;
 	private int preservationClassificationID = 0;
-	double width = 0, height = 0;
+	private double width = 0, height = 0;
 	
 	public WallEntry() { }
 	
@@ -68,16 +50,16 @@ public class WallEntry extends AbstractEntry {
 	 * @param width
 	 * @param height
 	 */
-	public WallEntry(int caveID, int wallLocationID, int preservationClassificationID, double width, double height) {
+	public WallEntry(int caveID, int wallLocationID, int preservationClassificationID, double width, double height, ArrayList<WallDimensionEntry> wallDimensions) {
+		super(wallLocationID, wallDimensions);
 		this.caveID = caveID;
-		this.wallLocationID = wallLocationID;
 		this.preservationClassificationID = preservationClassificationID;
 		this.width = width;
 		this.height = height;
 	}
 	
 	public WallEntry clone() {
-		return new WallEntry(caveID, wallLocationID, preservationClassificationID, width, height);
+		return new WallEntry(caveID, wallLocationID, preservationClassificationID, width, height, wallDimensions);
 	}
 
 	/* (non-Javadoc)
@@ -133,6 +115,4 @@ public class WallEntry extends AbstractEntry {
 	public void setWallLocationID(int wallLocationID) {
 		this.wallLocationID = wallLocationID;
 	}
-
-
 }

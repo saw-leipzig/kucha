@@ -16,46 +16,35 @@ package de.cses.shared;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class WallTreeEntry extends AbstractEntry {
+public class WallTreeEntry extends AbstractWallEntry {
 	
-	public static final ArrayList<Integer> ANTECHAMBER_LABEL = new ArrayList<Integer>(Arrays.asList(101,104));
-	public static final ArrayList<Integer>  MAIN_CHAMBER_LABEL = new ArrayList<Integer>(Arrays.asList(102,106));
-	public static final ArrayList<Integer>  MAIN_CHAMBER_CORRIDOR_LABEL= new ArrayList<Integer>(Arrays.asList( 105));
-	public static final ArrayList<Integer>  REAR_AREA_LABEL = new ArrayList<Integer>(Arrays.asList( 103,110,113));
-	public static final ArrayList<Integer>  REAR_AREA_LEFT_CORRIDOR_LABEL= new ArrayList<Integer>(Arrays.asList(107,108));
-	public static final ArrayList<Integer>  REAR_AREA_RIGHT_CORRIDOR_LABEL = new ArrayList<Integer>(Arrays.asList( 111,112));
-	
-
-	private int wallLocationID, parentID;
-	private String text;
-	private String search;
-	private ArrayList<WallTreeEntry> children = new ArrayList<WallTreeEntry>();
-	private ArrayList<WallDimensionEntry> dimension = new ArrayList<WallDimensionEntry>();
-	private ArrayList<PositionEntry> position = new ArrayList<PositionEntry>();
+	protected int parentID;
+	protected String text;
+	protected String search;
+	protected ArrayList<WallTreeEntry> children = new ArrayList<WallTreeEntry>();
+	protected ArrayList<PositionEntry> position = new ArrayList<PositionEntry>();
 	
 	public WallTreeEntry() { }
 
 	public WallTreeEntry(int wallLocationID, int parentID, String text, String search) {
-		super();
-		this.wallLocationID = wallLocationID;
+		super(wallLocationID);
 		this.parentID = parentID;
 		this.text = text;
 		this.search = search;
 		this.children = null;
 	}
-	public WallTreeEntry(int wallLocationID, int parentID, String text, String search, ArrayList<WallDimensionEntry> dimension,  ArrayList<PositionEntry> position) {
-		super();
-		this.wallLocationID = wallLocationID;
+	public WallTreeEntry(int wallLocationID, int parentID, String text, String search, ArrayList<WallDimensionEntry> wallDimensions,  ArrayList<PositionEntry> position) {
+		super(wallLocationID, wallDimensions);
 		this.parentID = parentID;
 		this.text = text;
 		this.search = search;
 		this.children = null;
-		if (dimension!=null) {
-			this.dimension=dimension;			
-		}
 		if (position!=null) {
 			this.position=position;			
 		}
+	}
+	public WallTreeEntry clone() {
+		return new WallTreeEntry(wallLocationID, parentID, text, search, wallDimensions, position);
 	}
 	public int getWallLocationID() {
 		return wallLocationID;
@@ -79,10 +68,10 @@ public class WallTreeEntry extends AbstractEntry {
 	public String getText() {
 		String name=text;
 		String dimensions ="";
-		if (dimension.size() == 0 && position.size() == 0) {
+		if (wallDimensions.size() == 0 && position.size() == 0) {
 			return text;
 		} else {
-			for (WallDimensionEntry wde: dimension) {
+			for (WallDimensionEntry wde: wallDimensions) {
 				String dimensionString = wde.getName().isEmpty()? "Register" :"Register " + wde.getName() + " (" + Integer.toString(wde.getRegisters()) + ", " + Integer.toString(wde.getColumns()) + ")";
 				if (dimensions.isEmpty()) {
 					dimensions = dimensionString;
@@ -125,28 +114,7 @@ public class WallTreeEntry extends AbstractEntry {
 	public ArrayList<WallTreeEntry> getChildren() {
 		return children;
 	}
-	public void setDimensions(ArrayList<WallDimensionEntry> de) {
-		this.dimension=de;
-	}
-	public ArrayList<WallDimensionEntry> getDimensions() {
-		return this.dimension;
-	}
-	public void addDimension(WallDimensionEntry de) {
-		ArrayList<WallDimensionEntry> updatedDimension = new ArrayList<WallDimensionEntry>();
-		boolean found = false;
-		for (WallDimensionEntry wde: dimension) {
-			if (wde.getWallDimensionID() == de.getWallDimensionID()) {
-				updatedDimension.add(de);
-				found = true;
-			} else {
-				updatedDimension.add(wde);
-			}
-		}
-		if (!found) {
-			updatedDimension.add(de);
-		}
-		this.dimension = updatedDimension;
-	}
+
 	public void setPositions(ArrayList<PositionEntry> pe) {
 		this.position=pe;
 	}

@@ -16,6 +16,7 @@ package de.cses.server.images;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -132,9 +133,12 @@ public class ImageServiceImpl extends HttpServlet {
 							target = new File(imgHomeDir, filename);
 							try {	
 								URL imageURL = new URL(
-										"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.jpg"
+										serverProperties.getProperty("iiif.osd") + serverProperties.getProperty("iiif.images") + filename + "/full/max/0/default.jpg"
 									);
-								InputStream in = imageURL.openStream();
+								HttpURLConnection myURLConnection = (HttpURLConnection)imageURL.openConnection();
+								myURLConnection.setRequestProperty ("SessionID", sessionID);
+								myURLConnection.setRequestMethod("GET");
+								InputStream in = myURLConnection.getInputStream();
 								in.close();	
 								ArrayList<String> sizes = new ArrayList<String>();
 								sizes.add("700");
@@ -142,10 +146,13 @@ public class ImageServiceImpl extends HttpServlet {
 								sizes.add("180");
 								for (String tnSize:sizes) {
 									imageURL = new URL(
-											"http://127.0.0.1:8182/iiif/2/" + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.jpg"
+											serverProperties.getProperty("iiif.osd") + serverProperties.getProperty("iiif.images") + filename + "/full/!" + tnSize + "," + tnSize + "/0/default.jpg"
 										);
 									System.out.println(imageURL);
-									in = imageURL.openStream();
+									myURLConnection = (HttpURLConnection)imageURL.openConnection();
+									myURLConnection.setRequestProperty ("SessionID", sessionID);
+									myURLConnection.setRequestMethod("GET");
+									in = myURLConnection.getInputStream();
 									in.close();																	
 								}
 							}

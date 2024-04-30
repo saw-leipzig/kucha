@@ -293,8 +293,8 @@ public class WallTree {
 
 
 	public void setWallTreeStore(Collection<WallTreeEntry> elements, boolean dropunselected, List<WallTreeEntry> wallIDs) {
+		Util.doLogging("");
 		for (WallTreeEntry item : elements) {
-			
 			wallTreeStore.add(item);
 			allEntries.add(item);
 			if (item.getChildren() != null) {
@@ -339,13 +339,18 @@ public class WallTree {
 	public void selectitems(List<WallTreeEntry> wallIDs) {
 		wallTree.setCheckStyle(CheckCascade.PARENTS);
 		for (WallTreeEntry wte : allEntries) {
+			if (cEntry != null) {
+					wte.setDimensions(cEntry.getDimensionsByWall(wte.getWallLocationID()));
+			}
 			Boolean found = false;
 			for (WallTreeEntry wall : wallIDs) {
 				if (wall.getWallLocationID()==wte.getWallLocationID()) {
 					found=true;
 					WallTreeEntry foundWte = wallTree.getStore().findModel(wte);
-					foundWte.setDimensions(wall.getDimensions());
-					foundWte.setPositions(wall.getPositions());
+					if (wall.getDimensions() != null){
+						foundWte.setDimensions(wall.getDimensions());
+						foundWte.setPositions(wall.getPositions());						
+					}
 					wallTree.setChecked(foundWte, CheckState.CHECKED);
 					break;
 				}

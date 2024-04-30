@@ -712,7 +712,9 @@ public class StaticTables {
 			}
 		});
 	}
-	
+	public void updateCave(int caveID, CaveEntry ce) {
+		caveEntryMap.put(caveID, ce);
+	}
 	public void loadCaves() {
 		caveEntryMap = new HashMap<Integer, CaveEntry>();
 		dbService.getCaves(new AsyncCallback<ArrayList<CaveEntry>>() {

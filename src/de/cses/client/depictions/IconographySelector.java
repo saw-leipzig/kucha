@@ -480,7 +480,7 @@ public class IconographySelector extends FramedPanel {
 	}
 	private void processParentIconographyEntry_select(IconographyEntry item, ArrayList<IconographyEntry> l) {	
 		for (IconographyEntry child : item.getChildren()) {
-			Boolean found =new Boolean(false);
+			Boolean found = false;
 			for (IconographyEntry entry : l) {
 				if (entry.getIconographyID()==child.getIconographyID()){
 					found=true;

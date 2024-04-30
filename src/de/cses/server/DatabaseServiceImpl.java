@@ -134,9 +134,9 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 		ArrayList<WallTreeEntry> districts = connector.getWallTreeEntriesByIconographyID(IconographyID, SessionID);
 		return districts;
 	}
-	public Map<Integer,ArrayList<WallDimensionEntry>>  getWallDimension(Integer caveID) throws IllegalArgumentException {
+	public ArrayList<WallDimensionEntry>  getWallDimension(Integer caveID) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
-		Map<Integer,ArrayList<WallDimensionEntry>> res = connector.getWallDimension(caveID);
+		ArrayList<WallDimensionEntry> res = connector.getWallDimension(caveID);
 		return res;
 	}
 		
@@ -588,7 +588,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#updateCaveEntry(de.cses.shared.CaveEntry)
 	 */
 
-	public boolean updateCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException {
+	public CaveEntry updateCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.updateCaveEntry(caveEntry);
 	}
@@ -597,7 +597,7 @@ public class DatabaseServiceImpl extends RemoteServiceServlet implements Databas
 	 * @see de.cses.client.DatabaseService#insertCaveEntry(de.cses.shared.CaveEntry)
 	 */
 
-	public int insertCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException {
+	public CaveEntry insertCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException {
 		MysqlConnector connector = MysqlConnector.getInstance();
 		return connector.insertCaveEntry(caveEntry);
 	}

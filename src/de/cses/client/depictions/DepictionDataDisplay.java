@@ -172,7 +172,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 			cave += entry.getCave().getOfficialNumber() + ((entry.getCave().getHistoricName() != null && entry.getCave().getHistoricName().length() > 0) ? " (" + entry.getCave().getHistoricName() + ")" : ""); 
 			realCaveSketchUri = UriUtils.fromString("/resource?cavesketch=" + entry.getCave().getOptionalCaveSketch() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 			if ( entry.getWallID() > 0) {
-				WallLocationEntry dummy = stab.getWallLocationEntries().get(entry.getCave().getWall(entry.getWallID()).getWallLocationID());
+				WallLocationEntry dummy = stab.getWallLocationEntries().get(entry.getWallID());
 				if (dummy!=null) {
 					
 				wall =dummy.getLabel();

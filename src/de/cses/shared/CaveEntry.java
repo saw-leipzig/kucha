@@ -56,7 +56,6 @@ public class CaveEntry extends AbstractEntry {
 	private ArrayList<C14DocumentEntry> c14DocumentList = new ArrayList<C14DocumentEntry>();
 	private ArrayList<CaveSketchEntry> caveSketchList = new ArrayList<CaveSketchEntry>();
 	private ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList = new ArrayList<AnnotatedBibliographyEntry>();
-	private Map<Integer,ArrayList<WallDimensionEntry>> wallDimensions = new HashMap<Integer,ArrayList<WallDimensionEntry>>();
 
 	public CaveEntry() { 
 		
@@ -65,7 +64,7 @@ public class CaveEntry extends AbstractEntry {
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int siteID, int districtID,
 			int regionID, int orientationID, String stateOfPerservation, String findings, String notes, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
 			int caveGroupID, String optionalCaveSketch, String caveLayoutComments, boolean hasVolutedHorseShoeArch, boolean hasSculptures, boolean hasClayFigures, boolean hasImmitationOfMountains,
-			boolean hasHolesForFixationOfPlasticalItems, boolean hasWoodenConstruction, int accessLevel, String lastChangedOn, Map<Integer,ArrayList<WallDimensionEntry>> wallDimensions) {
+			boolean hasHolesForFixationOfPlasticalItems, boolean hasWoodenConstruction, int accessLevel, String lastChangedOn) {
 		this.caveID = caveID;
 		this.officialNumber = officialNumber;
 		this.historicName = historicName;
@@ -92,14 +91,13 @@ public class CaveEntry extends AbstractEntry {
 		this.hasWoodenConstruction = hasWoodenConstruction;
 		this.setAccessLevel(accessLevel);
 		this.setModifiedOn(lastChangedOn);
-		this.wallDimensions = wallDimensions;
 	}
 	
 	public CaveEntry clone() {
 		CaveEntry clonedCE = new CaveEntry(caveID, officialNumber, historicName, optionalHistoricName, caveTypeID, siteID, districtID,
 				regionID, orientationID, stateOfPerservation, findings, notes, firstDocumentedBy, firstDocumentedInYear, preservationClassificationID,
 				caveGroupID, optionalCaveSketch, caveLayoutComments, hasVolutedHorseShoeArch, hasSculptures, hasClayFigures, hasImmitationOfMountains, 
-				hasHolesForFixationOfPlasticalItems, hasWoodenConstruction, this.getAccessLevel(), this.modifiedOn, this.wallDimensions);
+				hasHolesForFixationOfPlasticalItems, hasWoodenConstruction, this.getAccessLevel(), this.modifiedOn);
 		ArrayList<CaveAreaEntry> clonedCaveAreaList = new ArrayList<CaveAreaEntry>();
 		for (CaveAreaEntry cae : caveAreaList) {
 			clonedCaveAreaList.add(cae.clone());
@@ -160,14 +158,6 @@ public class CaveEntry extends AbstractEntry {
 
 	public void setCaveID(int caveID) {
 		this.caveID = caveID;
-	}
-
-	public Map<Integer,ArrayList<WallDimensionEntry>> getWallDimensions() {
-		return this.wallDimensions;
-	}
-
-	public void setWallDimensions(Map<Integer,ArrayList<WallDimensionEntry>> wallDimensions) {
-		this.wallDimensions = wallDimensions;
 	}
 
 	public String getOfficialNumber() {
@@ -333,7 +323,7 @@ public class CaveEntry extends AbstractEntry {
 				return we;
 			}
 		}
-		WallEntry newEntry = new WallEntry(caveID, wallLocationID, 0, 0, 0);
+		WallEntry newEntry = new WallEntry(caveID, wallLocationID, 0, 0, 0, null);
 		wallList.add(newEntry);
 		return newEntry;
 	}
@@ -480,5 +470,21 @@ public class CaveEntry extends AbstractEntry {
 	public void setRelatedBibliographyList(ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList) {
 		this.relatedBibliographyList = relatedBibliographyList;
 	}
-	
+	public boolean setWallDimensionsInWall(int wallID, ArrayList<WallDimensionEntry> dimensions) {
+		WallEntry we = this.getWall(wallID);		
+		if (we != null) {
+			we.setDimensions(dimensions);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	public ArrayList<WallDimensionEntry> getDimensionsByWall (int wallID){
+		for (WallEntry we: getWallList()) {
+			if (we.getWallLocationID() == wallID) {
+				return we.getDimensions();
+			}
+		}
+		return new ArrayList<WallDimensionEntry>();
+	}
 }

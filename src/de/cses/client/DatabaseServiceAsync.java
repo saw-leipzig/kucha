@@ -109,7 +109,7 @@ public interface DatabaseServiceAsync {
 	
 	void getWallSketches(AsyncCallback<ArrayList<WallSketchEntry>> callback) throws IllegalArgumentException;	
 	
-	void getWallDimension(Integer caveID, AsyncCallback<Map<Integer,ArrayList<WallDimensionEntry>>> callback) throws IllegalArgumentException;	
+	void getWallDimension(Integer caveID, AsyncCallback<ArrayList<WallDimensionEntry>> callback) throws IllegalArgumentException;	
 	
 	void insertWallSketchEntry(WallSketchEntry wse, AsyncCallback<Integer> callback) throws IllegalArgumentException;	
 	
@@ -262,9 +262,9 @@ public interface DatabaseServiceAsync {
 	void getPreservationClassifications(AsyncCallback<ArrayList<PreservationClassificationEntry>> asyncCallback)
 			throws IllegalArgumentException;
 
-	void updateCaveEntry(CaveEntry caveEntry, AsyncCallback<Boolean> asyncCallback) throws IllegalArgumentException;
+	void updateCaveEntry(CaveEntry caveEntry, AsyncCallback<CaveEntry> asyncCallback) throws IllegalArgumentException;
 
-	void insertCaveEntry(CaveEntry caveEntry, AsyncCallback<Integer> asyncCallback) throws IllegalArgumentException;
+	void insertCaveEntry(CaveEntry caveEntry, AsyncCallback<CaveEntry> asyncCallback) throws IllegalArgumentException;
 
 	void getCaveGroups(AsyncCallback<ArrayList<CaveGroupEntry>> asyncCallback) throws IllegalArgumentException;
 

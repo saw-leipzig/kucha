@@ -14,6 +14,7 @@
 package de.cses.server;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -282,6 +283,8 @@ public class ResourceDownloadServlet extends HttpServlet {
 			myURLConnection.setRequestProperty ("SessionID", sessionID);
 			myURLConnection.setRequestMethod("GET");
 			InputStream in = myURLConnection.getInputStream();
+			response.setContentType("image/jpg");
+
 			byte buffer[] = new byte[4096];
 			int bytesRead = 0;
 			while ((bytesRead = in.read(buffer)) > 0) {

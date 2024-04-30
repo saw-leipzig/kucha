@@ -100,7 +100,7 @@ public interface DatabaseService extends RemoteService {
 	
 	Map<Integer,String> getMasterImageFromOrnament(int tnSize,String sessionID) throws IllegalArgumentException;
 
-	Map<Integer,ArrayList<WallDimensionEntry>> getWallDimension(Integer caveID) throws IllegalArgumentException;
+	ArrayList<WallDimensionEntry> getWallDimension(Integer caveID) throws IllegalArgumentException;
 
 	WallSketchEntry getWallSketchEntryByID(int wallSketchID) throws IllegalArgumentException;
 
@@ -237,9 +237,9 @@ public interface DatabaseService extends RemoteService {
 	ArrayList<PreservationClassificationEntry> getPreservationClassifications();
 
 
-	boolean updateCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException;
+	CaveEntry updateCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException;
 
-	int insertCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException;
+	CaveEntry insertCaveEntry(CaveEntry caveEntry) throws IllegalArgumentException;
 
 	ArrayList<CaveGroupEntry> getCaveGroups() throws IllegalArgumentException;
 

@@ -14,7 +14,6 @@
 package de.cses.shared;
 
 import java.util.ArrayList;
-import java.text.Normalizer;
 
 public class IconographyEntry extends AbstractEntry {
 	

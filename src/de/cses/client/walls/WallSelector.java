@@ -43,6 +43,7 @@ import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.WallEntry;
 import de.cses.shared.WallLocationEntry;
+import de.cses.shared.WallTreeEntry;
 
 /**
  * @author alingnau
