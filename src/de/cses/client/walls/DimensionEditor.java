@@ -125,6 +125,7 @@ import de.cses.shared.CavePart;
 import de.cses.shared.CoordinateEntry;
 import de.cses.shared.CoordinatesEntry;
 import de.cses.shared.DepictionEntry;
+import de.cses.shared.EmptySpotEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.OrnamentFunctionEntry;
 import de.cses.shared.OrnamentPositionEntry;
@@ -390,7 +391,33 @@ public class DimensionEditor implements IsWidget {
 		vlcWallViewEditor.add(hlcWallLowerView, new VerticalLayoutData(1, .4));
 		vlcWallViewEditor.add(hlcWallButtomView, new VerticalLayoutData(1, .2));
 		FramedPanel editDimensionFP = new FramedPanel();
-		editDimensionFP.setHeading("Edit Register");		
+		editDimensionFP.setHeading("Edit Register");
+		ToolButton deleteDimension = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
+		deleteDimension.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				Boolean found = false;
+				for (CoordinateEntry ce: wde.getCoordinates()){
+					if (!ce.isdeleted()) {
+						found = true;
+					}
+				}
+				for (EmptySpotEntry ese: wde.getEmptySpots()){
+					if (!ese.isdeleted()) {
+						found = true;
+					}
+				}
+				if (found) {
+					Info.display("Delete aborted!","there are still entries in this Register System! only empty Register Systems are to be deleted.");
+				} else {
+					wde.delete();
+					del.deleteDimension(wde);
+				}
+			}
+		});
+		deleteDimension.setToolTip("Delete this Dimension. Works only, if no entries are set!");
+		editDimensionFP.addTool(deleteDimension);
 		editDimensionFP.add(vlcWallViewEditor);
 		mainView.add(editDimensionFP, new VerticalLayoutData(1.0, .35));
 		mainView.add(positionTabPanel, new VerticalLayoutData(1.0, .65));

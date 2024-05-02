@@ -24,5 +24,7 @@ public interface DimensionEditorListener {
 	//public void iconographySelected(IconographyEntry entry);
 	//public void cancel();
 	public void saveDimension(WallDimensionEntry wde);
+	
+	public void deleteDimension(WallDimensionEntry wde);
 
 }

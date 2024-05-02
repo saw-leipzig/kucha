@@ -74,9 +74,23 @@ public class AbstractWallEntry extends AbstractEntry {
 	public void setDimensions(ArrayList<WallDimensionEntry> de) {
 		this.wallDimensions=de;
 	}
+	
 	public ArrayList<WallDimensionEntry> getDimensions() {
 		return this.wallDimensions;
 	}
+	
+	public void replaceDimensions(WallDimensionEntry wde) {
+		ArrayList<WallDimensionEntry> newDimensions = new ArrayList<WallDimensionEntry>();
+		for (WallDimensionEntry wallDimension: wallDimensions) {
+			if (wde.getWallDimensionID() != wallDimension.getWallDimensionID()) {
+				newDimensions.add(wallDimension);
+			} else {
+				newDimensions.add(wde);
+			}
+		}
+		this.wallDimensions = newDimensions;
+	}
+	
 	public void addDimension(WallDimensionEntry de) {
 		ArrayList<WallDimensionEntry> updatedDimension = new ArrayList<WallDimensionEntry>();
 		boolean found = false;

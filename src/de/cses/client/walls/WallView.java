@@ -46,6 +46,8 @@ import com.sencha.gxt.widget.core.client.form.NumberField;
 import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.SimpleComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
 import de.cses.client.DatabaseService;
 import de.cses.client.StaticTables;
@@ -147,20 +149,28 @@ public class WallView implements IsWidget{
 		Util.doLogging("dimension length" + Integer.toString(wte.getDimensions().size()));
 		if (wte.getDimensions() != null) {
 			for (WallDimensionEntry wde: this.wte.getDimensions()) {
-				Util.doLogging("found wall register");
-				DimensionEditorListener del = new DimensionEditorListener() {
+				if (!wde.isdeleted()) {
+					Util.doLogging("found wall register");
+					DimensionEditorListener del = new DimensionEditorListener() {
 
-					@Override
-					public void saveDimension(WallDimensionEntry wde) {
-						Util.doLogging("saveWallDimension" + wde.getName());
-						addDimensionToWall(wde);
+						@Override
+						public void saveDimension(WallDimensionEntry wde) {
+							Util.doLogging("saveWallDimension" + wde.getName());
+							addDimensionToWall(wde);
+							
+						}
+						@Override
+						public void deleteDimension(WallDimensionEntry wde) {
+							Util.doLogging("deleteWallDimension" + wde.getName());
+							wte.replaceDimensions(wde);
+							setWall(wte);
+						}
 						
-					}
+					};
+					DimensionEditor deEntry = new DimensionEditor(wde,del, correspondingDepictionEntry);
 					
-				};
-				DimensionEditor deEntry = new DimensionEditor(wde,del, correspondingDepictionEntry);
-				
-				tabPanel.add(deEntry, new TabItemConfig(wde.getName(), true));
+					tabPanel.add(deEntry, new TabItemConfig(wde.getName(), false));					
+				}
 			}
 
 			mainPanel.center();			
@@ -230,6 +240,14 @@ public class WallView implements IsWidget{
 
 				@Override
 				public void onSelection(SelectionEvent<PositionEntry> arg0) {
+
+				}
+				
+			});
+			PositionSelectionLV.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<PositionEntry>() {
+
+				@Override
+				public void onSelectionChanged(SelectionChangedEvent<PositionEntry> event) {
 					ArrayList<PositionEntry> positions = new ArrayList<PositionEntry>();
 					for (PositionEntry pe : PositionSelectionLV.getSelectionModel().getSelectedItems()) {
 						Util.doLogging("setting new Position");
