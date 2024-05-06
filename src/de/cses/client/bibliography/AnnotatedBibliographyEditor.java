@@ -1332,7 +1332,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 				addKeywordFP.setHeading("Add Keyword");
 				TextField keywordField = new TextField();
 				keywordField.setAllowBlank(false);
-				keywordField.addValidator(new MaxLengthValidator(32));
+				keywordField.addValidator(new MaxLengthValidator(64));
 				keywordField.setValue("");
 				keywordField.setWidth(200);
 				addKeywordFP.add(keywordField);
@@ -1499,7 +1499,7 @@ public class AnnotatedBibliographyEditor extends AbstractEditor {
 				});
 				keywordField = new TextField();
 				keywordField.setAllowBlank(false);
-				keywordField.addValidator(new MaxLengthValidator(32));
+				keywordField.addValidator(new MaxLengthValidator(64));
 				keywordField.setValue("");
 				keywordField.setWidth(200);
 				VerticalLayoutContainer editkwVLC = new VerticalLayoutContainer();

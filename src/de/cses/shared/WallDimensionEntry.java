@@ -203,7 +203,7 @@ public class WallDimensionEntry extends AbstractEntry {
 	}
 
 	public String getName() {
-		return name;
+		return name == null? "": name;
 	}
 	
 

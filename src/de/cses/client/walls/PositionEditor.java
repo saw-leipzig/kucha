@@ -181,9 +181,11 @@ public class PositionEditor {
 		this.isWallDimension = isWallDimension;
 		this.isCheckable = isCheckable;
 		Collection<WallTreeEntry> wtes = StaticTables.getInstance().getWallTreeEntries().values();
-		for (WallEntry wte : entry.getWallList()) {
-			if (entry != null) {
-				wte.setDimensions(entry.getDimensionsByWall(wte.getWallLocationID()));
+		if (entry != null) {			
+			for (WallEntry wte : entry.getWallList()) {
+				if (entry != null) {
+					wte.setDimensions(entry.getDimensionsByWall(wte.getWallLocationID()));
+				}
 			}
 		}
 		if (isCheckable) {
