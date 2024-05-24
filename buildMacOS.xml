@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="war" name="KUCHA" xmlns:if="ant:if">
 	<!-- Configure path to GWT SDK -->
-	<!-- property name="GWT_HOME" value="/home/erik/.p2/pool/plugins/com.gwtplugins.gwt.eclipse.sdkbundle.gwt28_2.8.0.201710131939/gwt-2.8.1" /> -->
-	<property name="GWT_HOME" value="/home/erik/gwt-2.9.0" />
+	<!--property name="GWT_HOME" value="/home/erik/.p2/pool/plugins/com.gwtplugins.gwt.eclipse.sdkbundle.gwt29_2.9.0.202303131102/gwt-2.9.0" />--> 
+	<property name="GWT_HOME" value="/home/erik/GWT/gwt-2.10.0"/>
     <property name="gwt.logging.logLevel" value="INFO"/>          
     <property name="gwt.logging.enabled" value="TRUE"/>
     <property name="gwt.logging.consoleHandler" value="DISABLED"/> 
@@ -11,7 +11,7 @@
 	<!-- enable the following property for devmode debugging in an IDE; for Eclipse create an "Remote Java Application" launcher conneting to port 8000 -->
 	<property name="enable.debug.port" value="false" />
 
-	<property name="target.java.version" value="1.8" />
+	<property name="target.java.version" value="11" />
 	<property name="main.class" value="de.cses.KuchaApplication" />
 	<path id="gwt.class.path">
 		<pathelement location="${GWT_HOME}/gwt-servlet.jar" />

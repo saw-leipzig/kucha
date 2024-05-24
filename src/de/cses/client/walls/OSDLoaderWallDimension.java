@@ -197,7 +197,7 @@ public class OSDLoaderWallDimension extends AbstractOSDLoader {
         	if (!_self.@de.cses.client.walls.OSDLoaderWallDimension::isEmptyRow(Ljava/lang/String;)(j.toString())){
         		rowNumber += 1;
         	}
-        	var colNumber = direction === 0 ? 0: isRect? cols + 1: isOdd(rowNumber) === 0? cols + 1 : cols    
+        	var colNumber = direction === 0 ? 0: isRect? cols + 1: isOdd(rowNumber) === 0? cols  : cols  + 1  
           for(var i = 1; i < (cols+1); i+=1){
           	var depictionIDs = getDepictionIDs(i,j)
           	var isEmpty = _self.@de.cses.client.walls.OSDLoaderWallDimension::isEmpty(Ljava/lang/String;Ljava/lang/String;)(i.toString(), j.toString())

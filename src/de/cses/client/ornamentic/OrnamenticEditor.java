@@ -1,6 +1,7 @@
 package de.cses.client.ornamentic;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,8 @@ import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.XTemplates;
+import com.sencha.gxt.core.client.Style.SelectionMode;
+import com.sencha.gxt.core.client.XTemplates.XTemplate;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -98,6 +101,8 @@ import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
 import de.cses.shared.AnnotationEntry;
 import de.cses.shared.CaveEntry;
+import de.cses.shared.DepictionEntry;
+import de.cses.shared.DepictionSearchEntry;
 import de.cses.shared.ExternalRessourceEntry;
 import de.cses.shared.IconographyEntry;
 import de.cses.shared.ImageEntry;
@@ -122,8 +127,11 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	protected ImageSelector imageSelector;
 	private DialogBox showTreeEdit = new DialogBox();
 	private ListView<ImageEntry, ImageEntry> imageListView;
+	private ListView<DepictionEntry, DepictionEntry> depictionListView;
 	private ListStore<ImageEntry> imageEntryLS;
 	private ListStore<OrnamentClassEntry> ornamentClassEntryList;
+	private SourcePRProperties sourcePRProps = GWT.create(SourcePRProperties.class);;
+	private ListStore<DepictionEntry> sourcePREntryList;
 	private ImageProperties imgProperties;
 	private OrnamentEntry ornamentEntry = null;;
 	private Map<Integer,String> imgdic;
@@ -144,6 +152,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	private TextArea references;
 	private FramedPanel ftree;
 	private FramedPanel ftreeedit;
+	private FramedPanel fpSource;
 	private OrnamenticIconographyTree ornamentTrees;
 	private ToolButton saveButton;
 	private ArrayList<IconographyEntry> iconographyRelationList;
@@ -177,6 +186,14 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 	// Viele der Eigenschaften der Ornamenten wurden inzwischen umbenannt (siehe OrnamentEntry f�r Kommentare zu den Eigenschafen)
 	
 	// 
+	interface DepictionViewTemplates extends XTemplates {
+//		@XTemplate("<div style='border-style: solid; border-color: #99ff66; border-width: 3px;'><img src=\"{imageUri}\" style=\"width: 400px; height: auto; align-content: center; margin: 10px;\"><br>{title}<br> {shortName}")
+		@XTemplate("<figure style='margin: 0;'>"
+				+ "<img src='{masterImageUri}' style='position: relative; padding: 5px; width: 100px;display: block; margin:auto; background: white;'>"
+				+ "<figcaption style='font-size:12px; padding: 10px; text-align: center;'>{shortName} ({depictionID})</figcaption></figure>")
+		SafeHtml depiction(SafeUri masterImageUri, String shortName, String depictionID);
+
+	}
 
 	public OrnamenticEditor(OrnamentEntry ornamentEntry, EditorListener av) {
 		this.addEditorListener(av);
@@ -505,8 +522,45 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 			}
 
 		}
+		sourcePREntryList = new ListStore<DepictionEntry>(sourcePRProps.depictionID());
+		SimpleSafeHtmlCell<DepictionEntry> imageCell = new SimpleSafeHtmlCell<DepictionEntry>(new AbstractSafeHtmlRenderer<DepictionEntry>() {
+			final DepictionViewTemplates depictionViewTemplates = GWT.create(DepictionViewTemplates.class);
+
+			public SafeHtml render(DepictionEntry item) {
+				SafeUri imageUri = UriUtils.fromString("resource?imageID=" + item.getMasterImageID() + "&thumb=300" + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+				return depictionViewTemplates.depiction(imageUri, item.getShortName(), Integer.toString(item.getDepictionID()));
+			}
+
+		});
+		depictionListView = new ListView<DepictionEntry, DepictionEntry>(sourcePREntryList, new IdentityValueProvider<DepictionEntry>(), imageCell);
+		depictionListView.getSelectionModel().setSelectionMode(SelectionMode.SIMPLE);
+
+		fpSource = new FramedPanel();
+		fpSource.setHeading("Source of Typical Picture");
+		DepictionSearchEntry searchEntry = new DepictionSearchEntry();
+		for (ImageEntry ie: ornamentEntry.getImages()) {
+			searchEntry.getImageIdList().add(ie.getImageID());		
+		}
+		dbService.searchDepictions(searchEntry, new AsyncCallback<ArrayList<DepictionEntry>>() {
+
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+			}
 
 
+			@Override
+			public void onSuccess(ArrayList<DepictionEntry> result) {
+				for (DepictionEntry de: result) {
+					sourcePREntryList.add(de);
+					if (ornamentEntry.getSourceDepictionIDs().contains(de.getDepictionID())) {
+						depictionListView.getSelectionModel().select(true, de);
+					}
+				}
+				
+			}
+		});
+
+		fpSource.add(depictionListView);
 		// Aufbau der Felder auf der Client Seite
 		TabPanel tabpanel = new TabPanel();
 		tabpanel.setSize( Integer.toString(Window.getClientWidth()/100*95),Integer.toString(Window.getClientHeight()/100*95));
@@ -596,75 +650,10 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					}
 				});
 		panel.add(ftree, new VerticalLayoutData(1.0, 0.275));
+		panel.add(fpSource, new VerticalLayoutData(1.0, 0.275));
 		panel.add(horizonttourData, new VerticalLayoutData(1.0, .125));
-		header = new FramedPanel();
-		header.setHeading("Motif");
-		ornamentClassComboBox.setTriggerAction(TriggerAction.ALL);
-		header.add(ornamentClassComboBox);
 		//header.add(iconographySelector);
 		//panel.add(header, new VerticalLayoutData(1.0, .125));
-		ToolButton addOrnamentClassButton = new ToolButton(new IconConfig("addButton", "addButtonOver"));
-		addOrnamentClassButton.setToolTip(Util.createToolTip("Add Ornament Motif"));
-
-		FramedPanel ornamentClassFramedPanel = new FramedPanel();
-		ornamentClassFramedPanel.setHeading("New Ornament Motif");
-
-		ToolButton saveOrnamentClass = new ToolButton(new IconConfig("saveButton", "saveButtonOver"));
-		saveOrnamentClass.setToolTip(Util.createToolTip("save"));
-		ornamentClassFramedPanel.add(saveOrnamentClass);
-		Util.doLogging("Create form von ornamenticeditor gestartet");
-
-		ToolButton cancelOrnamentClass = new ToolButton(new IconConfig("closeButton", "closeButtonOver"));
-		cancelOrnamentClass.setToolTip(Util.createToolTip("cancel"));
-
-		ornamentClassFramedPanel.addTool(cancelOrnamentClass);
-		ornamentClassFramedPanel.addTool(saveOrnamentClass);
-
-		HorizontalLayoutContainer newOrnamentClassLayoutPanel = new HorizontalLayoutContainer();
-		TextField newOrnamentClassTextField = new TextField();
-		newOrnamentClassLayoutPanel.add(newOrnamentClassTextField);
-		ornamentClassFramedPanel.add(newOrnamentClassLayoutPanel);
-		addOrnamentClassButton.addSelectHandler(new SelectHandler() {
-
-			@Override
-			public void onSelect(SelectEvent event) {
-				PopupPanel newOrnamentClassPopup = new PopupPanel();
-				newOrnamentClassPopup.add(ornamentClassFramedPanel);
-				ornamentClassFramedPanel.setSize("150", "80");
-				newOrnamentClassPopup.center();
-				cancelOrnamentClass.addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						newOrnamentClassPopup.hide();
-					}
-				});
-				saveOrnamentClass.addSelectHandler(new SelectHandler() {
-
-					@Override
-					public void onSelect(SelectEvent event) {
-						OrnamentClassEntry entry = new OrnamentClassEntry();
-						entry.setName(newOrnamentClassTextField.getText());
-						dbService.addOrnamentClass(entry, new AsyncCallback<OrnamentClassEntry>() {
-
-							public void onFailure(Throwable caught) {
-								caught.printStackTrace();
-							}
-
-							@Override
-							public void onSuccess(OrnamentClassEntry result) {
-								//Util.doLogging(this.getClass().getName() + " added " + result.getName());
-								ornamentClassEntryList.add(result);
-								newOrnamentClassPopup.hide();
-							}
-						});
-						newOrnamentClassPopup.hide();
-					}
-				});
-
-			}
-		});
-		header.addTool(addOrnamentClassButton);
 
 		ToolButton renameOrnamentClassButton = new ToolButton(new IconConfig("editButton", "editButtonOver"));
 		renameOrnamentClassButton
@@ -1702,6 +1691,11 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		if (ornamentEntry == null) {
 			ornamentEntry = new OrnamentEntry();
 		}
+		ArrayList<Integer> sourceDepictionIDs = new ArrayList<Integer>();
+		for (DepictionEntry de: depictionListView.getSelectionModel().getSelectedItems()) {
+			sourceDepictionIDs.add(de.getDepictionID());
+		}
+		ornamentEntry.setSourceDepictionIDs(sourceDepictionIDs);
 		ornamentEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
 		ArrayList<OrnamentCaveRelation> corList = new ArrayList<OrnamentCaveRelation>();
 		for (int i = 0; i < caveOrnamentRelationList.size(); i++) {
@@ -1715,6 +1709,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		for (int i = 0; i < imageEntryLS.size(); i++) {
 			ieList.add(imageEntryLS.get(i));
 		}
+		
 		ornamentEntry.setImages(ieList);
 		ornamentEntry.setVirtualTourOrder((double) this.tourOrderField.getValue());
 		ornamentEntry.setIsVirtualTour(this.isVirtualTour.getValue());
@@ -1749,7 +1744,7 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 					saveButton.enable();
 					if (result > 0) {
 						Util.doLogging(this.getClass().getName() + " saving sucessful");
-						ornamentEntry.setOrnamentID(result);
+						ornamentEntry.setTypicalID(result);
 						// updateEntry(ornamentEntry);
 						if (close) {
 							closeEditor(ornamentEntry);
@@ -1796,10 +1791,21 @@ public class OrnamenticEditor extends AbstractEditor implements ImageSelectorLis
 		SafeHtml ornamentClass(String name);
 	}
 
+	interface SourcePRViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}</div>")
+		SafeHtml sourcePRView(String name);
+	}
+
 	interface OrnamentClassProperties extends PropertyAccess<OrnamentClassEntry> {
 		ModelKeyProvider<OrnamentClassEntry> ornamentClassID();
 
 		LabelProvider<OrnamentClassEntry> name();
+	}
+
+	interface SourcePRProperties extends PropertyAccess<DepictionEntry> {
+		ModelKeyProvider<DepictionEntry> depictionID();
+
+		LabelProvider<DepictionEntry> shortNameAndID();
 	}
 
 	interface OrnamentComponentsProperties extends PropertyAccess<OrnamentComponentsEntry> {

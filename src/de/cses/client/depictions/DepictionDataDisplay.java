@@ -39,7 +39,6 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.safehtml.shared.UriUtils;
-import com.google.gwt.thirdparty.debugging.sourcemap.Base64;
 import com.google.gwt.user.client.ui.HTML;
 import com.sencha.gxt.data.shared.SortDir;
 import com.sencha.gxt.data.shared.Store.StoreSortInfo;
@@ -170,7 +169,7 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 				cave += stab.getSiteEntries().get(entry.getCave().getSiteID()).getShortName() + ": ";
 			}
 			cave += entry.getCave().getOfficialNumber() + ((entry.getCave().getHistoricName() != null && entry.getCave().getHistoricName().length() > 0) ? " (" + entry.getCave().getHistoricName() + ")" : ""); 
-			realCaveSketchUri = UriUtils.fromString("/resource?cavesketch=" + entry.getCave().getOptionalCaveSketch() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
+			realCaveSketchUri = UriUtils.fromString("resource?cavesketch=" + entry.getCave().getOptionalCaveSketch() + UserLogin.getInstance().getUsernameSessionIDParameterForUri());
 			if ( entry.getWallID() > 0) {
 				WallLocationEntry dummy = stab.getWallLocationEntries().get(entry.getWallID());
 				if (dummy!=null) {
@@ -189,7 +188,6 @@ public class DepictionDataDisplay extends AbstractDataDisplay {
 		for (PreservationAttributeEntry pae : entry.getPreservationAttributesList()) {
 			stateOfPreservation += stateOfPreservation.length() > 0 ? ", " + pae.getName() : pae.getName();
 		}
-		GWT.debugger();
 		ImageEntry masterImage = null;
 		for (ImageEntry ie: entry.getRelatedImages()) {
 			if (ie.getImageID() == entry.getMasterImageID()) {

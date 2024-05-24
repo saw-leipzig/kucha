@@ -376,6 +376,10 @@ public class DepictionEntry extends AbstractEntry {
 		this.inventoryNumber = inventoryNumber;
 	}
 
+	public String getShortNameAndID() {
+		return shortName + " (" + Integer.toString(depictionID) + ")";
+	}
+
 	public String getShortName() {
 		return shortName;
 	}

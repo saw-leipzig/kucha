@@ -581,9 +581,11 @@ public class DepictionEditor extends AbstractEditor {
 		for (CaveEntry ce : StaticTables.getInstance().getCaveEntries().values()) {
 			if (correspondingDepictionEntry.getCave() != null) {
 				if (ce.getCaveID() == correspondingDepictionEntry.getCave().getCaveID()) {
+					correspondingDepictionEntry.setCave(ce);
 					caveEntryLS.add(correspondingDepictionEntry.getCave());
 					wallSelectorPanel.setCave(correspondingDepictionEntry.getCave());				
 					caveSelectionCB.setValue(correspondingDepictionEntry.getCave());
+					
 				}				
 			} else {
 				caveEntryLS.add(ce);				

@@ -13,16 +13,12 @@
  */
 package de.cses.server.mysql;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,7 +26,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.math.BigInteger;
-import java.util.Base64;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -45,10 +40,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -62,13 +53,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import org.jsoup.safety.Safelist;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -79,14 +67,10 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHost;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Node;
-import org.jsoup.nodes.XmlDeclaration;
 import org.jsoup.parser.Parser;
-import org.xhtmlrenderer.layout.SharedContext;
-import org.xhtmlrenderer.pdf.ITextRenderer;
+import org.jsoup.safety.Safelist;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -94,20 +78,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.thirdparty.json.JSONArray;
 import com.google.gwt.thirdparty.json.JSONException;
 import com.google.gwt.thirdparty.json.JSONObject;
 //import javax.mail.Authenticator;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import com.lowagie.text.DocumentException;
-import com.sencha.gxt.core.client.XTemplates.XTemplate;
 
-import de.cses.client.Util;
-import de.cses.client.caves.CaveType;
-import de.cses.client.user.UserLogin;
 import de.cses.server.ServerProperties;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.AnnotatedBibliographyEntry;
@@ -126,6 +102,7 @@ import de.cses.shared.CaveSketchEntry;
 import de.cses.shared.CaveTypeEntry;
 import de.cses.shared.CeilingTypeEntry;
 import de.cses.shared.CollectionEntry;
+import de.cses.shared.CoordinateEntry;
 import de.cses.shared.CoordinatesEntry;
 import de.cses.shared.CurrentLocationEntry;
 import de.cses.shared.DepictionEntry;
@@ -158,7 +135,6 @@ import de.cses.shared.OrnamentPositionEntry;
 import de.cses.shared.OrnamenticSearchEntry;
 import de.cses.shared.PhotographerEntry;
 import de.cses.shared.PositionEntry;
-import de.cses.shared.CoordinateEntry;
 import de.cses.shared.PreservationAttributeEntry;
 import de.cses.shared.PreservationClassificationEntry;
 import de.cses.shared.PublicationEntry;
@@ -1016,32 +992,100 @@ public class MysqlConnector implements IsSerializable {
     				}
     	        } else if (index == "/kucha_discussion") {
     				String filename=serverProperties.getProperty("home.jsons")+"discussions.json";
-    				File versionfile = new File(filename);
-    				versionfile.createNewFile(); 
-    				try {
-    					Writer versionOutput = new BufferedWriter(new FileWriter(filename, true));
-    					versionOutput.append("{ \"index\" : { \"_index\" : \"" + index.replace("/", "") + "\", \"_id\" : \"" + ID + "\" } }" + System.lineSeparator());
-    					versionOutput.append(json+System.lineSeparator());
-    					versionOutput.close();
-
-    				}catch (IOException e) {
-    				    System.err.println(e);
+    				File f = new File(filename);
+    				String inputStr = "";
+    				if(f.exists() && !f.isDirectory()) {
+        		        BufferedReader file = new BufferedReader(new FileReader(f));
+        		        StringBuffer inputBuffer = new StringBuffer();
+        		        Boolean foundLine = false;
+        		        while ((line = file.readLine()) != null) {
+        		        	if (foundLine) {
+            		            inputBuffer.append(json);
+            		            inputBuffer.append('\n'); 
+            		            foundLine = false;
+        		        	} else {
+            		            inputBuffer.append(line);
+            		            inputBuffer.append('\n');
+            		            if (line.contains("{ \"index\" : { \"_index\" : \"" + index.replace("/", "") + "\", \"_id\" : \"" + ID + "\" } }")) {
+            		            	foundLine = true; 
+            		            }    		        		
+        		        	}
+        		        }
+        		        file.close();    					
+        		        inputStr = inputBuffer.toString();
     				}
-    	        	
+    		        if (!inputStr.contains("{ \"index\" : { \"_index\" : \"" + index.replace("/", "") + "\", \"_id\" : \"" + ID + "\" } }")) {
+    		        	inputStr += "{ \"index\" : { \"_index\" : \"" + index.replace("/", "") + "\", \"_id\" : \"" + ID + "\" } }" + System.lineSeparator()+ json + System.lineSeparator();
+    		        }
+    		        File index_discussion = new File(serverProperties.getProperty("home.jsons")+"discussions.json");
+    		        index_discussion.createNewFile();
+    		        FileOutputStream fileOut = new FileOutputStream(index_discussion);
+    		        fileOut.write(inputStr.getBytes());
+    		        fileOut.close();
     	        } else if (index == "/kucha_news") {
     				String filename=serverProperties.getProperty("home.jsons")+"news.json";
-    				File versionfile = new File(filename);
-    				versionfile.createNewFile(); 
-    				try {
-    					Writer versionOutput = new BufferedWriter(new FileWriter(filename, true));
-    					versionOutput.append("{ \"index\" : { \"_index\" : \"" + index.replace("/", "") + "\", \"_id\" : \"" + ID + "\" } }" + System.lineSeparator());
-    					versionOutput.append(json+System.lineSeparator());
-    					versionOutput.close();
-
-    				}catch (IOException e) {
-    				    System.err.println(e);
+    				File f = new File(filename);
+    				String inputStr = "";
+    				if(f.exists() && !f.isDirectory()) {
+        		        BufferedReader file = new BufferedReader(new FileReader(f));
+        		        StringBuffer inputBuffer = new StringBuffer();
+        		        Boolean foundLine = false;
+        		        while ((line = file.readLine()) != null) {
+        		        	if (foundLine) {
+            		            inputBuffer.append(json);
+            		            inputBuffer.append('\n'); 
+            		            foundLine = false;
+        		        	} else {
+            		            inputBuffer.append(line);
+            		            inputBuffer.append('\n');
+            		            if (line.contains( "{ \"index\" : { \"_index\" : \"" + index.replace("/", "") + "\", \"_id\" : \"" + ID + "\" } }")) {
+            		            	foundLine = true; 
+            		            }    		        		
+        		        	}
+        		        }
+        		        file.close();    					
+        		        inputStr = inputBuffer.toString();
     				}
-    	        	
+    		        if (!inputStr.contains("{ \"index\" : { \"_index\" : \"" + index.replace("/", "") + "\", \"_id\" : \"" + ID + "\" } }")) {
+    		        	inputStr += "{ \"index\" : { \"_index\" : \"" + index.replace("/", "") + "\", \"_id\" : \"" + ID + "\" } }" + System.lineSeparator()+ json + System.lineSeparator();
+    		        }
+    		        File index_news = new File(serverProperties.getProperty("home.jsons")+"news.json");
+    		        index_news.createNewFile();
+    		        FileOutputStream fileOut = new FileOutputStream(index_news);
+    		        fileOut.write(inputStr.getBytes());
+    		        fileOut.close();
+    	        } else if (index.contains("kucha_deep")) {
+    				String filename=serverProperties.getProperty("home.jsons") + "kucha_deep.json";
+    				File f = new File(filename);
+    				String inputStr = "";
+    				if(f.exists() && !f.isDirectory()) {
+        		        BufferedReader file = new BufferedReader(new FileReader(f));
+        		        StringBuffer inputBuffer = new StringBuffer();
+        		        Boolean foundLine = false;
+        		        while ((line = file.readLine()) != null) {
+        		        	if (foundLine) {
+            		            inputBuffer.append(json);
+            		            inputBuffer.append('\n'); 
+            		            foundLine = false;
+        		        	} else {
+            		            inputBuffer.append(line);
+            		            inputBuffer.append('\n');
+            		            if (line.contains( "{ \"index\" : { \"_index\" : \"kucha_deep\", \"_id\" : \"" + ID + "\" } }")) {
+            		            	foundLine = true; 
+            		            }    		        		
+        		        	}
+        		        }
+        		        file.close();    					
+        		        inputStr = inputBuffer.toString();
+    				}
+    		        if (!inputStr.contains("{ \"index\" : { \"_index\" : \"" + index.replace("/", "") + "\", \"_id\" : \"" + ID + "\" } }" )) {
+    		        	inputStr += "{ \"index\" : { \"_index\" : \"" + index.replace("/", "") + "\", \"_id\" : \"" + ID + "\" } }" + System.lineSeparator()+ json + System.lineSeparator();
+    		        }
+    		        File index_kucha = new File(serverProperties.getProperty("home.jsons")+"kucha_deep.json");
+    		        index_kucha.createNewFile();
+    		        FileOutputStream fileOut = new FileOutputStream(index_kucha);
+    		        fileOut.write(inputStr.getBytes());
+    		        fileOut.close();
     	        }
     		} catch (Exception ex) {
     			output += "Failed to do request ";
@@ -1226,7 +1270,7 @@ public class MysqlConnector implements IsSerializable {
 				int accessLevel=-1;
 				accessLevel = getAccessLevelForSessionID(sessionID);
 				// we only need to call this once, since we do not expect more than 1 result!
-				String filename=serverProperties.getProperty("home.jsons")+"result.json";
+				String filename=serverProperties.getProperty("home.jsons")+"kucha_deep.json";
 				String dicFilename=serverProperties.getProperty("home.jsons")+"dic.json";
 				Gson gson = new Gson();
 				Date date = new Date(System.currentTimeMillis());
@@ -1523,7 +1567,7 @@ public class MysqlConnector implements IsSerializable {
 				int accessLevel=-1;
 				accessLevel = getAccessLevelForSessionID(sessionID);
 				// we only need to call this once, since we do not expect more than 1 result!
-				String filename=serverProperties.getProperty("home.jsons")+"result.json";
+				String filename=serverProperties.getProperty("home.jsons")+"kucha_deep.json";
 				String dicFilename=serverProperties.getProperty("home.jsons")+"dic.json";
 				Gson gson = new Gson();
 				Date date = new Date(System.currentTimeMillis());
@@ -3604,6 +3648,50 @@ public class MysqlConnector implements IsSerializable {
 		}
 		return results;
 	}
+	private ArrayList<Integer> getSourceDepictionIDsByTypical(Integer ornamentID) {
+		ArrayList<Integer> results = new ArrayList<Integer>();
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement("SELECT * FROM OrnamentSourceDepictionIDs WHERE OrnamentID=?");
+			pstmt.setInt(1, ornamentID);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				results.add(rs.getInt("DepictionID"));
+			}
+			rs.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		return results;		
+	}
+	/**
+	 * 
+	 * @param caveID
+	 * @param entryList
+	 * @return
+	 */
+	private synchronized boolean writeSourceDepictionIDs(int ornamentID, ArrayList<Integer> entryList) {
+		Connection dbc = getConnection();
+		PreparedStatement prestat;
+		deleteEntry("DELETE FROM OrnamentSourceDepictionIDs WHERE OrnamentID=" + Integer.toString(ornamentID));
+		try {
+			prestat = dbc.prepareStatement("INSERT INTO OrnamentSourceDepictionIDs (OrnamentID, DepictionID) VALUES (?, ?)");
+			for (int sourceDepictionID : entryList) {
+				prestat.setInt(1, ornamentID);
+				prestat.setInt(2, sourceDepictionID);
+				prestat.executeUpdate();
+			}
+			prestat.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 
 	public ArrayList<OrnamentEntry> getOrnaments() {
 		ArrayList<OrnamentEntry> results = new ArrayList<OrnamentEntry>();
@@ -3620,7 +3708,7 @@ public class MysqlConnector implements IsSerializable {
 					getImagesbyOrnamentID(rs.getInt("OrnamentID")), 
 					getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 					new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
-					getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"), getOrnamentRessourceList(rs.getInt("OrnamentID"))));
+					getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"), getOrnamentRessourceList(rs.getInt("OrnamentID")), getSourceDepictionIDsByTypical(rs.getInt("OrnamentID"))));
 				// Aufruf der h�heren Hierarchie Ebenen der Ornamentik mittels getCaveRelation
 				// Aufruf der Tabellen OrnamentComponentsRelation, OrnamentImageRelation und InnerSecondaryPatternRelation
 			}
@@ -4067,10 +4155,11 @@ public class MysqlConnector implements IsSerializable {
 				newOrnamentID = keys.getInt(1);
 			}
 			keys.close();
-			ornamentEntry.setOrnamentID(newOrnamentID);
+			ornamentEntry.setTypicalID(newOrnamentID);
 			insertOrnamentRelatedExternalRessources(ornamentEntry);
 			updateOrnamentImageRelations(newOrnamentID, ornamentEntry.getImages());
 			writeOrnamenticBibliographyRelation(newOrnamentID, ornamentEntry.getRelatedBibliographyList());
+			writeSourceDepictionIDs(newOrnamentID, ornamentEntry.getSourceDepictionIDs());
 			deleteEntry("DELETE FROM OrnamentIconographyRelation WHERE OrnamentID =" + ornamentEntry.getTypicalID());
 			if (ornamentEntry.getRelatedIconographyList().size() > 0) {
 				insertOrnamentIconographyRelation(ornamentEntry.getTypicalID(), ornamentEntry.getRelatedIconographyList());
@@ -4081,7 +4170,7 @@ public class MysqlConnector implements IsSerializable {
 			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
 			return 0;
 		}
-		ornamentEntry.setOrnamentID(newOrnamentID);
+		ornamentEntry.setTypicalID(newOrnamentID);
 		Date date = new Date(System.currentTimeMillis());
 		DateFormat df = DateFormat.getDateTimeInstance();
 		ornamentEntry.setModifiedOn(df.format(date));
@@ -4140,6 +4229,7 @@ public class MysqlConnector implements IsSerializable {
 			
 			if (dologging) System.err.println("writeOrnamenticBibliographyRelation triggered");
 			writeOrnamenticBibliographyRelation(ornamentEntry.getTypicalID(), ornamentEntry.getRelatedBibliographyList());
+			writeSourceDepictionIDs(ornamentEntry.getTypicalID(), ornamentEntry.getSourceDepictionIDs());
 			ornamentStatement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -6215,7 +6305,7 @@ public boolean isHan(String s) {
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),
 						rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")), getOrnamentAnnotations(rs.getInt("OrnamentID")),
-						rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"), getOrnamentRessourceList(rs.getInt("OrnamentID")));
+						rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"), getOrnamentRessourceList(rs.getInt("OrnamentID")), getSourceDepictionIDsByTypical(rs.getInt("OrnamentID")));
 				resultList.add(entry);
 			}
 		} catch (SQLException e) {
@@ -6241,7 +6331,7 @@ public boolean isHan(String s) {
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")),
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
-						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"), getOrnamentRessourceList(rs.getInt("OrnamentID"))));
+						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"), getOrnamentRessourceList(rs.getInt("OrnamentID")), getSourceDepictionIDsByTypical(rs.getInt("OrnamentID"))));
 			}
 			rs.close();
 			stmt.close();
@@ -6270,7 +6360,7 @@ public boolean isHan(String s) {
 						getImagesbyOrnamentID(rs.getInt("OrnamentID")),
 						getRelatedBibliographyFromOrnamen(rs.getInt("OrnamentID")),
 						new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(rs.getTimestamp("ModifiedOn")),rs.getInt("IconographyID"),rs.getInt("MasterImageID"), getOrnamentRelatedIconography(rs.getInt("OrnamentID")),
-						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"), getOrnamentRessourceList(rs.getInt("OrnamentID")));
+						getOrnamentAnnotations(rs.getInt("OrnamentID")),rs.getInt("AccessLevel"),rs.getDouble("TourOrder"),rs.getBoolean("IsVirtualTour"), getOrnamentRessourceList(rs.getInt("OrnamentID")), getSourceDepictionIDsByTypical(rs.getInt("OrnamentID")));
 			}
 			rs.close();
 			pstmt.close();
@@ -7262,7 +7352,6 @@ public boolean isHan(String s) {
 			Date date = new Date(System.currentTimeMillis());
 			de.setModifiedOn("");
 			String json = prepareDepictionForElastic(de);
-			String filename=serverProperties.getProperty("home.jsons")+"result.json";		
 
 			String url = serverProperties.getProperty("home.elastic.url");
 			int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));

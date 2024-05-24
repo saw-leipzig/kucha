@@ -49,7 +49,6 @@ import org.jsoup.select.Elements;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import com.gargoylesoftware.htmlunit.javascript.host.dom.Comment;
 import com.google.gson.Gson;
 import com.google.gwt.thirdparty.json.JSONException;
 import com.google.gwt.thirdparty.json.JSONObject;

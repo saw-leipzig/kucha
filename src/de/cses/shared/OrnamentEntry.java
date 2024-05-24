@@ -19,6 +19,7 @@ import java.util.List;
 public class OrnamentEntry extends AbstractEntry {
 	private int typicalID;
 	private String code;
+	private ArrayList<Integer> sourceDepictionIDs = new ArrayList<Integer>();
 	private String description;
 	private String remarks;
 	private int iconographyID;
@@ -55,7 +56,7 @@ public class OrnamentEntry extends AbstractEntry {
 			String references, int ornamentClassID, ArrayList<ImageEntry> images,
 			ArrayList<AnnotatedBibliographyEntry> relatedBibliographyList, String modifiedOn, int iconographyID, int masterImageID,
 			ArrayList<IconographyEntry> relatedIconographyList, ArrayList<AnnotationEntry> relatedAnnotationList, int accessLevel, 
-			double tourOrder, boolean isVirtualTour, List<ExternalRessourceEntry> relatedExternalRessourcesList) {
+			double tourOrder, boolean isVirtualTour, List<ExternalRessourceEntry> relatedExternalRessourcesList, ArrayList<Integer> sourceDepictionIDs) {
 		this.typicalID = typicalID;
 		this.code = code;
 		this.description = description;
@@ -72,11 +73,12 @@ public class OrnamentEntry extends AbstractEntry {
 		this.virtualTourOrder=tourOrder;
 		this.isVirtualTour = isVirtualTour;
 		this.relatedExternalRessourcesList = relatedExternalRessourcesList;
+		this.sourceDepictionIDs = sourceDepictionIDs;
 	}
 
 	public OrnamentEntry(int typicalID, String code, String description, String remarks, 
 			//String annotations, String modifiedOn, ArrayList<IconographyEntry> relatedIconographyList,
-			ArrayList<AnnotationEntry> relatedAnnotationList, int accessLevel, List<ExternalRessourceEntry> relatedExternalRessourcesList) {
+			ArrayList<AnnotationEntry> relatedAnnotationList, int accessLevel, List<ExternalRessourceEntry> relatedExternalRessourcesList, ArrayList<Integer> sourceDepictionID) {
 		this.typicalID = typicalID;
 		this.code = code;
 		this.description = description;
@@ -87,6 +89,7 @@ public class OrnamentEntry extends AbstractEntry {
 		this.relatedAnnotationList=relatedAnnotationList;
 		this.accessLevel=accessLevel;
 		this.relatedExternalRessourcesList = relatedExternalRessourcesList;
+		this.sourceDepictionIDs = sourceDepictionIDs;
 	}
 	public ArrayList<AnnotationEntry> getRelatedAnnotationList() {
 		return relatedAnnotationList;
@@ -124,9 +127,18 @@ public class OrnamentEntry extends AbstractEntry {
 		return typicalID;
 	}
 
-	public void setOrnamentID(int typicalID) {
+	public void setTypicalID(int typicalID) {
 		this.typicalID = typicalID;
 	}
+	
+	public ArrayList<Integer> getSourceDepictionIDs() {
+		return sourceDepictionIDs;
+	}
+
+	public void setSourceDepictionIDs(ArrayList<Integer> sourceDepictionIDs) {
+		this.sourceDepictionIDs = sourceDepictionIDs;
+	}
+	
 	public IconographyEntry getIconographyEntry() {
 		return ie;
 	}

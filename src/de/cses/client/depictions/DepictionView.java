@@ -68,7 +68,7 @@ public class DepictionView extends AbstractView {
 		dvTemplates = GWT.create(DepictionViewTemplates.class);
 
 		refreshHTML();
-		setSize("350px", "130px");
+		setSize("350px", "100%");
 
 		new DragSource(this) {
 
