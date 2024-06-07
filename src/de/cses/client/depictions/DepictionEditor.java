@@ -490,7 +490,6 @@ public class DepictionEditor extends AbstractEditor {
 		if (newAnnos.size()>0) {
 			if (annotationsLoaded) {
 				osdLoader.removeOrAddAnnotations(newAnnos,!deselect);
-				osdLoader.setHasContourAllign(false);
 
 			}				
 		}
@@ -1806,7 +1805,6 @@ public class DepictionEditor extends AbstractEditor {
 				osdLoader.removeOrAddAnnotations(correspondingDepictionEntry.getRelatedAnnotationList(),
 						annotationsLoaded);
 				annotationsLoaded = !annotationsLoaded;
-				osdLoader.setHasContourAllign(false);
 			}
 		});
 		showAnnotationTB.setToolTip(Util.createToolTip("Show or Hide Annotations.", "This will show or hide all Annotations."));
@@ -1825,7 +1823,6 @@ public class DepictionEditor extends AbstractEditor {
 							}
 							osdLoader.removeOrAddAnnotations(proposedAnnotations,
 									annotationsLoaded);
-							osdLoader.setHasContourAllign(true);
 						}
 						annotationsLoaded = !annotationsLoaded;
 					}

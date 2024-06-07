@@ -58,14 +58,13 @@ public class OSDLoaderEditorImageAnnotation extends AbstractOSDLoader {
 	
 	public OSDLoaderEditorImageAnnotation(ArrayList<ImageEntry> images, boolean annotation, TreeStore<IconographyEntry> icoTree, OSDListener osdListener) {
 		
-		super(annotation, null, osdListener, "bettermultipolygon", false, getHighlighter());
+		super(annotation, null, osdListener, "multipolygon", false, getHighlighter());
 		Util.doLogging("initiating icotree");
 		this.images = images;
 		this.icoTree=icoTree;
 		if (icoTree!=null) {
 			icoTree.setEnableFilters(false);
 			icoEntries = icoTree.getRootItems();
-			icoTree.setEnableFilters(true);
 		}
 		JavaScriptObject icos;
 		icos = listConverter(icoEntries);
@@ -193,16 +192,7 @@ public class OSDLoaderEditorImageAnnotation extends AbstractOSDLoader {
 		_self.@de.cses.client.depictions.OSDLoaderEditorImageAnnotation::getResults(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/Boolean;Ljava/lang/Boolean;Ljava/lang/Double;Ljava/lang/Double;Ljava/lang/Boolean;)(annotation.id,results,annotation.target.selector.value,image, true, false,annotation.created?annotation.created:-1, annotation.modified?annotation.modified:-1, annotation.creator.type === "computer"?true:false);
 	}-*/;
 	
-	public void setHasContourAllign(boolean hasContourAllign) {
-		setHasContourAllignJS(viewers, hasContourAllign);
-	}
 	
-	public static native JavaScriptObject setHasContourAllignJS(JavaScriptObject viewers, boolean hasContourAllign)
-	/*-{
-		for (var v in viewers["annotorious"]) {
-			viewers["annotorious"][v].setHasContourAllign(hasContourAllign);
-		}
-	}-*/;
 
 	public JavaScriptObject listConverter(Collection<IconographyEntry> icoTree) {
 		JavaScriptObject list = null;

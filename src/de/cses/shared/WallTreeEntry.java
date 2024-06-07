@@ -66,13 +66,13 @@ public class WallTreeEntry extends AbstractWallEntry {
 	}
 
 	public String getText() {
-		String name=text;
+		String name=text + " (" + Integer.toString(this.wallLocationID) + ")";
 		String dimensions ="";
 		if (wallDimensions.size() == 0 && position.size() == 0) {
-			return text;
+			return name;
 		} else {
 			for (WallDimensionEntry wde: wallDimensions) {
-				String dimensionString = wde.getName().isEmpty()? "Register" :"Register " + wde.getName() + " (" + Integer.toString(wde.getRegisters()) + ", " + Integer.toString(wde.getColumns()) + ")";
+				String dimensionString = wde.getName().isEmpty()? " Register" :" Register " + wde.getName() + " (" + Integer.toString(wde.getRegisters()) + ", " + Integer.toString(wde.getColumns()) + ")";
 				if (dimensions.isEmpty()) {
 					dimensions = dimensionString;
 				} else {
@@ -89,7 +89,7 @@ public class WallTreeEntry extends AbstractWallEntry {
 				}
 			}
 			if (!posNames.isEmpty()) {
-				name=name+" ("+posNames + ")";
+				name=name+" - "+posNames + "";
 			}			
 			if (dimensions.isEmpty()) {
 				return name;

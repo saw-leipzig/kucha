@@ -161,7 +161,6 @@ public abstract class AbstractOSDLoader {
 	}
 	public static native void removeOrAddAnnotationsJS(JavaScriptObject viewers, JavaScriptObject annos, Boolean add) 
 	/*-{
-		$wnd.console.log("adding", viewers, annos);
 	    if (viewers["annotorious"]!=null){
 	    	for (var v in viewers["annotorious"]) {
 				var annosForViewer = [];
@@ -320,10 +319,11 @@ public abstract class AbstractOSDLoader {
 							config["readOnly"]=false;
 						}
 						config["image"]=wheres[i];
-						config["formatter"] = [highlighter];
+						config["formatters"] = [highlighter];
 						config["disableEditor"] = disableEditor;
 						annotorious[wheres[i]] = $wnd.OpenSeadragon.Annotorious(dic[wheres[i]],config);
 				        $wnd.Annotorious.SelectorPack(annotorious[wheres[i]]);
+				        $wnd.console.log(annotorious[wheres[i]].listDrawingTools());
 				        annotorious[wheres[i]].setDrawingTool(annotationType);
 						annotorious[wheres[i]].on('createAnnotation',function(annotation) {
 						annotation["creator"] = annotation.creator?annotation.creator:{"type":"human"}

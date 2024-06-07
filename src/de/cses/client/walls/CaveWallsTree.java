@@ -39,7 +39,7 @@ public class CaveWallsTree {
 
 		@Override
 		public String getValue(WallTreeEntry object) {
-			return object.getText();
+			return object.getText() + " (" + object.getWallLocationID() + ")";
 		}
 
 		@Override

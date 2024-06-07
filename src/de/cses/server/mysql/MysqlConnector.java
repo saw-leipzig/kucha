@@ -4698,7 +4698,7 @@ public boolean isHan(String s) {
 			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.getLocalizedMessage());;
+			System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.getLocalizedMessage());;
 			return false;
 		}
 
@@ -7965,7 +7965,6 @@ public boolean isHan(String s) {
 	 * @return
 	 */
 	public ArrayList<AnnotationEntry> getAnnotations(int depictionID) {
-		if (dologging) System.err.println("Entering getAnnotations for DepictionID: "+Integer.toString(depictionID));
 		Connection dbc = getConnection();
 		ArrayList<AnnotationEntry> results = new ArrayList<AnnotationEntry>();
 		Statement stmt;
@@ -8096,7 +8095,6 @@ public boolean isHan(String s) {
 		return results;
 	}
 	public ArrayList<AnnotationEntry> getOrnamentAnnotations(int depictionID) {
-		if (dologging) System.err.println("Entering getAnnotations for DepictionID: "+Integer.toString(depictionID));
 		Connection dbc = getConnection();
 		ArrayList<AnnotationEntry> results = new ArrayList<AnnotationEntry>();
 		Statement stmt;
@@ -10091,10 +10089,10 @@ public boolean isHan(String s) {
            if (dologging) System.out.println("Message sent!");
 
         } catch (Exception e) {
-           if (dologging) System.err.println(e.getLocalizedMessage());                
-           if (dologging) System.err.println(e.getSuppressed());                
-           if (dologging) System.err.println(e.getCause());                
-           if (dologging) System.err.println(e.getMessage());                
+           System.err.println(e.getLocalizedMessage());                
+           System.err.println(e.getSuppressed());                
+           System.err.println(e.getCause());                
+           System.err.println(e.getMessage());                
        }
     }
 	private static String cryptWithMD5(String pass) {

@@ -335,7 +335,7 @@ public class IconographySelector extends FramedPanel {
 					    	    	iconographyTree.getStore().update(draggedIco);
 					    	    	iconographyTree.refresh(droppedToIco);
 					    	    	iconographyTree.refresh(draggedIco);
-				    	    		dbService.updateIconographyEntry(draggedIco, UserLogin.getInstance().getUsername(), true, new AsyncCallback<Boolean>() {
+				    	    		dbService.updateIconographyEntry(draggedIco, UserLogin.getInstance().getSessionID(), true, new AsyncCallback<Boolean>() {
 
 										@Override
 										public void onFailure(Throwable arg0) {
@@ -689,7 +689,6 @@ public class IconographySelector extends FramedPanel {
 		}
 	}
 	private void initPanel(Collection<IconographyEntry> elements) {
-		Util.doLogging("init panel");
 		filterField = new StoreFilterField<IconographyEntry>() {
 
 			@Override
