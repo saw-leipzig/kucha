@@ -95,6 +95,7 @@ import de.cses.client.StaticTables;
 import de.cses.client.Util;
 import de.cses.client.bibliography.BibliographySelector;
 import de.cses.client.caves.C14DocumentUploader.C14DocumentUploadListener;
+import de.cses.client.caves.Cave3DModelUploader.Cave3DModelUploadListener;
 import de.cses.client.caves.CaveSketchUploader.CaveSketchUploadListener;
 import de.cses.client.depictions.DepictionView;
 import de.cses.client.ui.AbstractEditor;
@@ -106,6 +107,7 @@ import de.cses.client.walls.WallTree;
 import de.cses.shared.AbstractEntry;
 import de.cses.shared.C14AnalysisUrlEntry;
 import de.cses.shared.C14DocumentEntry;
+import de.cses.shared.Cave3DModelEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -130,8 +132,11 @@ public class CaveEditor extends AbstractEditor {
 	private FramedPanel mainPanel;
 	private CaveEntry correspondingCaveEntry;
 	private ComboBox<CaveTypeEntry> caveTypeSelectionCB;
+	private ComboBox<Cave3DModelEntry> cave3DMOdelSelectionCB;
 	private CaveTypeProperties caveTypeProps;
+	private Cave3DModelProperties cave3DModelProps;
 	private ListStore<CaveTypeEntry> caveTypeEntryListStore;
+	private ListStore<Cave3DModelEntry> cave3DModelEntryListStore;
 	private DistrictProperties districtProps;
 	private ListStore<DistrictEntry> districtEntryList;
 	private RegionProperties regionProps;
@@ -140,6 +145,7 @@ public class CaveEditor extends AbstractEditor {
 	private OrientationProperties orientationProps;
 	private CaveLayoutViewTemplates caveLayoutViewTemplates;
 	private CaveTypeViewTemplates ctvTemplates;
+	private Cave3DModelViewTemplates c3DMTemplates;
 	private CaveTypeViewTemplates ctvt;
 	private PreservationClassificationViewTemplates pcvt;
 	private TextField officialNumberField;
@@ -157,6 +163,7 @@ public class CaveEditor extends AbstractEditor {
 	private TextField firstDocumentedByField;
 	private NumberField<Integer> firstDocumentedInYearField;
 	private TextArea findingsTextArea;
+	Cave3DModelUploader cave3DModelUploader;
 	private FlowLayoutContainer caveSketchFLC;
 	private ComboBox<OrientationEntry> orientationSelection;
 	private CeilingTypeProperties ceilingTypeProps;
@@ -258,9 +265,20 @@ public class CaveEditor extends AbstractEditor {
 		LabelProvider<CaveTypeEntry> nameEN();
 	}
 
+	interface Cave3DModelProperties extends PropertyAccess<Cave3DModelEntry> {
+		ModelKeyProvider<Cave3DModelEntry> cave3DModelID();
+
+		LabelProvider<Cave3DModelEntry> title();
+	}
+
 	interface CaveTypeViewTemplates extends XTemplates {
 		@XTemplate("<div>{name}</div>")
 		SafeHtml caveTypeLabel(String name);
+	}
+
+	interface Cave3DModelViewTemplates extends XTemplates {
+		@XTemplate("<div>{name}</div>")
+		SafeHtml cave3DModelabel(String name);
 	}
 
 	interface CeilingTypeProperties extends PropertyAccess<CeilingTypeEntry> {
@@ -389,6 +407,7 @@ public class CaveEditor extends AbstractEditor {
 		}
 		this.correspondingCaveEntry.setLastChangedByUser(UserLogin.getInstance().getUsername());
 		caveTypeProps = GWT.create(CaveTypeProperties.class);
+		cave3DModelProps = GWT.create(Cave3DModelProperties.class);
 		caveTypeEntryListStore = new ListStore<CaveTypeEntry>(caveTypeProps.caveTypeID());
 		ceilingTypeProps = GWT.create(CeilingTypeProperties.class);
 		ceilingTypeEntryList = new ListStore<CeilingTypeEntry>(ceilingTypeProps.ceilingTypeID());
@@ -412,6 +431,7 @@ public class CaveEditor extends AbstractEditor {
 		caveLayoutViewTemplates = GWT.create(CaveLayoutViewTemplates.class);
 		documentLinkTemplate = GWT.create(DocumentLinkTemplate.class);
 		ctvTemplates = GWT.create(CaveTypeViewTemplates.class);
+		c3DMTemplates = GWT.create(Cave3DModelViewTemplates.class);
 		ctvt = GWT.create(CaveTypeViewTemplates.class);
 		pcvt = GWT.create(PreservationClassificationViewTemplates.class);
 		wallProps = GWT.create(WallProperties.class);
@@ -2270,6 +2290,60 @@ public class CaveEditor extends AbstractEditor {
 		});
 		caveTypeFP.add(caveTypeSelectionCB);
 
+
+		/**
+		 * ======== caveTypeSelector
+		 */
+		FramedPanel cave3DModelFP = new FramedPanel();
+		cave3DModelFP.setHeading("3D Model");
+		cave3DMOdelSelectionCB = new ComboBox<Cave3DModelEntry>(cave3DModelEntryListStore, cave3DModelProps.title(),
+				new AbstractSafeHtmlRenderer<Cave3DModelEntry>() {
+
+					@Override
+					public SafeHtml render(Cave3DModelEntry item) {
+						return c3DMTemplates.cave3DModelabel(item.getTitle());
+					}
+				});
+		cave3DMOdelSelectionCB.setEmptyText("select 3D Model");
+		cave3DMOdelSelectionCB.setTypeAhead(false);
+		cave3DMOdelSelectionCB.setEditable(false);
+		cave3DMOdelSelectionCB.setTriggerAction(TriggerAction.ALL);
+		cave3DMOdelSelectionCB.addSelectionHandler(new SelectionHandler<Cave3DModelEntry>() {
+
+			@Override
+			public void onSelection(SelectionEvent<Cave3DModelEntry> event) {
+				correspondingCaveEntry.setCave3DModel(event.getSelectedItem());
+				update3DModel();
+			}
+		});
+		ToolButton new3DModelPlusTool = new ToolButton(new IconConfig("addButton", "addButtonOver"));
+		new3DModelPlusTool.setToolTip(Util.createToolTip("add Cave 3D Model"));
+		cave3DModelFP.addTool(new3DModelPlusTool);
+		new3DModelPlusTool.addSelectHandler(new SelectHandler() {
+
+			@Override
+			public void onSelect(SelectEvent event) {
+				PopupPanel addNew3DModelDialog = new PopupPanel();
+				cave3DModelUploader = new Cave3DModelUploader("", 0, new Cave3DModelUploadListener() {
+
+					@Override
+					public void uploadCompleted(Cave3DModelEntry csEntry) {
+					}
+
+					@Override
+					public void uploadCanceled() {
+						addNew3DModelDialog.hide();
+					}
+				});
+				addNew3DModelDialog.add(cave3DModelUploader);
+				addNew3DModelDialog.setModal(true);
+				addNew3DModelDialog.center();
+			}
+		});
+
+
+		cave3DModelFP.add(cave3DMOdelSelectionCB);
+
 		/**
 		 * ======== orientationSelection
 		 */
@@ -2560,8 +2634,9 @@ public class CaveEditor extends AbstractEditor {
 
 		VerticalLayoutContainer caveLayoutLeftVLC = new VerticalLayoutContainer();
 		caveLayoutLeftVLC.add(typeOrientationHLC, new VerticalLayoutData(1.0, .1));
-		caveLayoutLeftVLC.add(ceilingTypeSelectionsFP, new VerticalLayoutData(1.0, .73));
-		caveLayoutLeftVLC.add(caveLayoutCommentsFP, new VerticalLayoutData(1.0, .17));
+		caveLayoutLeftVLC.add(cave3DModelFP, new VerticalLayoutData(1.0, .1));
+		caveLayoutLeftVLC.add(ceilingTypeSelectionsFP, new VerticalLayoutData(1.0, .65));
+		caveLayoutLeftVLC.add(caveLayoutCommentsFP, new VerticalLayoutData(1.0, .15));
 
 		caveTypeHLC.add(caveLayoutLeftVLC, new HorizontalLayoutData(.5, 1.0));
 
@@ -3325,6 +3400,8 @@ public class CaveEditor extends AbstractEditor {
 		}
 	}
 
+	public void update3DModel() {
+	}
 	public void updateWallList(int caveTypeID) {
 		wallEntryLS.clear();
 		switch (caveTypeID) {

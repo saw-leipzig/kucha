@@ -94,6 +94,7 @@ import de.cses.shared.BibKeywordEntry;
 import de.cses.shared.C14AnalysisUrlEntry;
 import de.cses.shared.C14DocumentEntry;
 import de.cses.shared.CCEntry;
+import de.cses.shared.Cave3DModelEntry;
 import de.cses.shared.CaveAreaEntry;
 import de.cses.shared.CaveEntry;
 import de.cses.shared.CaveGroupEntry;
@@ -2585,6 +2586,39 @@ public class MysqlConnector implements IsSerializable {
 		}
 		return entry;
 	}
+
+	/**
+	 * Creates a new image entry in the table 'Images'
+	 * 
+	 * @return auto incremented primary key 'ImageID'
+	 */
+	public synchronized Cave3DModelEntry createNew3DModelEntry(String filename, String title, int caveTypeID) {
+		Cave3DModelEntry entry = new Cave3DModelEntry(0,title,  filename, caveTypeID, false);
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+
+		try {
+			if (dologging) System.err.println("Preparing statement.");
+			pstmt = dbc.prepareStatement(
+					"INSERT INTO Cave3DModels (Filename, Title, CaveTypeID, deleted) VALUES (?, ?, ?, ?)",
+					Statement.RETURN_GENERATED_KEYS);
+			pstmt.setString(1, "");
+			pstmt.setString(2, entry.getFilename());
+			pstmt.setString(3, entry.getTitle());
+			pstmt.setInt(4, entry.getCaveTypeID());
+			pstmt.executeUpdate();
+			ResultSet keys = pstmt.getGeneratedKeys();
+			if (keys.next()) { // there should only be 1 key returned here
+				entry.setCave3DID(keys.getInt(1));
+			}
+			keys.close();
+			pstmt.close();
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			return null;
+		}
+		return entry;
+	}
 	/**
 	 * Creates a new wall sketch entry in the table 'WallSketches'
 	 * 
@@ -3172,6 +3206,30 @@ public class MysqlConnector implements IsSerializable {
 		}
 		return results;
 	}
+	/**
+	 * 
+	 * @param cave3DModelID
+	 * @return Cave3DModelEntry that matches cave3DModelID, or NULL
+	 */
+	public Cave3DModelEntry getCave3DModelEntry(int cave3DModelID) {
+		Connection dbc = getConnection();
+		Cave3DModelEntry result = null;
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Cave3DModels WHERE deleted=0 and Cave3DModelID=" + cave3DModelID);
+			if (rs.first()) {
+				result = new Cave3DModelEntry(rs.getInt("Cave3DModelID"), rs.getString("Title"), rs.getString("Filename"),rs.getInt("CaveTypeID"), rs.getBoolean("deleted"));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+			return null;
+		}
+		return result;
+	}
 
 	/**
 	 * 
@@ -3261,7 +3319,27 @@ public class MysqlConnector implements IsSerializable {
 
 		return result;
 	}
+	public Cave3DModelEntry getCave3DModel(int cave3DModelID) {
+		Cave3DModelEntry cave3DModel = null;
+		Connection dbc = getConnection();
+		Statement stmt;
+		try {
+			stmt = dbc.createStatement();
 
+			String sqlText = "SELECT * FROM Cave3DModels where Cave3DModelID = " + Integer.toString(cave3DModelID);
+			ResultSet rs = stmt.executeQuery(sqlText);
+			while (rs.next()) {
+				cave3DModel = new Cave3DModelEntry(rs.getInt("Cave3DModelID"), rs.getString("Title"), rs.getString("Filename"),rs.getInt("CaveTypeID"), rs.getBoolean("deleted"));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+		}
+		return cave3DModel;
+
+	}
 	public ArrayList<CaveEntry> searchCaves(CaveSearchEntry searchEntry) {
 		ArrayList<CaveEntry> results = new ArrayList<CaveEntry>();
 		Connection dbc = getConnection();
@@ -3379,7 +3457,7 @@ public class MysqlConnector implements IsSerializable {
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("SiteID"), rs.getInt("DistrictID"),
 						rs.getInt("RegionID"),rs.getInt("OrientationID"),
 						rs.getString("StateOfPreservation"), rs.getString("Findings"),
-						rs.getString("Notes"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
+						rs.getString("Notes"), getCave3DModel(rs.getInt("Cave3DModelID")), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
 						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"),
 						rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
 						rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"),
@@ -3509,7 +3587,7 @@ public class MysqlConnector implements IsSerializable {
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("SiteID"), rs.getInt("DistrictID"),
 						rs.getInt("RegionID"),rs.getInt("OrientationID"),
 						rs.getString("StateOfPreservation"), rs.getString("Findings"),
-						rs.getString("Notes"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
+						rs.getString("Notes"), getCave3DModel(rs.getInt("Cave3DModelID")), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
 						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"),
 						rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
 						rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"),
@@ -3589,7 +3667,7 @@ public class MysqlConnector implements IsSerializable {
 							rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("SiteID"), rs.getInt("DistrictID"),
 							rs.getInt("RegionID"),	rs.getInt("OrientationID"),
 							rs.getString("StateOfPreservation"), rs.getString("Findings"),
-							rs.getString("Notes"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
+							rs.getString("Notes"), getCave3DModel(rs.getInt("Cave3DModelID")), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
 							rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"),
 							rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
 							rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"),
@@ -3625,7 +3703,7 @@ public class MysqlConnector implements IsSerializable {
 				CaveEntry ce = new CaveEntry(rs.getInt("CaveID"), rs.getString("OfficialNumber"), rs.getString("HistoricName"),
 						rs.getString("OptionalHistoricName"), rs.getInt("CaveTypeID"), rs.getInt("SiteID"), rs.getInt("DistrictID"),
 						rs.getInt("RegionID"), rs.getInt("OrientationID"), rs.getString("StateOfPreservation"), rs.getString("Findings"),
-						rs.getString("Notes"), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
+						rs.getString("Notes"), getCave3DModel(rs.getInt("Cave3DModelID")), rs.getString("FirstDocumentedBy"), rs.getInt("FirstDocumentedInYear"),
 						rs.getInt("PreservationClassificationID"), rs.getInt("CaveGroupID"), rs.getString("OptionalCaveSketch"),
 						rs.getString("CaveLayoutComments"), rs.getBoolean("HasVolutedHorseShoeArch"), rs.getBoolean("HasSculptures"),
 						rs.getBoolean("HasClayFigures"), rs.getBoolean("HasImmitationOfMountains"),
@@ -5422,6 +5500,33 @@ public boolean isHan(String s) {
 	}
 
 	/**
+	 * Updates the information of the entry given as parameter in the SQL database.
+	 * 
+	 * @param entry
+	 * @return
+	 */
+	public synchronized boolean updateCave3DModelEntry(Cave3DModelEntry entry, String sessionID) {
+		if (dologging) System.out.println("Starting UpdateImageEntry");
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		try {
+			pstmt = dbc.prepareStatement(
+					"UPDATE Cave3DModels SET Filename=?, Title=?, Cave3DModel=?, deleted=?  WHERE Cave3DModelID=?");
+			pstmt.setString(1, entry.getFilename());
+			pstmt.setString(2, entry.getTitle());
+			pstmt.setInt(3, entry.getCaveTypeID());
+			pstmt.setBoolean(4, entry.isdeleted());
+			pstmt.setInt(5, entry.getCave3DModelID());
+			pstmt.executeUpdate();
+			pstmt.closeOnCompletion();
+		} catch (SQLException e) {
+			System.err.println(e.getMessage());
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * 
 	 * @return A list of all Regions as RegionEntry objects
 	 */
@@ -6469,6 +6574,31 @@ public boolean isHan(String s) {
 		}
 		return result;
 	}
+	public ArrayList<Cave3DModelEntry> get3DModelEntry(String sqlWhere){
+	ArrayList<Cave3DModelEntry> results = new ArrayList<Cave3DModelEntry>();
+	Connection dbc = getConnection();
+	PreparedStatement pstmt;
+	try {
+		if (sqlWhere != null) {
+			pstmt = dbc.prepareStatement("SELECT * FROM Cave3DModels WHERE deleted=0 and " + sqlWhere + " ORDER BY Title Asc");
+		} else {
+			pstmt = dbc.prepareStatement("SELECT * FROM Images WHERE deleted=0 ORDER BY Title Asc");
+		}
+		ResultSet rs = pstmt.executeQuery();
+		while (rs.next()) {
+			Cave3DModelEntry c3DMe = new Cave3DModelEntry(rs.getInt("Cave3DModelID"), rs.getString("Title"), rs.getString("Filfename"), rs.getInt("CaveTypeID"),
+					rs.getBoolean("deleted"));
+			results.add(c3DMe);
+		}
+		rs.close();
+		pstmt.close();
+	} catch (SQLException e) {
+		e.printStackTrace();
+		if (dologging) System.out.println("                -->  "+System.currentTimeMillis()+"  SQL-Statement von "+ new Throwable().getStackTrace()[0].getMethodName()+" wurde abgebrochen:."+e.toString());;
+		return null;
+	}
+	return results;
+}
 
 	/**
 	 * TODO: only save existing areas depending on cave type!
@@ -6485,7 +6615,7 @@ public boolean isHan(String s) {
 					"UPDATE Caves SET OfficialNumber=?, HistoricName=?, OptionalHistoricName=?, CaveTypeID=?, SiteID=?, DistrictID=?, "
 							+ "RegionID=?, OrientationID=?, StateOfPreservation=?, Findings=?, Notes=?, FirstDocumentedBy=?, FirstDocumentedInYear=?, PreservationClassificationID=?, "
 							+ "CaveGroupID=?, OptionalCaveSketch=?, CaveLayoutComments=?, HasVolutedHorseShoeArch=?, HasSculptures=?, HasClayFigures=?, HasImmitationOfMountains=?, "
-							+ "HasHolesForFixationOfPlasticalItems=?, HasWoodenConstruction=?, AccessLevel=? WHERE CaveID=?");
+							+ "HasHolesForFixationOfPlasticalItems=?, HasWoodenConstruction=?, AccessLevel=?, Cave3DModelID=? WHERE CaveID=?");
 			pstmt.setString(1, caveEntry.getOfficialNumber());
 			pstmt.setString(2, caveEntry.getHistoricName());
 			pstmt.setString(3, caveEntry.getOptionalHistoricName());
@@ -6510,7 +6640,8 @@ public boolean isHan(String s) {
 			pstmt.setBoolean(22, caveEntry.isHasHolesForFixationOfPlasticalItems());
 			pstmt.setBoolean(23, caveEntry.isHasWoodenConstruction());
 			pstmt.setInt(24, caveEntry.getAccessLevel());
-			pstmt.setInt(25, caveEntry.getCaveID());
+			pstmt.setInt(25, caveEntry.getCave3DModel().getCave3DModelID());
+			pstmt.setInt(26, caveEntry.getCaveID());
 			pstmt.executeUpdate();
 			pstmt.close();
 //			for (CaveAreaEntry caEntry : caveEntry.getCaveAreaList()) {
@@ -6557,6 +6688,37 @@ public boolean isHan(String s) {
 		protocollModifiedAbstractEntry(caveEntry,"");
 		return getCave(caveEntry.getCaveID());
 	}
+	public synchronized CaveEntry update3DCave(Integer caveID, String cave3DFilename) {
+		if (dologging) System.out.println("updating cave3DFilename");
+		Connection dbc = getConnection();
+		PreparedStatement pstmt;
+		CaveEntry caveEntry = getCave(caveID);
+		if (caveEntry.getAccessLevel() == 2) {
+			if (dologging) System.out.println("starting writing cave to elastic");
+			caveEntry.setModifiedOn("");
+			Gson gson = new Gson();
+			String json = prepareCaveEntryForElastic(caveEntry);
+			Date date = new Date(System.currentTimeMillis());
+			DateFormat df = DateFormat.getDateTimeInstance();
+			String url = serverProperties.getProperty("home.elastic.url");
+			int port = Integer.parseInt(serverProperties.getProperty("home.elastic.port"));
+			String elastic_user = serverProperties.getProperty("home.elastic.login");
+			String elastic_pw = serverProperties.getProperty("home.elastic.pw");
+			String updateResult = doUploadToElastic(caveEntry.getUniqueID(),   "{\"doc\":"+json+"}", url,"/kucha_deep", Integer.toString(port), elastic_user,elastic_pw, true);
+			try {
+				ElasticResult er = gson.fromJson(updateResult, ElasticResult.class);
+			    if (er.result == null || !er.result.equals("noop") || updateResult.contains("document_missing_exception")) {
+			    	doUploadToElastic(caveEntry.getUniqueID()+"-"+Integer.toString(er._version),"{\"timestamp\":"+date.getTime()+",\"content\":"+json+"}", url,"/kucha_backup", Integer.toString(port), elastic_user,elastic_pw, false);
+			    }				
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				System.err.println(updateResult);
+			}
+		    caveEntry.setModifiedOn(df.format(date));			
+		}
+		protocollModifiedAbstractEntry(caveEntry,"");
+		return getCave(caveEntry.getCaveID());
+	}
 
 	/**
 	 * @param caveEntry
@@ -6570,8 +6732,8 @@ public boolean isHan(String s) {
 			pstmt = dbc.prepareStatement(
 					"INSERT INTO Caves (OfficialNumber, HistoricName, OptionalHistoricName, CaveTypeID, SiteID, DistrictID, RegionID, OrientationID, StateOfPreservation, "
 							+ "Findings, Notes, FirstDocumentedBy, FirstDocumentedInYear, PreservationClassificationID, CaveGroupID, OptionalCaveSketch, CaveLayoutComments, HasVolutedHorseShoeArch, "
-							+ "HasSculptures, HasClayFigures, HasImmitationOfMountains, HasHolesForFixationOfPlasticalItems, HasWoodenConstruction, AccessLevel) "
-							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+							+ "HasSculptures, HasClayFigures, HasImmitationOfMountains, HasHolesForFixationOfPlasticalItems, HasWoodenConstruction, AccessLevel, Cave3DModelID) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, caveEntry.getOfficialNumber());
 			pstmt.setString(2, caveEntry.getHistoricName());
@@ -6597,6 +6759,7 @@ public boolean isHan(String s) {
 			pstmt.setBoolean(22, caveEntry.isHasHolesForFixationOfPlasticalItems());
 			pstmt.setBoolean(23, caveEntry.isHasWoodenConstruction());
 			pstmt.setInt(24, caveEntry.getAccessLevel());
+			pstmt.setInt(25, caveEntry.getCave3DModel().getCave3DModelID());
 			pstmt.executeUpdate();
 			ResultSet keys = pstmt.getGeneratedKeys();
 			if (keys.next()) { // there should only be 1 key returned here

@@ -40,6 +40,7 @@ public class CaveEntry extends AbstractEntry {
 	private String stateOfPerservation;
 	private String findings;
 	private String notes;
+	private Cave3DModelEntry cave3DModel;
 	private String firstDocumentedBy;
 	private int firstDocumentedInYear = 0;
 	private String optionalCaveSketch;
@@ -62,7 +63,7 @@ public class CaveEntry extends AbstractEntry {
 	}
 
 	public CaveEntry(int caveID, String officialNumber, String historicName, String optionalHistoricName, int caveTypeID, int siteID, int districtID,
-			int regionID, int orientationID, String stateOfPerservation, String findings, String notes, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
+			int regionID, int orientationID, String stateOfPerservation, String findings, String notes, Cave3DModelEntry cave3DModel, String firstDocumentedBy, int firstDocumentedInYear, int preservationClassificationID,
 			int caveGroupID, String optionalCaveSketch, String caveLayoutComments, boolean hasVolutedHorseShoeArch, boolean hasSculptures, boolean hasClayFigures, boolean hasImmitationOfMountains,
 			boolean hasHolesForFixationOfPlasticalItems, boolean hasWoodenConstruction, int accessLevel, String lastChangedOn) {
 		this.caveID = caveID;
@@ -77,6 +78,7 @@ public class CaveEntry extends AbstractEntry {
 		this.stateOfPerservation = stateOfPerservation;
 		this.findings = findings;
 		this.setNotes(notes);
+		this.cave3DModel = cave3DModel;
 		this.firstDocumentedBy = firstDocumentedBy;
 		this.firstDocumentedInYear = firstDocumentedInYear;
 		this.preservationClassificationID = preservationClassificationID;
@@ -95,7 +97,7 @@ public class CaveEntry extends AbstractEntry {
 	
 	public CaveEntry clone() {
 		CaveEntry clonedCE = new CaveEntry(caveID, officialNumber, historicName, optionalHistoricName, caveTypeID, siteID, districtID,
-				regionID, orientationID, stateOfPerservation, findings, notes, firstDocumentedBy, firstDocumentedInYear, preservationClassificationID,
+				regionID, orientationID, stateOfPerservation, findings, notes, cave3DModel, firstDocumentedBy, firstDocumentedInYear, preservationClassificationID,
 				caveGroupID, optionalCaveSketch, caveLayoutComments, hasVolutedHorseShoeArch, hasSculptures, hasClayFigures, hasImmitationOfMountains, 
 				hasHolesForFixationOfPlasticalItems, hasWoodenConstruction, this.getAccessLevel(), this.modifiedOn);
 		ArrayList<CaveAreaEntry> clonedCaveAreaList = new ArrayList<CaveAreaEntry>();
@@ -353,6 +355,20 @@ public class CaveEntry extends AbstractEntry {
 	 */
 	public void setOptionalCaveSketch(String optionalCaveSketch) {
 		this.optionalCaveSketch = optionalCaveSketch;
+	}
+	
+	/**
+	 * @return the notes
+	 */
+	public Cave3DModelEntry getCave3DModel() {
+		return cave3DModel;
+	}
+
+	/**
+	 * @param notes the notes to set
+	 */
+	public void setCave3DModel(Cave3DModelEntry cave3DModel) {
+		this.cave3DModel = cave3DModel;
 	}
 
 	/**

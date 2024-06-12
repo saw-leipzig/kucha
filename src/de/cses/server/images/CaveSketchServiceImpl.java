@@ -53,7 +53,7 @@ public class CaveSketchServiceImpl extends HttpServlet {
 	/**
 	 * This method is called when the submit button in the image paperUploader is pressed.
 	 * 
-	 * @see de.cses.client.images.ImageUploader
+	 * @see de.cses.client.cave.CaveSketchUploader
 	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

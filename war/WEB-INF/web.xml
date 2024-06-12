@@ -27,6 +27,22 @@
     </multipart-config>
   </servlet>
   
+  <servlet>
+  	<servlet-name>cave3DModelUploader</servlet-name>
+  	<servlet-class>de.cses.server.images.Cave3DServiceImpl</servlet-class>
+    <multipart-config>
+    	<location>/var/lib/tomcat8/webapps/images</location>
+    	<max-file-size>20848820</max-file-size>
+    	<max-request-size>418018841</max-request-size>
+    	<file-size-threshold>1048576</file-size-threshold>
+    </multipart-config>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>cave3DModelUploader</servlet-name>
+    <url-pattern>/cave3DModelUpload</url-pattern>
+  </servlet-mapping>
+  
   <servlet-mapping>
     <servlet-name>imgUploader</servlet-name>
     <url-pattern>/imgUpload</url-pattern>
